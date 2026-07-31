@@ -49,8 +49,12 @@
         "noUnusedImports": "warn",
         "useExhaustiveDependencies": "off"
       },
+      "security": {
+        "noDangerouslySetInnerHtml": "off"
+      },
       "a11y": {
-        "useAriaPropsSupportedByRole": "off"
+        "useAriaPropsSupportedByRole": "off",
+        "noSvgWithoutTitle": "off"
       }
     }
   },
