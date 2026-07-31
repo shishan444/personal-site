@@ -46,3 +46,7 @@ next-env.d.ts
 
 # drizzle
 /drizzle/meta
+
+# pglite（开发期嵌入式 PG 数据目录）
+/.pglite
+
