@@ -1,3 +1,4 @@
+import rehypeShiki from "@shikijs/rehype";
 import rehypeRaw from "rehype-raw";
 import rehypeStringify from "rehype-stringify";
 import remarkGfm from "remark-gfm";
@@ -11,6 +12,7 @@ export async function renderMarkdownToHtml(md: string): Promise<string> {
     .use(remarkGfm)
     .use(remarkRehype, { allowDangerousHtml: true })
     .use(rehypeRaw)
+    .use(rehypeShiki, { theme: "github-dark" })
     .use(rehypeStringify)
     .process(md);
   return String(file);

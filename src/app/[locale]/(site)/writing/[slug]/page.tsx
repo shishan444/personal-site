@@ -5,6 +5,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { StatusBadge } from "@/components/shared";
 import { getPgliteDb } from "@/lib/db/pglite";
 import { agents } from "@/lib/db/schema";
+import { renderMarkdownToHtml } from "@/lib/markdown";
 import {
   getAdjacentEssays,
   getEssayAttachments,
@@ -37,10 +38,11 @@ export default async function EssayDetailPage({
   const essay = await getEssayBySlug(slug, locale);
   if (!essay) notFound();
 
-  const [{ prev, next }, _translationSlug, attachments] = await Promise.all([
+  const [{ prev, next }, _translationSlug, attachments, bodyHtml] = await Promise.all([
     getAdjacentEssays(essay.publishedAt ?? new Date(), locale),
     getEssayTranslationSlug(essay.translationGroupId, locale === "zh" ? "en" : "zh", essay.id),
     getEssayAttachments(essay.id),
+    renderMarkdownToHtml(essay.body),
   ]);
 
   let relatedAgent: { sn: string; name: string } | null = null;
@@ -68,7 +70,8 @@ export default async function EssayDetailPage({
             className="text-[10px] uppercase tracking-widest text-[var(--color-ink-soft)]"
             style={{ fontFamily: "var(--font-mono)" }}
           >
-            {essay.sn} · {essay.words} 字 · {essay.readMinutes} 分钟
+            {essay.sn} · {t("common.unit.words", { count: essay.words })} ·{" "}
+            {t("common.unit.minutes", { count: essay.readMinutes })}
           </span>
         </div>
       </div>
@@ -89,11 +92,8 @@ export default async function EssayDetailPage({
       <article
         className="prose prose-invert max-w-none text-[var(--color-ink)] leading-relaxed space-y-4"
         style={{ fontFamily: "var(--font-body)" }}
-      >
-        {essay.body.split(/\n\n+/).map((para, idx) => (
-          <p key={idx}>{para}</p>
-        ))}
-      </article>
+        dangerouslySetInnerHTML={{ __html: bodyHtml }}
+      />
 
       {attachments.length > 0 && (
         <section className="mt-16 pt-8 border-t border-[var(--color-line)]">

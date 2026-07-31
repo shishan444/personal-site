@@ -3,9 +3,7 @@ import { and, eq, lt } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { getPgliteDb } from "@/lib/db/pglite";
 import { sessions, users } from "@/lib/db/schema";
-
-const COOKIE_NAME = "atelier_session";
-const SESSION_TTL_SECONDS = 60 * 60 * 24 * 14;
+import { COOKIE_NAME, SESSION_TTL_SECONDS } from "./constants";
 
 export interface SessionUser {
   id: string;

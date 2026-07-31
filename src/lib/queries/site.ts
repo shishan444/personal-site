@@ -79,7 +79,7 @@ export async function getHomeAgents(): Promise<HomeAgent[]> {
   const db = await getPgliteDb();
   const rows = await db.select().from(agents).orderBy(agents.order);
   return rows
-    .filter((a) => a.status !== "archived" || true)
+    .filter((a) => a.status !== "archived")
     .map((a) => ({
       id: a.id,
       sn: a.sn,

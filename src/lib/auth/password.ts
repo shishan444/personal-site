@@ -20,8 +20,8 @@ export async function verifyPassword(hashed: string, password: string): Promise<
   }
 }
 
-export function validatePasswordInput(password: string): string | null {
-  if (password.length < 8) return "密码至少 8 位";
-  if (password.length > 128) return "密码最多 128 位";
+export function validatePasswordInput(password: string): "TOO_SHORT" | "TOO_LONG" | null {
+  if (password.length < 8) return "TOO_SHORT";
+  if (password.length > 128) return "TOO_LONG";
   return null;
 }

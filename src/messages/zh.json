@@ -151,6 +151,7 @@
     "login_submit": "登录",
     "login_forgot": "忘记密码？",
     "login_invalid": "邮箱或密码错误",
+    "login_rate_limited": "尝试次数过多，请 15 分钟后再试",
     "logout": "退出登录",
     "required": "请先登录",
     "forbidden": "没有权限",

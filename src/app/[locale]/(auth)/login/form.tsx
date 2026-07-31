@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useEffect } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import type { LoginState } from "@/lib/auth/actions";
@@ -10,7 +11,13 @@ interface LoginFormProps {
   locale: string;
 }
 
+const ERROR_KEYS: Record<string, string> = {
+  INVALID_CREDENTIALS: "login_invalid",
+  RATE_LIMITED: "login_rate_limited",
+};
+
 export function LoginForm({ action, fromPath, locale }: LoginFormProps) {
+  const t = useTranslations("auth");
   const [state, formAction] = useFormState<LoginState | undefined, FormData>(action, undefined);
 
   useEffect(() => {
@@ -34,7 +41,7 @@ export function LoginForm({ action, fromPath, locale }: LoginFormProps) {
             className="text-xs uppercase tracking-[0.3em] text-[var(--color-ink-mute)]"
             style={{ fontFamily: "var(--font-mono)" }}
           >
-            Admin Sign In
+            {t("login_title")}
           </p>
         </div>
 
@@ -42,27 +49,33 @@ export function LoginForm({ action, fromPath, locale }: LoginFormProps) {
           <input type="hidden" name="from" value={fromPath} />
           <input type="hidden" name="locale" value={locale} />
 
-          <Field id="email" label="Email" type="email" autoComplete="email" />
-          <Field id="password" label="Password" type="password" autoComplete="current-password" />
+          <Field id="email" label={t("login_email")} type="email" autoComplete="email" />
+          <Field
+            id="password"
+            label={t("login_password")}
+            type="password"
+            autoComplete="current-password"
+          />
 
           {state?.error && (
             <p
               className="text-sm text-[var(--color-danger)]"
               style={{ fontFamily: "var(--font-body)" }}
             >
-              {state.error}
+              {t(ERROR_KEYS[state.error] ?? "login_invalid")}
             </p>
           )}
 
-          <SubmitButton />
+          <SubmitButton label={t("login_submit")} />
         </form>
       </div>
     </main>
   );
 }
 
-function SubmitButton() {
+function SubmitButton({ label }: { label: string }) {
   const { pending } = useFormStatus();
+  const t = useTranslations("common");
   return (
     <button
       type="submit"
@@ -70,7 +83,7 @@ function SubmitButton() {
       className="w-full bg-[var(--color-accent)] text-[var(--color-bg)] py-2.5 uppercase tracking-widest text-xs font-medium hover:bg-[var(--color-ink)] transition-colors disabled:opacity-50"
       style={{ fontFamily: "var(--font-mono)" }}
     >
-      {pending ? "Signing in…" : "Sign In"}
+      {pending ? t("label.loading") : label}
     </button>
   );
 }

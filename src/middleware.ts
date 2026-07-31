@@ -1,7 +1,7 @@
-import { getSessionCookie } from "better-auth/cookies";
 import { type NextRequest, NextResponse } from "next/server";
 import createNextIntlMiddleware from "next-intl/middleware";
 import { routing } from "@/i18n/routing";
+import { COOKIE_NAME } from "@/lib/auth/constants";
 
 const intlMiddleware = createNextIntlMiddleware(routing);
 
@@ -24,7 +24,7 @@ export function middleware(request: NextRequest) {
 
   const isProtected = PROTECTED_PREFIXES.some((p) => pathWithoutLocale.startsWith(p));
   const isAuthPage = AUTH_PAGES.includes(pathWithoutLocale);
-  const sessionCookie = getSessionCookie(request);
+  const sessionCookie = request.cookies.get(COOKIE_NAME)?.value;
 
   if (isProtected && !sessionCookie) {
     const url = new URL(`/${routing.defaultLocale}/login`, request.url);

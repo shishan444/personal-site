@@ -13,7 +13,11 @@ export interface EssayDetail extends HomeEssay {
 
 export async function getEssayBySlug(slug: string, locale: string): Promise<EssayDetail | null> {
   const db = await getPgliteDb();
-  const rows = await db.select().from(essays).where(eq(essays.slug, slug)).limit(1);
+  const rows = await db
+    .select()
+    .from(essays)
+    .where(and(eq(essays.slug, slug), eq(essays.status, "published")))
+    .limit(1);
   if (rows.length === 0) return null;
   const e = rows[0];
   if (e.lang !== locale) return null;
@@ -49,6 +53,7 @@ export async function getEssayTranslationSlug(
       and(
         eq(essays.translationGroupId, groupId),
         eq(essays.lang, targetLang as "zh" | "en"),
+        eq(essays.status, "published"),
         ne(essays.id, excludeId),
       ),
     )

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useEffect } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import type { ChangePasswordState } from "@/lib/auth/actions";
@@ -9,9 +10,20 @@ interface ChangePasswordFormProps {
     prev: ChangePasswordState | undefined,
     formData: FormData,
   ) => Promise<ChangePasswordState>;
+  locale: string;
 }
 
-export function ChangePasswordForm({ action }: ChangePasswordFormProps) {
+const ERROR_KEYS: Record<string, string> = {
+  UNAUTHORIZED: "required",
+  MISMATCH: "change_password_mismatch",
+  TOO_SHORT: "change_password_too_short",
+  TOO_LONG: "change_password_too_long",
+  NO_PASSWORD: "change_password_no_password",
+  CURRENT_WRONG: "change_password_current_wrong",
+};
+
+export function ChangePasswordForm({ action, locale }: ChangePasswordFormProps) {
+  const t = useTranslations("auth");
   const [state, formAction] = useFormState<ChangePasswordState | undefined, FormData>(
     action,
     undefined,
@@ -19,32 +31,48 @@ export function ChangePasswordForm({ action }: ChangePasswordFormProps) {
 
   useEffect(() => {
     if (state?.ok) {
-      window.location.href = "/admin";
+      window.location.href = `/${locale}/admin`;
     }
-  }, [state?.ok]);
+  }, [state?.ok, locale]);
 
   return (
     <form action={formAction} className="space-y-4">
-      <Field id="current" label="当前密码" type="password" autoComplete="current-password" />
-      <Field id="new" label="新密码" type="password" autoComplete="new-password" />
-      <Field id="confirm" label="确认新密码" type="password" autoComplete="new-password" />
+      <Field
+        id="current"
+        label={t("change_password_current")}
+        type="password"
+        autoComplete="current-password"
+      />
+      <Field
+        id="new"
+        label={t("change_password_new")}
+        type="password"
+        autoComplete="new-password"
+      />
+      <Field
+        id="confirm"
+        label={t("change_password_confirm")}
+        type="password"
+        autoComplete="new-password"
+      />
 
       {state?.error && (
         <p
           className="text-sm text-[var(--color-danger)]"
           style={{ fontFamily: "var(--font-body)" }}
         >
-          {state.error}
+          {t(ERROR_KEYS[state.error] ?? "change_password_mismatch")}
         </p>
       )}
 
-      <SubmitButton />
+      <SubmitButton label={t("change_password_title")} />
     </form>
   );
 }
 
-function SubmitButton() {
+function SubmitButton({ label }: { label: string }) {
   const { pending } = useFormStatus();
+  const t = useTranslations("common");
   return (
     <button
       type="submit"
@@ -52,7 +80,7 @@ function SubmitButton() {
       className="w-full bg-[var(--color-accent)] text-[var(--color-bg)] py-2.5 uppercase tracking-widest text-xs font-medium hover:bg-[var(--color-ink)] transition-colors disabled:opacity-50"
       style={{ fontFamily: "var(--font-mono)" }}
     >
-      {pending ? "Saving…" : "Set New Password"}
+      {pending ? t("label.loading") : label}
     </button>
   );
 }

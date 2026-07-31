@@ -1,6 +1,6 @@
 "use server";
 
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { getSession } from "@/lib/auth";
 import { getPgliteDb } from "@/lib/db/pglite";
@@ -28,7 +28,7 @@ export async function createAgent(input: AgentInput): Promise<{ id: string; sn: 
 
   const db = await getPgliteDb();
   const id = crypto.randomUUID();
-  const maxOrderRow = await db.select().from(agents).orderBy(agents.order).limit(1);
+  const maxOrderRow = await db.select().from(agents).orderBy(desc(agents.order)).limit(1);
   const nextOrder = maxOrderRow.length > 0 ? maxOrderRow[0].order + 1 : 1;
 
   const [row] = await db

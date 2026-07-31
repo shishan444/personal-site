@@ -19,6 +19,8 @@ export async function softDeleteAsset(id: string): Promise<{ ok: boolean; reason
 }
 
 export async function listAssetsForAdmin() {
+  const session = await getSession();
+  if (!session) throw new Error("UNAUTHORIZED");
   const db = await getPgliteDb();
   const rows = await db.select().from(assets).where(isNull(assets.deletedAt));
   return rows.map((a) => ({
@@ -36,6 +38,8 @@ export async function listAssetsForAdmin() {
 }
 
 export async function listAuditLogsForAdmin(opts?: { action?: string; limit?: number }) {
+  const session = await getSession();
+  if (!session) throw new Error("UNAUTHORIZED");
   const db = await getPgliteDb();
   const { auditLogs } = await import("@/lib/db/schema");
   const limit = opts?.limit ?? 50;

@@ -39,7 +39,7 @@ describe("L1 · 密码哈希（password.ts）", () => {
 
 describe("L1 · 密码输入校验（validatePasswordInput）", () => {
   it("F3.1 · 短于 8 位应报错", () => {
-    expect(validatePasswordInput("abc123")).toBe("密码至少 8 位");
+    expect(validatePasswordInput("abc123")).toBe("TOO_SHORT");
   });
 
   it("F3.2 · 8 位应通过", () => {
@@ -48,7 +48,7 @@ describe("L1 · 密码输入校验（validatePasswordInput）", () => {
 
   it("F3.3 · 超过 128 位应报错", () => {
     const long = "a".repeat(129);
-    expect(validatePasswordInput(long)).toBe("密码最多 128 位");
+    expect(validatePasswordInput(long)).toBe("TOO_LONG");
   });
 
   it("F3.4 · 128 位应通过", () => {
@@ -57,6 +57,6 @@ describe("L1 · 密码输入校验（validatePasswordInput）", () => {
   });
 
   it("F3.5 · 空密码应报错", () => {
-    expect(validatePasswordInput("")).toBe("密码至少 8 位");
+    expect(validatePasswordInput("")).toBe("TOO_SHORT");
   });
 });

@@ -151,6 +151,7 @@
     "login_submit": "Sign in",
     "login_forgot": "Forgot password?",
     "login_invalid": "Invalid email or password",
+    "login_rate_limited": "Too many attempts, please try again in 15 minutes",
     "logout": "Sign out",
     "required": "Please sign in first",
     "forbidden": "Forbidden",
