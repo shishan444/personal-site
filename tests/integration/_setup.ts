@@ -1,15 +1,16 @@
 import { readdirSync, readFileSync, rmSync } from "node:fs";
 import path from "node:path";
 import { afterAll, beforeAll } from "vitest";
-import { closePgliteDb, getPgliteDb } from "@/lib/db/pglite";
 
-const TEST_DIR = path.resolve(process.cwd(), ".pglite/atelier-test");
+const TEST_ROOT = path.resolve(process.cwd(), ".pglite");
+const CURRENT_DIR = path.join(TEST_ROOT, "atelier-test");
 
 beforeAll(async () => {
-  rmSync(TEST_DIR, { recursive: true, force: true });
-  process.env.PGLITE_DATA_DIR = TEST_DIR;
+  const { getPgliteDb } = await import("@/lib/db/pglite");
 
-  const db = await getPgliteDb(TEST_DIR);
+  rmSync(CURRENT_DIR, { recursive: true, force: true });
+
+  const db = await getPgliteDb(CURRENT_DIR);
 
   const client = db.$client as unknown as {
     exec: (sql: string) => Promise<unknown>;
@@ -35,6 +36,12 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
+  const { closePgliteDb } = await import("@/lib/db/pglite");
   await closePgliteDb();
-  rmSync(TEST_DIR, { recursive: true, force: true });
+  await new Promise((resolve) => setTimeout(resolve, 200));
+  try {
+    rmSync(CURRENT_DIR, { recursive: true, force: true });
+  } catch {
+    // 测试结束后 .pglite 会被 git 忽略，残留不阻塞
+  }
 });

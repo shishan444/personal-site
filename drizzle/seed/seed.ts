@@ -279,6 +279,8 @@ async function main() {
 
   const existingOwner = await db.select().from(users).where(eq(users.id, OWNER_ID)).limit(1);
   if (existingOwner.length === 0) {
+    const { hashPassword } = await import("../../src/lib/auth/password");
+    const passwordHash = await hashPassword("ChangeMe-On-First-Login");
     await db
       .insert(users)
       .values({
@@ -287,10 +289,11 @@ async function main() {
         name: "GLM",
         role: "owner",
         emailVerified: true,
-        passwordHash: "$argon2id$CHANGE_ME_ON_FIRST_LOGIN",
+        mustChangePassword: true,
+        passwordHash,
       })
       .execute();
-    console.log("[seed] ✓ owner user");
+    console.log("[seed] ✓ owner user (email=owner@atelier.com, password=ChangeMe-On-First-Login)");
   } else {
     console.log("[seed] · owner exists, skip");
   }

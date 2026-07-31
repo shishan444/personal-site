@@ -15,6 +15,8 @@ export const users = pgTable(
     role: userRoleEnum("role").default("owner").notNull(),
     avatarAssetId: uuid("avatar_asset_id"),
     emailVerified: boolean("email_verified").default(false).notNull(),
+    mustChangePassword: boolean("must_change_password").default(true).notNull(),
+    lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
