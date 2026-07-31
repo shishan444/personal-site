@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { getHomeEssays } from "@/lib/queries/site";
 
 function escapeXml(s: string): string {

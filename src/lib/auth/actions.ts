@@ -1,6 +1,7 @@
 "use server";
 
 import { eq } from "drizzle-orm";
+import { writeAuditLog } from "@/lib/audit";
 import {
   authenticateByEmailPassword,
   destroySession,
@@ -9,7 +10,7 @@ import {
   setSessionCookie,
   validatePasswordInput,
 } from "@/lib/auth";
-import { getPgliteDb } from "@/lib/db/pglite";
+import { getDb } from "@/lib/db";
 import { users } from "@/lib/db/schema";
 
 const LOGIN_MAX_FAILURES = 5;
@@ -67,6 +68,13 @@ export async function loginAction(
     const session = await authenticateByEmailPassword(email, password);
     clearLoginFailures(email);
     await setSessionCookie(session.token);
+    await writeAuditLog({
+      userId: session.userId,
+      action: "login",
+      targetType: "user",
+      targetId: session.userId,
+      summary: "登录成功",
+    });
     if (session.user.mustChangePassword) {
       return { redirect: `/${locale}/change-password` };
     }
@@ -74,6 +82,12 @@ export async function loginAction(
   } catch (err) {
     if (err instanceof Error && err.message === "INVALID_CREDENTIALS") {
       recordLoginFailure(email);
+      await writeAuditLog({
+        action: "login",
+        targetType: "user",
+        summary: "登录失败",
+        metadata: { email },
+      });
       return { error: "INVALID_CREDENTIALS" };
     }
     throw err;
@@ -98,7 +112,7 @@ export async function changePasswordAction(
   const validationError = validatePasswordInput(next);
   if (validationError) return { error: validationError };
 
-  const db = await getPgliteDb();
+  const db = await getDb();
   const user = (await db.select().from(users).where(eq(users.id, session.userId)).limit(1))[0];
   if (!user?.passwordHash) return { error: "NO_PASSWORD" };
 
@@ -113,9 +127,27 @@ export async function changePasswordAction(
     .set({ passwordHash: newHash, mustChangePassword: false, updatedAt: new Date() })
     .where(eq(users.id, session.userId));
 
+  await writeAuditLog({
+    userId: session.userId,
+    action: "update",
+    targetType: "user",
+    targetId: session.userId,
+    summary: "修改密码",
+  });
+
   return { ok: true };
 }
 
 export async function logoutAction(): Promise<void> {
+  const session = await getSession();
   await destroySession();
+  if (session) {
+    await writeAuditLog({
+      userId: session.userId,
+      action: "logout",
+      targetType: "user",
+      targetId: session.userId,
+      summary: "退出登录",
+    });
+  }
 }

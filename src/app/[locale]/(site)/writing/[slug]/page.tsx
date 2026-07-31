@@ -1,9 +1,11 @@
+export const dynamic = "force-dynamic";
+
 import { eq } from "drizzle-orm";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { StatusBadge } from "@/components/shared";
-import { getPgliteDb } from "@/lib/db/pglite";
+import { getDb } from "@/lib/db";
 import { agents } from "@/lib/db/schema";
 import { renderMarkdownToHtml } from "@/lib/markdown";
 import {
@@ -47,7 +49,7 @@ export default async function EssayDetailPage({
 
   let relatedAgent: { sn: string; name: string } | null = null;
   if (essay.relatedAgentId) {
-    const db = await getPgliteDb();
+    const db = await getDb();
     const a = (
       await db.select().from(agents).where(eq(agents.id, essay.relatedAgentId)).limit(1)
     )[0];

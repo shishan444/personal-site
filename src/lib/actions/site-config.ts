@@ -2,8 +2,9 @@
 
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { writeAuditLog } from "@/lib/audit";
 import { getSession } from "@/lib/auth";
-import { getPgliteDb } from "@/lib/db/pglite";
+import { getDb } from "@/lib/db";
 import { siteConfig } from "@/lib/db/schema";
 import type { ChapterConfig, GlobalStats, SubdialsConfig } from "@/lib/db/schema/site_config";
 
@@ -24,7 +25,7 @@ export interface SiteConfigInput {
 export async function updateSiteConfig(input: Partial<SiteConfigInput>): Promise<void> {
   const session = await getSession();
   if (!session) throw new Error("UNAUTHORIZED");
-  const db = await getPgliteDb();
+  const db = await getDb();
   const patch: Record<string, unknown> = { updatedAt: new Date() };
   if (input.siteName !== undefined) patch.siteName = input.siteName;
   if (input.subtitle !== undefined) patch.subtitle = input.subtitle;
@@ -38,11 +39,20 @@ export async function updateSiteConfig(input: Partial<SiteConfigInput>): Promise
   if (input.globalStats !== undefined) patch.globalStats = input.globalStats;
   if (input.theme !== undefined) patch.theme = input.theme;
   await db.update(siteConfig).set(patch).where(eq(siteConfig.id, 1));
+  await writeAuditLog({
+    userId: session.userId,
+    action: "update",
+    targetType: "site_config",
+    summary: "更新站点配置",
+    metadata: { fields: Object.keys(input) },
+  });
   revalidatePath("/[locale]");
 }
 
 export async function getSiteConfigForAdmin() {
-  const db = await getPgliteDb();
+  const session = await getSession();
+  if (!session) throw new Error("UNAUTHORIZED");
+  const db = await getDb();
   const row = (await db.select().from(siteConfig).where(eq(siteConfig.id, 1)).limit(1))[0];
   return row;
 }

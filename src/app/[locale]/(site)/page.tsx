@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { setRequestLocale } from "next-intl/server";
 import { SubdialFrame } from "@/components/site";
 import { LanguageSwitcher } from "@/components/site/language-switcher";

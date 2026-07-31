@@ -1,7 +1,7 @@
 import { randomBytes } from "node:crypto";
 import { and, eq, lt } from "drizzle-orm";
 import { cookies } from "next/headers";
-import { getPgliteDb } from "@/lib/db/pglite";
+import { getDb } from "@/lib/db";
 import { sessions, users } from "@/lib/db/schema";
 import { COOKIE_NAME, SESSION_TTL_SECONDS } from "./constants";
 
@@ -26,7 +26,7 @@ function generateToken(): string {
 }
 
 export async function createSession(userId: string): Promise<SessionData> {
-  const db = await getPgliteDb();
+  const db = await getDb();
   const user = (await db.select().from(users).where(eq(users.id, userId)).limit(1))[0];
   if (!user) throw new Error("user not found");
 
@@ -70,7 +70,7 @@ export async function getSession(tokenOverride?: string): Promise<SessionData | 
     if (!token) return null;
   }
 
-  const db = await getPgliteDb();
+  const db = await getDb();
   const session = (await db.select().from(sessions).where(eq(sessions.token, token)).limit(1))[0];
 
   if (!session) return null;
@@ -106,7 +106,7 @@ export async function destroySession(tokenOverride?: string): Promise<void> {
     token = store.get(COOKIE_NAME)?.value;
   }
   if (token) {
-    const db = await getPgliteDb();
+    const db = await getDb();
     await db.delete(sessions).where(eq(sessions.token, token));
   }
   if (tokenOverride === undefined) {
@@ -127,7 +127,7 @@ export async function setSessionCookie(token: string): Promise<void> {
 }
 
 export async function clearExpiredSessions(): Promise<number> {
-  const db = await getPgliteDb();
+  const db = await getDb();
   const now = new Date();
   const before = await db
     .select({ id: sessions.id })
@@ -142,7 +142,7 @@ export async function authenticateByEmailPassword(
   email: string,
   password: string,
 ): Promise<SessionData> {
-  const db = await getPgliteDb();
+  const db = await getDb();
   const user = (
     await db
       .select()

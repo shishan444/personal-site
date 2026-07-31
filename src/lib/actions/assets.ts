@@ -3,8 +3,9 @@
 import { desc, eq, isNull } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { deleteAssetIfUnreferenced } from "@/lib/assets";
+import { writeAuditLog } from "@/lib/audit";
 import { getSession } from "@/lib/auth";
-import { getPgliteDb } from "@/lib/db/pglite";
+import { getDb } from "@/lib/db";
 import { assets } from "@/lib/db/schema";
 
 export async function softDeleteAsset(id: string): Promise<{ ok: boolean; reason?: string }> {
@@ -14,6 +15,13 @@ export async function softDeleteAsset(id: string): Promise<{ ok: boolean; reason
   if (!result.ok) {
     return { ok: false, reason: result.reason };
   }
+  await writeAuditLog({
+    userId: session.userId,
+    action: "delete",
+    targetType: "asset",
+    targetId: id,
+    summary: "删除资产",
+  });
   revalidatePath("/[locale]/admin/assets");
   return { ok: true };
 }
@@ -21,7 +29,7 @@ export async function softDeleteAsset(id: string): Promise<{ ok: boolean; reason
 export async function listAssetsForAdmin() {
   const session = await getSession();
   if (!session) throw new Error("UNAUTHORIZED");
-  const db = await getPgliteDb();
+  const db = await getDb();
   const rows = await db.select().from(assets).where(isNull(assets.deletedAt));
   return rows.map((a) => ({
     id: a.id,
@@ -40,7 +48,7 @@ export async function listAssetsForAdmin() {
 export async function listAuditLogsForAdmin(opts?: { action?: string; limit?: number }) {
   const session = await getSession();
   if (!session) throw new Error("UNAUTHORIZED");
-  const db = await getPgliteDb();
+  const db = await getDb();
   const { auditLogs } = await import("@/lib/db/schema");
   const limit = opts?.limit ?? 50;
   const baseQuery =

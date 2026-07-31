@@ -2,8 +2,9 @@
 
 import { eq, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { writeAuditLog } from "@/lib/audit";
 import { getSession } from "@/lib/auth";
-import { getPgliteDb } from "@/lib/db/pglite";
+import { getDb } from "@/lib/db";
 import { essayRevisions, essays } from "@/lib/db/schema";
 import { countWords, readingTime } from "@/lib/markdown";
 
@@ -28,7 +29,7 @@ export async function createEssay(input: EssayInput): Promise<{ id: string; sn: 
   const session = await getSession();
   if (!session) throw new Error("UNAUTHORIZED");
 
-  const db = await getPgliteDb();
+  const db = await getDb();
   const words = countWords(input.body);
   const id = crypto.randomUUID();
   const translationGroupId = input.translationGroupId ?? id;
@@ -65,6 +66,14 @@ export async function createEssay(input: EssayInput): Promise<{ id: string; sn: 
     createdBy: session.userId,
   });
 
+  await writeAuditLog({
+    userId: session.userId,
+    action: "create",
+    targetType: "essay",
+    targetId: row.id,
+    summary: `创建文章 ${row.sn}`,
+  });
+
   revalidatePath("/[locale]");
   return { id: row.id, sn: row.sn };
 }
@@ -76,7 +85,7 @@ export async function updateEssay(
   const session = await getSession();
   if (!session) throw new Error("UNAUTHORIZED");
 
-  const db = await getPgliteDb();
+  const db = await getDb();
   const existing = (await db.select().from(essays).where(eq(essays.id, id)).limit(1))[0];
   if (!existing) throw new Error("NOT_FOUND");
 
@@ -107,11 +116,26 @@ export async function updateEssay(
   await db.update(essays).set(patch).where(eq(essays.id, id));
 
   const updated = (await db.select().from(essays).where(eq(essays.id, id)).limit(1))[0];
+  const statusChanged = input.status !== undefined && input.status !== existing.status;
   await db.insert(essayRevisions).values({
     essayId: id,
     snapshot: updated as unknown as Record<string, unknown>,
     action: input.status === "published" ? "published" : "edited",
     createdBy: session.userId,
+  });
+
+  await writeAuditLog({
+    userId: session.userId,
+    action: !statusChanged
+      ? "update"
+      : input.status === "published"
+        ? "publish"
+        : input.status === "archived"
+          ? "archive"
+          : "update",
+    targetType: "essay",
+    targetId: id,
+    summary: `更新文章 ${existing.sn}`,
   });
 
   revalidatePath("/[locale]");
@@ -132,9 +156,16 @@ export async function restoreEssay(id: string): Promise<void> {
 export async function deleteEssay(id: string): Promise<void> {
   const session = await getSession();
   if (!session) throw new Error("UNAUTHORIZED");
-  const db = await getPgliteDb();
+  const db = await getDb();
   await db.delete(essayRevisions).where(eq(essayRevisions.essayId, id));
   await db.delete(essays).where(eq(essays.id, id));
+  await writeAuditLog({
+    userId: session.userId,
+    action: "delete",
+    targetType: "essay",
+    targetId: id,
+    summary: "删除文章",
+  });
   revalidatePath("/[locale]");
 }
 
@@ -145,9 +176,16 @@ export async function batchUpdateStatus(
   const session = await getSession();
   if (!session) throw new Error("UNAUTHORIZED");
   if (ids.length === 0) return 0;
-  const db = await getPgliteDb();
+  const db = await getDb();
   const patch: Record<string, unknown> = { status, updatedAt: new Date() };
   if (status === "published") patch.publishedAt = new Date();
   await db.update(essays).set(patch).where(inArray(essays.id, ids));
+  await writeAuditLog({
+    userId: session.userId,
+    action: status === "published" ? "publish" : status === "archived" ? "archive" : "update",
+    targetType: "essay",
+    summary: `批量更新 ${ids.length} 篇文章状态为 ${status}`,
+    metadata: { ids },
+  });
   return ids.length;
 }

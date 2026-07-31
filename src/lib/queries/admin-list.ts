@@ -1,5 +1,5 @@
 import { and, desc, eq } from "drizzle-orm";
-import { getPgliteDb } from "@/lib/db/pglite";
+import { getDb } from "@/lib/db";
 import { agents, essays } from "@/lib/db/schema";
 
 export interface AdminEssayRow {
@@ -19,7 +19,7 @@ export async function listEssaysForAdmin(opts?: {
   status?: "draft" | "published" | "archived";
   typeTag?: "essay" | "note" | "tutorial";
 }): Promise<AdminEssayRow[]> {
-  const db = await getPgliteDb();
+  const db = await getDb();
   const conditions = [];
   if (opts?.status) conditions.push(eq(essays.status, opts.status));
   if (opts?.typeTag) conditions.push(eq(essays.typeTag, opts.typeTag));
@@ -58,7 +58,7 @@ export interface AdminAgentRow {
 }
 
 export async function listAgentsForAdmin(): Promise<AdminAgentRow[]> {
-  const db = await getPgliteDb();
+  const db = await getDb();
   const rows = await db.select().from(agents).orderBy(agents.order);
   return rows.map((a) => ({
     id: a.id,
@@ -72,14 +72,14 @@ export async function listAgentsForAdmin(): Promise<AdminAgentRow[]> {
 }
 
 export async function getEssayForEdit(id: string) {
-  const db = await getPgliteDb();
+  const db = await getDb();
   const row = (await db.select().from(essays).where(eq(essays.id, id)).limit(1))[0];
   if (!row) return null;
   return row;
 }
 
 export async function getAgentForEdit(id: string) {
-  const db = await getPgliteDb();
+  const db = await getDb();
   const row = (await db.select().from(agents).where(eq(agents.id, id)).limit(1))[0];
   if (!row) return null;
   return row;

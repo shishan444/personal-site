@@ -1,12 +1,12 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { getPgliteDb } from "@/lib/db/pglite";
+import { getDb } from "@/lib/db";
 import { essays } from "@/lib/db/schema";
 
 export default async function AdminTagsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations();
-  const db = await getPgliteDb();
+  const db = await getDb();
   const allEssays = await db.select().from(essays);
 
   const tagCount = new Map<string, number>();

@@ -1,7 +1,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { and, eq } from "drizzle-orm";
-import { getPgliteDb } from "@/lib/db/pglite";
+import { getDb } from "@/lib/db";
 import { assetLinks, assets } from "@/lib/db/schema";
 import { computeChecksum } from "./checksum";
 import { buildStorageLayout, type StorageLayout } from "./storage-path";
@@ -25,7 +25,7 @@ export interface UploadResult {
 export async function persistUpload(input: UploadInput): Promise<UploadResult> {
   const uploadRoot = input.uploadRoot ?? process.env.UPLOAD_DIR ?? "./uploads";
   const publicBaseUrl = input.publicBaseUrl ?? "/uploads";
-  const db = await getPgliteDb();
+  const db = await getDb();
 
   const checksum = computeChecksum(input.buffer);
   const sizeBytes = input.buffer.byteLength;
@@ -94,7 +94,7 @@ export interface LinkAssetInput {
 }
 
 export async function linkAsset(input: LinkAssetInput) {
-  const db = await getPgliteDb();
+  const db = await getDb();
   const existing = await db
     .select()
     .from(assetLinks)
@@ -130,7 +130,7 @@ export async function unlinkAsset(
   sourceId: string,
   usage: string,
 ): Promise<void> {
-  const db = await getPgliteDb();
+  const db = await getDb();
   await db
     .delete(assetLinks)
     .where(
@@ -144,7 +144,7 @@ export async function unlinkAsset(
 }
 
 export async function findAssetReferences(assetId: string) {
-  const db = await getPgliteDb();
+  const db = await getDb();
   return db.select().from(assetLinks).where(eq(assetLinks.assetId, assetId));
 }
 
@@ -155,7 +155,7 @@ export interface DeleteAssetResult {
 }
 
 export async function deleteAssetIfUnreferenced(assetId: string): Promise<DeleteAssetResult> {
-  const db = await getPgliteDb();
+  const db = await getDb();
   const target = await db.select().from(assets).where(eq(assets.id, assetId)).limit(1);
   if (target.length === 0) return { ok: false, reason: "NOT_FOUND" };
 

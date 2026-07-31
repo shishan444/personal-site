@@ -1,5 +1,5 @@
 import { count, desc, eq, isNull } from "drizzle-orm";
-import { getPgliteDb } from "@/lib/db/pglite";
+import { getDb } from "@/lib/db";
 import { agents, auditLogs, essays, timelineNodes } from "@/lib/db/schema";
 
 export interface AdminDashboardData {
@@ -31,7 +31,7 @@ export interface AdminDashboardData {
 }
 
 export async function getAdminDashboard(): Promise<AdminDashboardData> {
-  const db = await getPgliteDb();
+  const db = await getDb();
   const [allAgents, allEssays, allTimeline, recentLogs, drafts] = await Promise.all([
     db.select().from(agents),
     db.select().from(essays),

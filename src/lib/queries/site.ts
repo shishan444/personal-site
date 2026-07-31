@@ -1,5 +1,5 @@
 import { desc, eq } from "drizzle-orm";
-import { getPgliteDb } from "@/lib/db/pglite";
+import { getDb } from "@/lib/db";
 import { agents, essays, siteConfig, timelineNodes } from "@/lib/db/schema";
 import type { AgentSpec } from "@/lib/db/schema/agents";
 import type { TimelineChange } from "@/lib/db/schema/timeline_nodes";
@@ -52,7 +52,7 @@ export interface HomeTimelineNode {
 }
 
 export async function getHomeEssays(locale: string = "zh"): Promise<HomeEssay[]> {
-  const db = await getPgliteDb();
+  const db = await getDb();
   const rows = await db
     .select()
     .from(essays)
@@ -76,7 +76,7 @@ export async function getHomeEssays(locale: string = "zh"): Promise<HomeEssay[]>
 }
 
 export async function getHomeAgents(): Promise<HomeAgent[]> {
-  const db = await getPgliteDb();
+  const db = await getDb();
   const rows = await db.select().from(agents).orderBy(agents.order);
   return rows
     .filter((a) => a.status !== "archived")
@@ -94,7 +94,7 @@ export async function getHomeAgents(): Promise<HomeAgent[]> {
 }
 
 export async function getHomeTimeline(): Promise<HomeTimelineNode[]> {
-  const db = await getPgliteDb();
+  const db = await getDb();
   const rows = await db.select().from(timelineNodes).orderBy(timelineNodes.date);
   return rows.map((t) => ({
     id: t.id,
@@ -112,13 +112,13 @@ export async function getHomeTimeline(): Promise<HomeTimelineNode[]> {
 }
 
 export async function getSiteConfig() {
-  const db = await getPgliteDb();
+  const db = await getDb();
   const rows = await db.select().from(siteConfig).limit(1);
   return rows[0] ?? null;
 }
 
 export async function getSiteStats(): Promise<SiteStats> {
-  const db = await getPgliteDb();
+  const db = await getDb();
   const allAgents = await db.select().from(agents);
   const config = await getSiteConfig();
   const essaysPublishedRows = await db.select().from(essays).where(eq(essays.status, "published"));

@@ -2,8 +2,9 @@
 
 import { desc, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { writeAuditLog } from "@/lib/audit";
 import { getSession } from "@/lib/auth";
-import { getPgliteDb } from "@/lib/db/pglite";
+import { getDb } from "@/lib/db";
 import { agents } from "@/lib/db/schema";
 import type { AgentSpec } from "@/lib/db/schema/agents";
 
@@ -26,7 +27,7 @@ export async function createAgent(input: AgentInput): Promise<{ id: string; sn: 
   const session = await getSession();
   if (!session) throw new Error("UNAUTHORIZED");
 
-  const db = await getPgliteDb();
+  const db = await getDb();
   const id = crypto.randomUUID();
   const maxOrderRow = await db.select().from(agents).orderBy(desc(agents.order)).limit(1);
   const nextOrder = maxOrderRow.length > 0 ? maxOrderRow[0].order + 1 : 1;
@@ -51,6 +52,14 @@ export async function createAgent(input: AgentInput): Promise<{ id: string; sn: 
     })
     .returning();
 
+  await writeAuditLog({
+    userId: session.userId,
+    action: "create",
+    targetType: "agent",
+    targetId: row.id,
+    summary: `创建 Agent ${row.sn}`,
+  });
+
   revalidatePath("/[locale]");
   return { id: row.id, sn: row.sn };
 }
@@ -58,7 +67,7 @@ export async function createAgent(input: AgentInput): Promise<{ id: string; sn: 
 export async function updateAgent(id: string, input: Partial<AgentInput>): Promise<void> {
   const session = await getSession();
   if (!session) throw new Error("UNAUTHORIZED");
-  const db = await getPgliteDb();
+  const db = await getDb();
 
   const patch: Record<string, unknown> = { updatedAt: new Date() };
   if (input.sn !== undefined) patch.sn = input.sn;
@@ -74,14 +83,28 @@ export async function updateAgent(id: string, input: Partial<AgentInput>): Promi
   if (input.modalSize !== undefined) patch.modalSize = input.modalSize;
 
   await db.update(agents).set(patch).where(eq(agents.id, id));
+  await writeAuditLog({
+    userId: session.userId,
+    action: "update",
+    targetType: "agent",
+    targetId: id,
+    summary: "更新 Agent",
+  });
   revalidatePath("/[locale]");
 }
 
 export async function deleteAgent(id: string): Promise<void> {
   const session = await getSession();
   if (!session) throw new Error("UNAUTHORIZED");
-  const db = await getPgliteDb();
+  const db = await getDb();
   await db.delete(agents).where(eq(agents.id, id));
+  await writeAuditLog({
+    userId: session.userId,
+    action: "delete",
+    targetType: "agent",
+    targetId: id,
+    summary: "删除 Agent",
+  });
   revalidatePath("/[locale]");
 }
 
@@ -89,12 +112,18 @@ export async function reorderAgents(orderedIds: string[]): Promise<void> {
   const session = await getSession();
   if (!session) throw new Error("UNAUTHORIZED");
   if (orderedIds.length === 0) return;
-  const db = await getPgliteDb();
+  const db = await getDb();
   for (let i = 0; i < orderedIds.length; i++) {
     await db
       .update(agents)
       .set({ order: i + 1 })
       .where(eq(agents.id, orderedIds[i]));
   }
+  await writeAuditLog({
+    userId: session.userId,
+    action: "update",
+    targetType: "agent",
+    summary: `调整 ${orderedIds.length} 个 Agent 排序`,
+  });
   revalidatePath("/[locale]");
 }

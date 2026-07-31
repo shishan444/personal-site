@@ -1,5 +1,5 @@
 import { and, desc, eq, ne } from "drizzle-orm";
-import { getPgliteDb } from "@/lib/db/pglite";
+import { getDb } from "@/lib/db";
 import { agents, assetLinks, assets, essays } from "@/lib/db/schema";
 import type { HomeAgent, HomeEssay } from "./site";
 
@@ -12,7 +12,7 @@ export interface EssayDetail extends HomeEssay {
 }
 
 export async function getEssayBySlug(slug: string, locale: string): Promise<EssayDetail | null> {
-  const db = await getPgliteDb();
+  const db = await getDb();
   const rows = await db
     .select()
     .from(essays)
@@ -45,7 +45,7 @@ export async function getEssayTranslationSlug(
   targetLang: string,
   excludeId: string,
 ): Promise<string | null> {
-  const db = await getPgliteDb();
+  const db = await getDb();
   const rows = await db
     .select()
     .from(essays)
@@ -65,7 +65,7 @@ export async function getAdjacentEssays(
   publishedAt: Date,
   locale: string,
 ): Promise<{ prev: HomeEssay | null; next: HomeEssay | null }> {
-  const db = await getPgliteDb();
+  const db = await getDb();
   const all = await db.select().from(essays).where(eq(essays.status, "published"));
   const filtered = all
     .filter((e) => e.lang === (locale as "zh" | "en"))
@@ -100,7 +100,7 @@ export interface AgentDetail extends HomeAgent {
 }
 
 export async function getAgentBySn(sn: string): Promise<AgentDetail | null> {
-  const db = await getPgliteDb();
+  const db = await getDb();
   const rows = await db.select().from(agents).where(eq(agents.sn, sn)).limit(1);
   if (rows.length === 0) return null;
   const a = rows[0];
@@ -122,7 +122,7 @@ export async function getAgentBySn(sn: string): Promise<AgentDetail | null> {
 }
 
 export async function getAgentScreenshots(agentId: string) {
-  const db = await getPgliteDb();
+  const db = await getDb();
   const links = await db
     .select()
     .from(assetLinks)
@@ -146,7 +146,7 @@ export async function getAgentScreenshots(agentId: string) {
 }
 
 export async function getRelatedEssays(agentId: string, locale: string): Promise<HomeEssay[]> {
-  const db = await getPgliteDb();
+  const db = await getDb();
   const rows = await db
     .select()
     .from(essays)
@@ -171,7 +171,7 @@ export interface SearchEntry {
 }
 
 export async function getSearchIndex(locale: string): Promise<SearchEntry[]> {
-  const db = await getPgliteDb();
+  const db = await getDb();
   const allEssays = await db
     .select()
     .from(essays)
@@ -217,7 +217,7 @@ export async function getSearchIndex(locale: string): Promise<SearchEntry[]> {
 }
 
 export async function getEssayAttachments(essayId: string) {
-  const db = await getPgliteDb();
+  const db = await getDb();
   const links = await db
     .select()
     .from(assetLinks)

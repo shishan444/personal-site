@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { getPgliteDb } from "../../src/lib/db/pglite";
+import { getDb } from "../../src/lib/db";
 import { agents, assets, essays, siteConfig, timelineNodes, users } from "../../src/lib/db/schema";
 
 const OWNER_ID = "00000000-0000-0000-0000-000000000001";
@@ -275,7 +275,7 @@ const demoSiteConfig = {
 };
 
 async function main() {
-  const db = await getPgliteDb();
+  const db = await getDb();
 
   const existingOwner = await db.select().from(users).where(eq(users.id, OWNER_ID)).limit(1);
   if (existingOwner.length === 0) {

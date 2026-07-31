@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import type { MetadataRoute } from "next";
 import { routing } from "@/i18n/routing";
 import { getHomeAgents, getHomeEssays } from "@/lib/queries/site";

@@ -2,8 +2,9 @@
 
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { writeAuditLog } from "@/lib/audit";
 import { getSession } from "@/lib/auth";
-import { getPgliteDb } from "@/lib/db/pglite";
+import { getDb } from "@/lib/db";
 import { timelineNodes } from "@/lib/db/schema";
 import type { TimelineChange } from "@/lib/db/schema/timeline_nodes";
 
@@ -23,7 +24,7 @@ export interface TimelineInput {
 export async function createTimelineNode(input: TimelineInput): Promise<{ id: string }> {
   const session = await getSession();
   if (!session) throw new Error("UNAUTHORIZED");
-  const db = await getPgliteDb();
+  const db = await getDb();
   if (input.isNow) {
     await db.update(timelineNodes).set({ isNow: false }).where(eq(timelineNodes.isNow, true));
   }
@@ -42,6 +43,13 @@ export async function createTimelineNode(input: TimelineInput): Promise<{ id: st
       isNow: input.isNow ?? false,
     })
     .returning();
+  await writeAuditLog({
+    userId: session.userId,
+    action: "create",
+    targetType: "timeline_node",
+    targetId: row.id,
+    summary: `创建 Timeline 节点 ${input.version}`,
+  });
   revalidatePath("/[locale]");
   return { id: row.id };
 }
@@ -49,7 +57,7 @@ export async function createTimelineNode(input: TimelineInput): Promise<{ id: st
 export async function updateTimelineNode(id: string, input: Partial<TimelineInput>): Promise<void> {
   const session = await getSession();
   if (!session) throw new Error("UNAUTHORIZED");
-  const db = await getPgliteDb();
+  const db = await getDb();
   if (input.isNow) {
     await db.update(timelineNodes).set({ isNow: false }).where(eq(timelineNodes.isNow, true));
   }
@@ -65,25 +73,46 @@ export async function updateTimelineNode(id: string, input: Partial<TimelineInpu
   if (input.linesDel !== undefined) patch.linesDel = input.linesDel;
   if (input.isNow !== undefined) patch.isNow = input.isNow;
   await db.update(timelineNodes).set(patch).where(eq(timelineNodes.id, id));
+  await writeAuditLog({
+    userId: session.userId,
+    action: "update",
+    targetType: "timeline_node",
+    targetId: id,
+    summary: "更新 Timeline 节点",
+  });
   revalidatePath("/[locale]");
 }
 
 export async function setAsNow(id: string): Promise<void> {
   const session = await getSession();
   if (!session) throw new Error("UNAUTHORIZED");
-  const db = await getPgliteDb();
+  const db = await getDb();
   await db.update(timelineNodes).set({ isNow: false }).where(eq(timelineNodes.isNow, true));
   await db
     .update(timelineNodes)
     .set({ isNow: true, type: "now", updatedAt: new Date() })
     .where(eq(timelineNodes.id, id));
+  await writeAuditLog({
+    userId: session.userId,
+    action: "update",
+    targetType: "timeline_node",
+    targetId: id,
+    summary: "设置 NOW 节点",
+  });
   revalidatePath("/[locale]");
 }
 
 export async function deleteTimelineNode(id: string): Promise<void> {
   const session = await getSession();
   if (!session) throw new Error("UNAUTHORIZED");
-  const db = await getPgliteDb();
+  const db = await getDb();
   await db.delete(timelineNodes).where(eq(timelineNodes.id, id));
+  await writeAuditLog({
+    userId: session.userId,
+    action: "delete",
+    targetType: "timeline_node",
+    targetId: id,
+    summary: "删除 Timeline 节点",
+  });
   revalidatePath("/[locale]");
 }

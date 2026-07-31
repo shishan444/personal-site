@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { persistUpload, type UploadResult } from "@/lib/assets";
+import { writeAuditLog } from "@/lib/audit";
 import { getSession } from "@/lib/auth";
 
 const MAX_BYTES = Number(process.env.UPLOAD_MAX_MB ?? 20) * 1024 * 1024;
@@ -32,6 +33,15 @@ export async function POST(request: NextRequest) {
     console.error("[upload] persist failed", err);
     return NextResponse.json({ error: "PERSIST_FAILED" }, { status: 500 });
   }
+
+  await writeAuditLog({
+    userId: session.userId,
+    action: "create",
+    targetType: "asset",
+    targetId: result.asset.id,
+    summary: `上传文件 ${file.name}`,
+    metadata: { isDuplicate: result.isDuplicate, sizeBytes: result.asset.sizeBytes },
+  });
 
   return NextResponse.json(
     {
