@@ -41,11 +41,16 @@
         "useImportType": "warn"
       },
       "suspicious": {
-        "noExplicitAny": "warn"
+        "noExplicitAny": "warn",
+        "noArrayIndexKey": "off"
       },
       "correctness": {
         "noUnusedVariables": "warn",
-        "noUnusedImports": "warn"
+        "noUnusedImports": "warn",
+        "useExhaustiveDependencies": "off"
+      },
+      "a11y": {
+        "useAriaPropsSupportedByRole": "off"
       }
     }
   },

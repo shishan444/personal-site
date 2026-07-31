@@ -126,7 +126,7 @@ describe("L2 · 文件上传 + 资产管理（upload.ts）", () => {
   it("F4 · linkAsset 写入 asset_links 多态关联", async () => {
     await ensureOwner();
     const result = await persistUpload({
-      buffer: Buffer.from("essay-image-" + Math.random()),
+      buffer: Buffer.from(`essay-image-${Math.random()}`),
       originalFilename: "essay-inline.png",
       mimeType: "image/jpeg",
       uploadedBy: OWNER_ID,
@@ -153,7 +153,7 @@ describe("L2 · 文件上传 + 资产管理（upload.ts）", () => {
   it("F4.2 · 同 source+asset+usage 重复 linkAsset 不创建新行", async () => {
     await ensureOwner();
     const result = await persistUpload({
-      buffer: Buffer.from("dup-link-" + Math.random()),
+      buffer: Buffer.from(`dup-link-${Math.random()}`),
       originalFilename: "dup.png",
       mimeType: "image/jpeg",
       uploadedBy: OWNER_ID,
@@ -178,7 +178,7 @@ describe("L2 · 文件上传 + 资产管理（upload.ts）", () => {
   it("F5 · findAssetReferences 反向查询引用", async () => {
     await ensureOwner();
     const result = await persistUpload({
-      buffer: Buffer.from("ref-" + Math.random()),
+      buffer: Buffer.from(`ref-${Math.random()}`),
       originalFilename: "ref.png",
       mimeType: "image/jpeg",
       uploadedBy: OWNER_ID,
@@ -200,7 +200,7 @@ describe("L2 · 文件上传 + 资产管理（upload.ts）", () => {
   it("F6 · unlinkAsset 解除单个关联", async () => {
     await ensureOwner();
     const result = await persistUpload({
-      buffer: Buffer.from("unlink-" + Math.random()),
+      buffer: Buffer.from(`unlink-${Math.random()}`),
       originalFilename: "x.png",
       mimeType: "image/jpeg",
       uploadedBy: OWNER_ID,
@@ -229,7 +229,7 @@ describe("L2 · 文件上传 + 资产管理（upload.ts）", () => {
   it("F7 · deleteAssetIfUnreferenced 有引用时拒绝删除", async () => {
     await ensureOwner();
     const result = await persistUpload({
-      buffer: Buffer.from("protected-" + Math.random()),
+      buffer: Buffer.from(`protected-${Math.random()}`),
       originalFilename: "p.png",
       mimeType: "image/jpeg",
       uploadedBy: OWNER_ID,
@@ -252,7 +252,7 @@ describe("L2 · 文件上传 + 资产管理（upload.ts）", () => {
   it("F8 · deleteAssetIfUnreferenced 无引用时成功删除", async () => {
     await ensureOwner();
     const result = await persistUpload({
-      buffer: Buffer.from("deletable-" + Math.random()),
+      buffer: Buffer.from(`deletable-${Math.random()}`),
       originalFilename: "d.png",
       mimeType: "image/jpeg",
       uploadedBy: OWNER_ID,
