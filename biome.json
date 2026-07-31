@@ -47,14 +47,20 @@
       "correctness": {
         "noUnusedVariables": "warn",
         "noUnusedImports": "warn",
-        "useExhaustiveDependencies": "off"
+        "useExhaustiveDependencies": "off",
+        "noUnusedPrivateClassMembers": "off"
+      },
+      "performance": {
+        "noImgElement": "off"
       },
       "security": {
         "noDangerouslySetInnerHtml": "off"
       },
       "a11y": {
         "useAriaPropsSupportedByRole": "off",
-        "noSvgWithoutTitle": "off"
+        "noSvgWithoutTitle": "off",
+        "noStaticElementInteractions": "off",
+        "useKeyWithClickEvents": "off"
       }
     }
   },

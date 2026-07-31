@@ -35,7 +35,6 @@ export function useActiveSection(
     for (const el of elements) observer.observe(el);
 
     return () => observer.disconnect();
-    // biome-ignore lint/correctness/useExhaustiveDependencies: joinedIds 是 stable string 派生
   }, [rootMargin, threshold, joinedIds]);
 
   return activeId;
