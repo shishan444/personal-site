@@ -10,6 +10,7 @@ const nextConfig = {
       "better-auth",
       "postgres",
       "drizzle-orm",
+      "sharp",
     ],
   },
   images: {

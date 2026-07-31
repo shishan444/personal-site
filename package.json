@@ -37,7 +37,8 @@
     "next": "14.2.35",
     "postgres": "^3.4.9",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "sharp": "^0.35.3"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.6",
