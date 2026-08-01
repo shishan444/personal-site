@@ -21,7 +21,7 @@ export default async function NewAgentPage({ params }: { params: Promise<{ local
       launchType: String(formData.get("launchType")) as "external" | "iframe" | "modal",
       launchUrl: formData.get("launchUrl") ? String(formData.get("launchUrl")) : null,
     });
-    redirect(`/zh/admin/agents/${result.id}`);
+    redirect(`/${locale}/admin/agents/${result.id}`);
   }
 
   return (

@@ -1,4 +1,4 @@
-import { and, desc, eq, ne } from "drizzle-orm";
+import { and, asc, desc, eq, ne } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { agents, assetLinks, assets, essays } from "@/lib/db/schema";
 import type { HomeAgent, HomeEssay } from "./site";
@@ -132,7 +132,8 @@ export async function getAgentScreenshots(agentId: string) {
         eq(assetLinks.sourceId, agentId),
         eq(assetLinks.usage, "screenshot"),
       ),
-    );
+    )
+    .orderBy(asc(assetLinks.orderIndex));
   if (links.length === 0) return [];
   const assetsRows = await db.select().from(assets);
   return links

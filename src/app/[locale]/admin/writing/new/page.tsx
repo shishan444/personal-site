@@ -22,7 +22,7 @@ export default async function NewEssayPage({ params }: { params: Promise<{ local
       status: String(formData.get("status") ?? "draft") as "draft" | "published" | "archived",
       slug: formData.get("slug") ? String(formData.get("slug")) : null,
     });
-    redirect(`/zh/admin/writing/${result.id}`);
+    redirect(`/${locale}/admin/writing/${result.id}`);
   }
 
   return (

@@ -113,7 +113,15 @@ export async function reorderAgents(orderedIds: string[]): Promise<void> {
   if (!session) throw new Error("UNAUTHORIZED");
   if (orderedIds.length === 0) return;
   const db = await getDb();
-  for (let i = 0; i < orderedIds.length; i++) {
+  // agents_order_idx 唯一索引：逐行交换会中途撞车，先整体抬升到 n+1..2n 再落位 1..n
+  const n = orderedIds.length;
+  for (let i = 0; i < n; i++) {
+    await db
+      .update(agents)
+      .set({ order: n + i + 1 })
+      .where(eq(agents.id, orderedIds[i]));
+  }
+  for (let i = 0; i < n; i++) {
     await db
       .update(agents)
       .set({ order: i + 1 })

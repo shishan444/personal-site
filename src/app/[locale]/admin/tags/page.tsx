@@ -1,4 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { TagMergeForm } from "@/components/admin/tag-merge-form";
 import { getDb } from "@/lib/db";
 import { essays } from "@/lib/db/schema";
 
@@ -29,8 +30,9 @@ export default async function AdminTagsPage({ params }: { params: Promise<{ loca
         className="text-xs text-[var(--color-ink-soft)]"
         style={{ fontFamily: "var(--font-mono)" }}
       >
-        topic_tags from {allEssays.length} essays · ⏳ 合并/重命名 待后续实现
+        topic_tags from {allEssays.length} essays
       </p>
+      <TagMergeForm tags={sorted.map(([tag]) => tag)} />
       {sorted.length === 0 ? (
         <div
           className="border border-dashed border-[var(--color-line)] p-12 text-center text-[var(--color-ink-soft)] text-sm"

@@ -84,3 +84,32 @@ export async function getAgentForEdit(id: string) {
   if (!row) return null;
   return row;
 }
+
+export interface EssayRevisionRow {
+  id: string;
+  action: "created" | "edited" | "published" | "archived" | "restored";
+  title: string;
+  words: number;
+  createdAt: Date;
+}
+
+export async function listEssayRevisions(essayId: string): Promise<EssayRevisionRow[]> {
+  const db = await getDb();
+  const { essayRevisions } = await import("@/lib/db/schema");
+  const rows = await db
+    .select()
+    .from(essayRevisions)
+    .where(eq(essayRevisions.essayId, essayId))
+    .orderBy(desc(essayRevisions.createdAt))
+    .limit(50);
+  return rows.map((r) => {
+    const snap = r.snapshot as { title?: unknown; words?: unknown };
+    return {
+      id: r.id,
+      action: r.action,
+      title: typeof snap.title === "string" ? snap.title : "（无标题）",
+      words: typeof snap.words === "number" ? snap.words : 0,
+      createdAt: r.createdAt,
+    };
+  });
+}

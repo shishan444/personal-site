@@ -1,6 +1,6 @@
 "use server";
 
-import { eq, inArray } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { writeAuditLog } from "@/lib/audit";
 import { getSession } from "@/lib/auth";
@@ -120,7 +120,13 @@ export async function updateEssay(
   await db.insert(essayRevisions).values({
     essayId: id,
     snapshot: updated as unknown as Record<string, unknown>,
-    action: input.status === "published" ? "published" : "edited",
+    action: !statusChanged
+      ? "edited"
+      : input.status === "published"
+        ? "published"
+        : input.status === "archived"
+          ? "archived"
+          : "edited",
     createdBy: session.userId,
   });
 
@@ -188,4 +194,54 @@ export async function batchUpdateStatus(
     metadata: { ids },
   });
   return ids.length;
+}
+
+export async function restoreEssayRevision(essayId: string, revisionId: string): Promise<void> {
+  const session = await getSession();
+  if (!session) throw new Error("UNAUTHORIZED");
+
+  const db = await getDb();
+  const revision = (
+    await db
+      .select()
+      .from(essayRevisions)
+      .where(and(eq(essayRevisions.id, revisionId), eq(essayRevisions.essayId, essayId)))
+      .limit(1)
+  )[0];
+  if (!revision) throw new Error("NOT_FOUND");
+
+  const snap = revision.snapshot as Record<string, unknown>;
+  const body = typeof snap.body === "string" ? snap.body : "";
+  const words = countWords(body);
+  await db
+    .update(essays)
+    .set({
+      title: typeof snap.title === "string" ? snap.title : "",
+      deck: typeof snap.deck === "string" ? snap.deck : "",
+      body,
+      words,
+      readMinutes: readingTime(words),
+      typeTag: snap.typeTag as "essay" | "note" | "tutorial",
+      topicTags: Array.isArray(snap.topicTags) ? (snap.topicTags as string[]) : [],
+      slug: typeof snap.slug === "string" ? snap.slug : null,
+      updatedAt: new Date(),
+    })
+    .where(eq(essays.id, essayId));
+
+  const restored = (await db.select().from(essays).where(eq(essays.id, essayId)).limit(1))[0];
+  await db.insert(essayRevisions).values({
+    essayId,
+    snapshot: restored as unknown as Record<string, unknown>,
+    action: "restored",
+    createdBy: session.userId,
+  });
+
+  await writeAuditLog({
+    userId: session.userId,
+    action: "update",
+    targetType: "essay",
+    targetId: essayId,
+    summary: `恢复文章 ${restored.sn} 到历史版本`,
+  });
+  revalidatePath("/[locale]");
 }

@@ -1,6 +1,8 @@
 import { notFound, redirect } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 import { AgentEditor } from "@/components/admin/agent-editor";
+import { AgentScreenshots } from "@/components/admin/agent-screenshots";
+import { listAgentScreenshotLinks } from "@/lib/actions/agent-screenshots";
 import { deleteAgent, updateAgent } from "@/lib/actions/agents";
 import { getAgentForEdit } from "@/lib/queries/admin-list";
 
@@ -13,6 +15,7 @@ export default async function EditAgentPage({
   setRequestLocale(locale);
   const agent = await getAgentForEdit(id);
   if (!agent) notFound();
+  const screenshots = await listAgentScreenshotLinks(id);
 
   async function save(formData: FormData) {
     "use server";
@@ -54,6 +57,8 @@ export default async function EditAgentPage({
           modalSize: agent.modalSize,
         }}
       />
+
+      <AgentScreenshots agentId={id} initial={screenshots} />
 
       <div className="pt-8 border-t border-[var(--color-line)]">
         <form action={remove}>

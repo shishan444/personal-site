@@ -1,8 +1,9 @@
 import { notFound, redirect } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 import { EssayEditor } from "@/components/admin/essay-editor";
+import { EssayRevisions } from "@/components/admin/essay-revisions";
 import { archiveEssay, deleteEssay, publishEssay, updateEssay } from "@/lib/actions/essays";
-import { getEssayForEdit } from "@/lib/queries/admin-list";
+import { getEssayForEdit, listEssayRevisions } from "@/lib/queries/admin-list";
 
 export default async function EditEssayPage({
   params,
@@ -13,6 +14,7 @@ export default async function EditEssayPage({
   setRequestLocale(locale);
   const essay = await getEssayForEdit(id);
   if (!essay) notFound();
+  const revisions = await listEssayRevisions(id);
 
   async function save(formData: FormData) {
     "use server";
@@ -63,6 +65,8 @@ export default async function EditEssayPage({
           lang: essay.lang,
         }}
       />
+
+      <EssayRevisions essayId={id} revisions={revisions} />
 
       <div className="flex items-center gap-3 pt-8 border-t border-[var(--color-line)]">
         {essay.status !== "published" && (
