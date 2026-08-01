@@ -54,8 +54,8 @@
     "scroll": "滚动",
     "chapter_hero": "首页",
     "chapter_writing": "文章",
-    "chapter_agents": "Agents",
-    "chapter_timeline": "时间历程",
+    "chapter_agents": "Agent",
+    "chapter_timeline": "发展历程",
     "chapter_outro": "结尾"
   },
   "hero": {
@@ -117,7 +117,7 @@
     "detail_uptime_90d": "90 天可用率"
   },
   "timeline": {
-    "section_label": "§ 04 · 生产日志",
+    "section_label": "§ 04 · 发展历程",
     "section_title": "它如何",
     "section_title_accent": "生长",
     "section_meta": "v0.1 → v0.4 · 11 个月",

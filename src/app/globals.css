@@ -26,3 +26,176 @@ body {
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
 }
+
+/* SectionReveal 入场动画（原 is-hidden/is-visible 类此前无定义，从未生效） */
+[data-reveal] {
+  transition:
+    opacity 600ms ease-out,
+    transform 600ms ease-out;
+}
+[data-reveal="hidden"].is-hidden {
+  opacity: 0;
+  transform: translateY(24px);
+}
+[data-reveal="visible"].is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* LuSubdial 章节翻牌动画 */
+@keyframes tick-flip {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 文章正文排版 —— 详情页 markdown 渲染专用。
+   项目未装 @tailwindcss/typography，手写以对齐站点 token 与中文阅读节奏。 */
+.essay-prose {
+  font-family: var(--font-body);
+  color: var(--color-ink);
+  font-size: 17px;
+  line-height: 1.85;
+  letter-spacing: 0.01em;
+}
+.essay-prose > * + * {
+  margin-top: 1.4em;
+}
+.essay-prose h2 {
+  margin-top: 2.6em;
+  margin-bottom: 0.8em;
+  padding-left: 0.75em;
+  border-left: 3px solid var(--color-accent);
+  font-family: var(--font-display);
+  font-size: 1.5em;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--color-ink);
+}
+.essay-prose h3 {
+  margin-top: 2em;
+  margin-bottom: 0.6em;
+  font-family: var(--font-display);
+  font-size: 1.25em;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--color-ink);
+}
+.essay-prose h2:first-child,
+.essay-prose h3:first-child {
+  margin-top: 0;
+}
+.essay-prose p {
+  margin: 0;
+}
+.essay-prose a {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+.essay-prose a:hover {
+  text-decoration-thickness: 2px;
+}
+.essay-prose strong {
+  color: var(--color-ink);
+  font-weight: 600;
+}
+.essay-prose em {
+  font-family: var(--font-serif);
+  font-style: italic;
+  color: var(--color-ink);
+}
+.essay-prose ul,
+.essay-prose ol {
+  margin: 1.4em 0;
+  padding-left: 1.5em;
+}
+.essay-prose li {
+  margin: 0.5em 0;
+  padding-left: 0.25em;
+}
+.essay-prose ul > li {
+  list-style: none;
+  position: relative;
+}
+.essay-prose ul > li::before {
+  content: "—";
+  position: absolute;
+  left: -1.25em;
+  color: var(--color-accent);
+}
+.essay-prose ol {
+  list-style: decimal;
+}
+.essay-prose blockquote {
+  margin: 1.8em 0;
+  padding: 0.4em 1.2em;
+  border-left: 3px solid var(--color-accent);
+  font-family: var(--font-serif);
+  font-style: italic;
+  color: var(--color-ink-mute);
+  background: var(--color-bg-2);
+}
+.essay-prose code {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  background: var(--color-bg-3);
+  color: var(--color-ink);
+  padding: 0.15em 0.4em;
+  border-radius: 2px;
+  border: 1px solid var(--color-line);
+}
+.essay-prose pre {
+  margin: 1.6em 0;
+  padding: 1.1em 1.3em;
+  background: var(--color-bg-3);
+  border: 1px solid var(--color-line);
+  border-radius: 3px;
+  overflow-x: auto;
+  font-size: 0.88em;
+  line-height: 1.6;
+}
+.essay-prose pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 1em;
+}
+.essay-prose hr {
+  margin: 2.8em 0;
+  border: 0;
+  border-top: 1px solid var(--color-line);
+}
+.essay-prose img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1.8em auto;
+  border: 1px solid var(--color-line);
+}
+.essay-prose table {
+  width: 100%;
+  margin: 1.6em 0;
+  border-collapse: collapse;
+  font-size: 0.94em;
+}
+.essay-prose th,
+.essay-prose td {
+  padding: 0.6em 0.9em;
+  border: 1px solid var(--color-line);
+  text-align: left;
+}
+.essay-prose th {
+  background: var(--color-bg-2);
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-ink-mute);
+}

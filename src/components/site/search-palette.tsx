@@ -84,11 +84,17 @@ export function SearchPalette({ index }: SearchPaletteProps) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="fixed top-4 left-1/2 -translate-x-1/2 z-30 px-3 py-1 border border-[var(--color-line)] text-[10px] uppercase tracking-widest text-[var(--color-ink-soft)] hover:border-[var(--color-accent)] hover:text-[var(--color-accent)]"
+        className="fixed top-4 left-1/2 -translate-x-1/2 z-30 min-w-[220px] flex items-center gap-2.5 px-4 py-2 border border-[var(--color-line)] bg-[var(--color-bg)]/60 text-xs text-[var(--color-ink-soft)] hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors"
         style={{ fontFamily: "var(--font-mono)" }}
         aria-label="Open search"
       >
-        ⌕ {t("common.button.search")} · ⌘K
+        <span className="text-sm text-[var(--color-accent)]">⌕</span>
+        <span className="flex-1 text-left uppercase tracking-widest">
+          {t("common.button.search")}
+        </span>
+        <span className="text-[10px] tracking-widest text-[var(--color-ink-mute)] border border-[var(--color-line)] px-1.5 py-0.5">
+          ⌘K
+        </span>
       </button>
     );
   }

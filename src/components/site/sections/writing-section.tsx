@@ -40,16 +40,16 @@ export function WritingSection({ essays }: WritingSectionProps) {
       as="section"
       className="min-h-screen border-b border-[var(--color-line)]"
     >
-      <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-0 max-w-7xl mx-auto">
-        <aside className="border-r border-[var(--color-line)] p-8 lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto">
+      <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-0 pl-6 md:pl-10">
+        <aside className="border-r border-[var(--color-line)] py-8 pr-6 lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto">
           <div
-            className="text-[10px] uppercase tracking-[0.3em] text-[var(--color-accent)] mb-2"
+            className="text-[11px] uppercase tracking-[0.3em] text-[var(--color-accent)] mb-2"
             style={{ fontFamily: "var(--font-mono)" }}
           >
             {t("writing.section_label")}
           </div>
           <h2
-            className="text-2xl font-bold mb-8 leading-tight"
+            className="text-xl font-bold mb-8 leading-tight"
             style={{ fontFamily: "var(--font-display)" }}
           >
             {t("writing.section_title")}{" "}
@@ -63,7 +63,7 @@ export function WritingSection({ essays }: WritingSectionProps) {
 
           <div className="space-y-1">
             <div
-              className="grid grid-cols-[40px_1fr_60px_40px] gap-2 pb-2 border-b border-[var(--color-line)] text-[9px] uppercase tracking-widest text-[var(--color-ink-soft)]"
+              className="grid grid-cols-[40px_1fr_60px_40px] gap-2 pb-2 border-b border-[var(--color-line)] text-[10px] uppercase tracking-widest text-[var(--color-ink-soft)]"
               style={{ fontFamily: "var(--font-mono)" }}
             >
               <span>{t("writing.toc_header_no")}</span>
@@ -76,7 +76,7 @@ export function WritingSection({ essays }: WritingSectionProps) {
                 key={e.id}
                 type="button"
                 onClick={() => setActiveIdx(idx)}
-                className={`grid grid-cols-[40px_1fr_60px_40px] gap-2 py-2 text-left text-sm border-b border-[var(--color-line)]/40 transition-colors w-full ${
+                className={`grid grid-cols-[40px_1fr_60px_40px] gap-2 py-2 text-left text-[13px] border-b border-[var(--color-line)]/40 transition-colors w-full ${
                   idx === activeIdx
                     ? "text-[var(--color-accent)] bg-[var(--color-bg-2)]/40"
                     : "text-[var(--color-ink)] hover:text-[var(--color-accent)]"
@@ -105,7 +105,7 @@ export function WritingSection({ essays }: WritingSectionProps) {
           </div>
         </aside>
 
-        <div className="p-8 lg:p-16 min-h-screen flex flex-col justify-center">
+        <div className="pl-8 lg:pl-16 pr-6 lg:pr-32 py-8 lg:py-16 min-h-screen flex flex-col justify-center">
           {active && (
             <article key={active.id} className="space-y-6 max-w-3xl">
               <div className="flex items-center gap-3">
@@ -119,13 +119,13 @@ export function WritingSection({ essays }: WritingSectionProps) {
               </div>
 
               <h3
-                className="text-3xl md:text-5xl font-bold leading-tight tracking-tight text-[var(--color-ink)]"
+                className="text-4xl md:text-6xl font-bold leading-tight tracking-tight text-[var(--color-ink)]"
                 style={{ fontFamily: "var(--font-display)" }}
                 dangerouslySetInnerHTML={{ __html: active.title }}
               />
 
               <p
-                className="text-lg text-[var(--color-ink-mute)] leading-relaxed"
+                className="text-xl text-[var(--color-ink-mute)] leading-relaxed"
                 style={{ fontFamily: "var(--font-body)" }}
               >
                 {active.deck}
@@ -135,7 +135,7 @@ export function WritingSection({ essays }: WritingSectionProps) {
                 {active.topicTags.map((tag) => (
                   <span
                     key={tag}
-                    className="px-2 py-1 border border-[var(--color-line)] text-[10px] uppercase tracking-widest text-[var(--color-ink-mute)]"
+                    className="px-2 py-1 border border-[var(--color-line)] text-[11px] uppercase tracking-widest text-[var(--color-ink-mute)]"
                     style={{ fontFamily: "var(--font-mono)" }}
                   >
                     {tag}

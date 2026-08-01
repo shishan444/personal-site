@@ -42,7 +42,7 @@ export function AgentsSection({ agents }: AgentsSectionProps) {
 
   return (
     <SectionReveal id="03" as="section" className="border-b border-[var(--color-line)]">
-      <div className="px-12 pt-32 pb-12 max-w-7xl mx-auto">
+      <div className="pl-6 md:pl-10 pr-6 md:pr-32 pt-32 pb-12">
         <div
           className="text-[10px] uppercase tracking-[0.3em] text-[var(--color-accent)] mb-2"
           style={{ fontFamily: "var(--font-mono)" }}
@@ -75,7 +75,7 @@ export function AgentsSection({ agents }: AgentsSectionProps) {
 
       <div
         ref={trackRef}
-        className="flex gap-8 overflow-x-auto px-12 pb-32 snap-x snap-mandatory"
+        className="flex gap-8 overflow-x-auto pl-6 md:pl-10 pr-6 md:pr-32 pb-32 snap-x snap-mandatory"
         style={{ scrollbarWidth: "none" }}
       >
         {agents.map((agent, idx) => {
@@ -157,7 +157,7 @@ export function AgentsSection({ agents }: AgentsSectionProps) {
       </div>
 
       <div
-        className="px-12 pb-12 text-[10px] uppercase tracking-[0.25em] text-[var(--color-ink-soft)]"
+        className="pl-6 md:pl-10 pr-6 md:pr-32 pb-12 text-[10px] uppercase tracking-[0.25em] text-[var(--color-ink-soft)]"
         style={{ fontFamily: "var(--font-mono)" }}
       >
         {t("agent.section_hint")} · {activeIdx + 1}/{agents.length}

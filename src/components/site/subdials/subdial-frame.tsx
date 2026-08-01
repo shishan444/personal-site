@@ -51,7 +51,7 @@ export function SubdialFrame({
           visible={Boolean(activeId)}
         />
       </div>
-      <div className="fixed top-6 right-6 z-40 pointer-events-none">
+      <div className="fixed right-6 top-1/2 -translate-y-1/2 z-40">
         <RuSubdial chapterIds={sectionIds} activeId={activeId} visitedIds={visited} />
       </div>
       <div className="fixed bottom-6 left-6 z-40 pointer-events-none">

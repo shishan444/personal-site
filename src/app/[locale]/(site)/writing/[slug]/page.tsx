@@ -57,11 +57,11 @@ export default async function EssayDetailPage({
   }
 
   return (
-    <main className="min-h-screen px-6 md:px-12 py-16 max-w-3xl mx-auto">
+    <main className="min-h-screen px-6 md:px-10 py-16 max-w-[820px] mx-auto">
       <div className="mb-12 space-y-4">
         <Link
           href={`/${locale}#02`}
-          className="text-[10px] uppercase tracking-[0.25em] text-[var(--color-ink-soft)] hover:text-[var(--color-accent)]"
+          className="text-[11px] uppercase tracking-[0.25em] text-[var(--color-ink-soft)] hover:text-[var(--color-accent)]"
           style={{ fontFamily: "var(--font-mono)" }}
         >
           ← {t("writing.detail_back")}
@@ -69,7 +69,7 @@ export default async function EssayDetailPage({
         <div className="flex items-center gap-3">
           <StatusBadge variant="warn">{t(`writing.tag_${essay.typeTag}`)}</StatusBadge>
           <span
-            className="text-[10px] uppercase tracking-widest text-[var(--color-ink-soft)]"
+            className="text-[11px] uppercase tracking-widest text-[var(--color-ink-soft)]"
             style={{ fontFamily: "var(--font-mono)" }}
           >
             {essay.sn} · {t("common.unit.words", { count: essay.words })} ·{" "}
@@ -79,23 +79,19 @@ export default async function EssayDetailPage({
       </div>
 
       <h1
-        className="text-4xl md:text-5xl font-bold leading-tight tracking-tight text-[var(--color-ink)] mb-6"
+        className="text-4xl md:text-6xl font-bold leading-tight tracking-tight text-[var(--color-ink)] mb-8"
         style={{ fontFamily: "var(--font-display)" }}
         dangerouslySetInnerHTML={{ __html: essay.title }}
       />
 
       <p
-        className="text-xl text-[var(--color-ink-mute)] mb-12 leading-relaxed"
+        className="text-2xl text-[var(--color-ink-mute)] mb-14 leading-relaxed"
         style={{ fontFamily: "var(--font-serif)", fontStyle: "italic" }}
       >
         {essay.deck}
       </p>
 
-      <article
-        className="prose prose-invert max-w-none text-[var(--color-ink)] leading-relaxed space-y-4"
-        style={{ fontFamily: "var(--font-body)" }}
-        dangerouslySetInnerHTML={{ __html: bodyHtml }}
-      />
+      <article className="essay-prose max-w-none" dangerouslySetInnerHTML={{ __html: bodyHtml }} />
 
       {attachments.length > 0 && (
         <section className="mt-16 pt-8 border-t border-[var(--color-line)]">

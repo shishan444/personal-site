@@ -117,7 +117,7 @@
     "detail_uptime_90d": "90-day uptime"
   },
   "timeline": {
-    "section_label": "§ 04 · Production log",
+    "section_label": "§ 04 · Timeline",
     "section_title": "How it",
     "section_title_accent": "grew",
     "section_meta": "v0.1 → v0.4 · 11 MONTHS",

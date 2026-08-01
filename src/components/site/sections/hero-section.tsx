@@ -18,10 +18,10 @@ export function HeroSection({ stats }: HeroSectionProps) {
     <SectionReveal
       id="01"
       as="section"
-      className="min-h-screen flex flex-col justify-center px-12 py-32 border-b border-[var(--color-line)]"
+      className="min-h-screen flex flex-col justify-center pl-6 md:pl-10 pr-6 md:pr-32 py-32 border-b border-[var(--color-line)]"
       activeClassName="opacity-100"
     >
-      <div className="max-w-6xl mx-auto w-full space-y-12">
+      <div className="w-full space-y-12">
         <div
           className="text-[10px] uppercase tracking-[0.3em] text-[var(--color-accent)]"
           style={{ fontFamily: "var(--font-mono)" }}

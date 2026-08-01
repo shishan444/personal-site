@@ -1,9 +1,19 @@
 import { render, screen } from "@testing-library/react";
+import { NextIntlClientProvider } from "next-intl";
 import { describe, expect, it } from "vitest";
 import { LdSubdial } from "@/components/site/subdials/ld-subdial";
 import { LuSubdial } from "@/components/site/subdials/lu-subdial";
 import { RdSubdial, RING_CIRCUMFERENCE } from "@/components/site/subdials/rd-subdial";
 import { RuSubdial } from "@/components/site/subdials/ru-subdial";
+import zhMessages from "@/messages/zh.json";
+
+function IntlWrapper({ children }: { children: React.ReactNode }) {
+  return (
+    <NextIntlClientProvider locale="zh" messages={zhMessages}>
+      {children}
+    </NextIntlClientProvider>
+  );
+}
 
 describe("L1 · LuSubdial 章节编号", () => {
   it("F1 · 渲染 index/total 格式", () => {
@@ -34,40 +44,47 @@ describe("L1 · LuSubdial 章节编号", () => {
   });
 });
 
-describe("L1 · RuSubdial 索引刻度尺", () => {
-  it("F1 · 渲染所有章节 id", () => {
+describe("L1 · RuSubdial 右侧章节导航", () => {
+  it("F1 · 渲染所有章节中文名", () => {
     render(
-      <RuSubdial
-        chapterIds={["01", "02", "03", "04", "05"]}
-        activeId="02"
-        visitedIds={new Set(["01", "02"])}
-      />,
+      <IntlWrapper>
+        <RuSubdial
+          chapterIds={["01", "02", "03", "04", "05"]}
+          activeId="02"
+          visitedIds={new Set(["01", "02"])}
+        />
+      </IntlWrapper>,
     );
-    expect(screen.getByText("01")).toBeTruthy();
-    expect(screen.getByText("02")).toBeTruthy();
-    expect(screen.getByText("03")).toBeTruthy();
+    expect(screen.getByText("首页")).toBeTruthy();
+    expect(screen.getByText("文章")).toBeTruthy();
+    expect(screen.getByText("Agent")).toBeTruthy();
+    expect(screen.getByText("发展历程")).toBeTruthy();
   });
 
-  it("F2 · active 节点最高", () => {
+  it("F2 · active 节点用 accent 圆点 + 竖条", () => {
     const { container } = render(
-      <RuSubdial chapterIds={["01", "02"]} activeId="01" visitedIds={new Set(["01"])} />,
+      <IntlWrapper>
+        <RuSubdial chapterIds={["01", "02"]} activeId="01" visitedIds={new Set(["01"])} />
+      </IntlWrapper>,
     );
-    const bars = container.querySelectorAll(".h-6, .h-3, .h-1\\.5");
-    const activeBar = container.querySelector(".h-6");
+    const activeDot = container.querySelector(".bg-\\[var\\(--color-accent\\)\\].w-1\\.5");
+    const activeBar = container.querySelector(".bg-\\[var\\(--color-accent\\)\\].h-5");
+    expect(activeDot).toBeTruthy();
     expect(activeBar).toBeTruthy();
-    expect(bars.length).toBeGreaterThan(0);
   });
 
-  it("F3 · visited 但非 active 中等高度", () => {
+  it("F3 · visited 但非 active 用 ink-mute 圆点", () => {
     const { container } = render(
-      <RuSubdial
-        chapterIds={["01", "02", "03"]}
-        activeId="03"
-        visitedIds={new Set(["01", "02", "03"])}
-      />,
+      <IntlWrapper>
+        <RuSubdial
+          chapterIds={["01", "02", "03"]}
+          activeId="03"
+          visitedIds={new Set(["01", "02", "03"])}
+        />
+      </IntlWrapper>,
     );
-    const passedBars = container.querySelectorAll(".h-3.bg-\\[var\\(--color-ink-mute\\)\\]");
-    expect(passedBars.length).toBe(2);
+    const passedDots = container.querySelectorAll(".bg-\\[var\\(--color-ink-mute\\)\\].w-1.h-1");
+    expect(passedDots.length).toBe(2);
   });
 });
 

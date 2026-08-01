@@ -54,3 +54,4 @@ next-env.d.ts
 # Playwright 产物
 /test-results
 /tests/e2e-pw/.auth
+.tmp-trace/

@@ -25,7 +25,6 @@ export function TimelineSection({ nodes }: TimelineSectionProps) {
   const t = useTranslations();
   const trackRef = useRef<HTMLDivElement | null>(null);
   const [activeIdx, setActiveIdx] = useState(0);
-  const [drawProgress, setDrawProgress] = useState(0);
 
   useEffect(() => {
     const el = trackRef.current;
@@ -44,8 +43,6 @@ export function TimelineSection({ nodes }: TimelineSectionProps) {
       const span = rangeStart - rangeEnd;
       const current = Math.min(rangeStart, Math.max(rangeEnd, sectionTop));
       const ratio = (rangeStart - current) / span;
-      setDrawProgress(Math.min(1, Math.max(0, ratio)));
-
       const next = Math.min(nodes.length - 1, Math.floor(ratio * nodes.length));
       setActiveIdx(next);
     }
@@ -55,12 +52,11 @@ export function TimelineSection({ nodes }: TimelineSectionProps) {
   }, [nodes.length]);
 
   const totalWidth = Math.max(1, nodes.length * 220);
-  const drawnWidth = totalWidth * drawProgress;
   const active = nodes[activeIdx];
 
   return (
     <SectionReveal id="04" as="section" className="border-b border-[var(--color-line)]">
-      <div className="px-12 pt-32 pb-12 max-w-7xl mx-auto">
+      <div className="pl-6 md:pl-10 pr-6 md:pr-32 pt-32 pb-12">
         <div
           className="text-[10px] uppercase tracking-[0.3em] text-[var(--color-accent)] mb-2"
           style={{ fontFamily: "var(--font-mono)" }}
@@ -87,7 +83,7 @@ export function TimelineSection({ nodes }: TimelineSectionProps) {
         </p>
       </div>
 
-      <div ref={trackRef} className="px-12 pb-12 overflow-hidden">
+      <div ref={trackRef} className="pl-6 md:pl-10 pr-6 md:pr-32 pb-12 overflow-hidden">
         <div className="relative" style={{ height: 120 }}>
           <svg
             width={totalWidth}
@@ -102,34 +98,19 @@ export function TimelineSection({ nodes }: TimelineSectionProps) {
               y1="60"
               x2={totalWidth}
               y2="60"
-              stroke="var(--color-line)"
+              stroke="var(--color-ink-mute)"
               strokeWidth="1"
-            />
-            <line
-              x1="0"
-              y1="60"
-              x2={Math.max(0, drawnWidth)}
-              y2="60"
-              stroke="var(--color-accent)"
-              strokeWidth="2"
-              strokeLinecap="round"
             />
             {nodes.map((node, idx) => {
               const x = (idx + 0.5) * (totalWidth / nodes.length);
-              const reached = idx <= activeIdx;
+              const reached = true;
               return (
                 <g key={node.id}>
                   <circle
                     cx={x}
                     cy="60"
-                    r={idx === activeIdx ? 8 : reached ? 5 : 3}
-                    fill={
-                      idx === activeIdx
-                        ? "var(--color-accent)"
-                        : reached
-                          ? "var(--color-ink-mute)"
-                          : "var(--color-ink-soft)"
-                    }
+                    r={idx === activeIdx ? 8 : 5}
+                    fill={idx === activeIdx ? "var(--color-accent)" : "var(--color-ink-mute)"}
                     stroke={idx === activeIdx ? "var(--color-accent)" : "transparent"}
                     strokeWidth="2"
                   />
@@ -164,7 +145,7 @@ export function TimelineSection({ nodes }: TimelineSectionProps) {
         </div>
       </div>
 
-      <div className="px-12 pb-32 max-w-3xl">
+      <div className="pl-6 md:pl-10 pr-6 md:pr-32 pb-32 max-w-3xl">
         {active && (
           <article key={active.id} className="space-y-4">
             <div className="flex items-center gap-3">
