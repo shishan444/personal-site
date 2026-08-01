@@ -1,6 +1,6 @@
 "use server";
 
-import { desc, eq, isNull } from "drizzle-orm";
+import { isNull } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { deleteAssetIfUnreferenced } from "@/lib/assets";
 import { writeAuditLog } from "@/lib/audit";
@@ -42,29 +42,5 @@ export async function listAssetsForAdmin() {
     width: a.width,
     height: a.height,
     createdAt: a.createdAt,
-  }));
-}
-
-export async function listAuditLogsForAdmin(opts?: { action?: string; limit?: number }) {
-  const session = await getSession();
-  if (!session) throw new Error("UNAUTHORIZED");
-  const db = await getDb();
-  const { auditLogs } = await import("@/lib/db/schema");
-  const limit = opts?.limit ?? 50;
-  const baseQuery =
-    opts?.action != null
-      ? db
-          .select()
-          .from(auditLogs)
-          .where(eq(auditLogs.action, opts.action as never))
-      : db.select().from(auditLogs);
-  const rows = await baseQuery.orderBy(desc(auditLogs.createdAt)).limit(limit);
-  return rows.map((log) => ({
-    id: log.id,
-    action: log.action,
-    targetType: log.targetType,
-    targetId: log.targetId,
-    summary: log.summary,
-    createdAt: log.createdAt,
   }));
 }

@@ -326,7 +326,9 @@ async function main() {
   console.log("[seed] ✅ done");
 }
 
-main().catch((err) => {
-  console.error("[seed] ❌", err);
-  process.exit(1);
-});
+main()
+  .then(() => process.exit(0))
+  .catch((err) => {
+    console.error("[seed] ❌", err);
+    process.exit(1);
+  });

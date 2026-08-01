@@ -47,6 +47,16 @@ describe("L4+ · 关键链路回归烟雾（审查修复锁定）", () => {
     expect(html).toContain("shiki");
   });
 
+  it("F10 · middleware 携带 cookie 访问 /login 不应重定向（防失效 cookie 循环）", async () => {
+    const { middleware } = await import("@/middleware");
+    const { NextRequest } = await import("next/server");
+    const req = new NextRequest("http://localhost/zh/login", {
+      headers: { cookie: "atelier_session=stale-token" },
+    });
+    const res = middleware(req);
+    expect(res.headers.get("location") ?? "").not.toContain("/admin");
+  });
+
   it("F7 · uploads 路由拒绝路径穿越", async () => {
     const { GET } = await import("@/app/uploads/[...path]/route");
     const { NextRequest } = await import("next/server");

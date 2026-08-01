@@ -180,7 +180,7 @@
     "sidebar_users": "Users"
   },
   "dashboard": {
-    "title": "Site overview",
+    "title": "Site",
     "title_accent": "Overview",
     "last_sync": "Last sync",
     "kpi_agents": "Agents",

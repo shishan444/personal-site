@@ -83,3 +83,27 @@ export async function getAdminDashboard(): Promise<AdminDashboardData> {
 }
 
 export { count, isNull };
+
+export async function listAuditLogsForAdmin(opts?: { action?: string; limit?: number }) {
+  const { getSession } = await import("@/lib/auth");
+  const session = await getSession();
+  if (!session) throw new Error("UNAUTHORIZED");
+  const db = await getDb();
+  const limit = opts?.limit ?? 50;
+  const baseQuery =
+    opts?.action != null
+      ? db
+          .select()
+          .from(auditLogs)
+          .where(eq(auditLogs.action, opts.action as never))
+      : db.select().from(auditLogs);
+  const rows = await baseQuery.orderBy(desc(auditLogs.createdAt)).limit(limit);
+  return rows.map((log) => ({
+    id: log.id,
+    action: log.action,
+    targetType: log.targetType,
+    targetId: log.targetId,
+    summary: log.summary,
+    createdAt: log.createdAt,
+  }));
+}

@@ -55,7 +55,9 @@ async function main() {
   console.log("[migrate] ✅ all migrations applied");
 }
 
-main().catch((err) => {
-  console.error("[migrate] ❌", err);
-  process.exit(1);
-});
+main()
+  .then(() => process.exit(0))
+  .catch((err) => {
+    console.error("[migrate] ❌", err);
+    process.exit(1);
+  });

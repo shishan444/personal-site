@@ -6,7 +6,6 @@ import { COOKIE_NAME } from "@/lib/auth/constants";
 const intlMiddleware = createNextIntlMiddleware(routing);
 
 const PROTECTED_PREFIXES = ["/admin"];
-const AUTH_PAGES = ["/login", "/change-password"];
 const LOCALE_PREFIXES = ["/zh", "/en"];
 
 function stripLocale(pathname: string): string {
@@ -23,17 +22,12 @@ export function middleware(request: NextRequest) {
   const pathWithoutLocale = stripLocale(pathname);
 
   const isProtected = PROTECTED_PREFIXES.some((p) => pathWithoutLocale.startsWith(p));
-  const isAuthPage = AUTH_PAGES.includes(pathWithoutLocale);
   const sessionCookie = request.cookies.get(COOKIE_NAME)?.value;
 
   if (isProtected && !sessionCookie) {
     const url = new URL(`/${routing.defaultLocale}/login`, request.url);
     url.searchParams.set("from", pathname);
     return NextResponse.redirect(url);
-  }
-
-  if (isAuthPage && sessionCookie && pathWithoutLocale !== "/change-password") {
-    return NextResponse.redirect(new URL(`/${routing.defaultLocale}/admin`, request.url));
   }
 
   return intlResponse;

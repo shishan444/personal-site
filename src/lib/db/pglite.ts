@@ -6,24 +6,28 @@ import * as schema from "./schema";
 
 export type PgliteDatabase = ReturnType<typeof drizzle<typeof schema>>;
 
-let _client: PGlite | null = null;
-let _db: PgliteDatabase | null = null;
+// Next dev 的 HMR 与多模块图（RSC / Server Action）会重复加载本模块，
+// 单例必须挂在 globalThis 上，否则同一 dataDir 会被多次 PGlite.create 导致 WASM abort。
+const globalStore = globalThis as unknown as {
+  __atelierPgliteClient?: PGlite | null;
+  __atelierPgliteDb?: PgliteDatabase | null;
+};
 
 export async function getPgliteDb(dataDir?: string): Promise<PgliteDatabase> {
-  if (_db) return _db;
+  if (globalStore.__atelierPgliteDb) return globalStore.__atelierPgliteDb;
   const dir = dataDir ?? process.env.PGLITE_DATA_DIR ?? ".pglite/atelier-dev";
   const absDir = path.resolve(process.cwd(), dir);
   mkdirSync(absDir, { recursive: true });
-  _client = await PGlite.create({ dataDir: absDir });
-  _db = drizzle(_client, { schema });
-  return _db;
+  globalStore.__atelierPgliteClient = await PGlite.create({ dataDir: absDir });
+  globalStore.__atelierPgliteDb = drizzle(globalStore.__atelierPgliteClient, { schema });
+  return globalStore.__atelierPgliteDb;
 }
 
 export async function closePgliteDb(): Promise<void> {
-  if (_client) {
-    await _client.close();
-    _client = null;
-    _db = null;
+  if (globalStore.__atelierPgliteClient) {
+    await globalStore.__atelierPgliteClient.close();
+    globalStore.__atelierPgliteClient = null;
+    globalStore.__atelierPgliteDb = null;
   }
 }
 

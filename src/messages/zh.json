@@ -180,7 +180,7 @@
     "sidebar_users": "用户"
   },
   "dashboard": {
-    "title": "站点总览",
+    "title": "站点",
     "title_accent": "总览",
     "last_sync": "最后同步",
     "kpi_agents": "Agent",

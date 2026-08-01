@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 
-export default async function NotFound({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale } = await params;
+export default async function NotFound() {
+  const locale = await getLocale();
   const t = await getTranslations({ locale });
   return (
     <main className="min-h-screen flex flex-col items-center justify-center gap-6 px-8 text-center">

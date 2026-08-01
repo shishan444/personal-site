@@ -1,7 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { StatusBadge } from "@/components/shared";
 import { DataTable, type DataTableColumn } from "@/components/ui/data-table";
-import { listAuditLogsForAdmin } from "@/lib/actions/assets";
+import { listAuditLogsForAdmin } from "@/lib/queries/admin";
 
 interface AuditLogRow {
   id: string;
