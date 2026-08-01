@@ -50,3 +50,7 @@ next-env.d.ts
 # pglite（开发期嵌入式 PG 数据目录）
 /.pglite
 
+
+# Playwright 产物
+/test-results
+/tests/e2e-pw/.auth
