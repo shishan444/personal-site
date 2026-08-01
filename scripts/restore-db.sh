@@ -33,7 +33,7 @@ fi
 if [ -f "${BACKUP_DIR}/uploads.tar.gz" ]; then
   echo "[restore] extracting uploads..."
   mkdir -p ./uploads
-  tar -xzf "${BACKUP_DIR}/uploads.tar.gz -C ./uploads"
+  tar -xzf "${BACKUP_DIR}/uploads.tar.gz" -C ./uploads
   echo "[restore] ✓ uploads restored"
 fi
 

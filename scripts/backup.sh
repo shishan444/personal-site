@@ -24,7 +24,7 @@ echo "[backup] ✓ db.sql.gz ($(du -h "${BACKUP_DIR}/db.sql.gz" | cut -f1))"
 # 2. uploads 目录（如果存在）
 if [ -d "./uploads" ]; then
   echo "[backup] tar uploads/..."
-  tar -czf "${BACKUP_DIR}/uploads.tar.gz -C ./uploads ."
+  tar -czf "${BACKUP_DIR}/uploads.tar.gz" -C ./uploads .
   echo "[backup] ✓ uploads.tar.gz ($(du -h "${BACKUP_DIR}/uploads.tar.gz" | cut -f1))"
 fi
 
