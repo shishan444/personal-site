@@ -1,0 +1,736 @@
+{
+  "schema_version": "3.0",
+  "design_ref": "test-design.md",
+  "requirement": {
+    "requirement_id": "REQ-full-suite-2026-08",
+    "title": "ATELIER personal-site 全量测试（L1+L2+L3）",
+    "version": "v0.4-actual",
+    "source_ids": [
+      "SRC-readme",
+      "SRC-architecture",
+      "SRC-test-strategy",
+      "SRC-code-src",
+      "SRC-code-tests",
+      "SRC-coverage-report"
+    ],
+    "readiness": "conditional",
+    "protected_values": [
+      "代码与数据完全分离（前台样式 / 后台 UI / Schema 升级独立演进）",
+      "内容主权在己（DB/Storage/Compute 全自管，不依赖 SaaS）",
+      "每版可上线（每个子任务完成都能部署验证）",
+      "反 AI slop（无紫渐变/emoji icon/圆角卡+左彩色 border）",
+      "代码级不变量：essays.sn / essays.slug / agents.sn / agents.order / timeline_one_now 唯一性",
+      "安全守卫：uploads 路径穿越拒绝；middleware 失效 cookie 不死循环；audit 不阻断主流程"
+    ],
+    "facts": [
+      {
+        "fact_id": "FACT-001",
+        "source_ids": ["SRC-readme", "SRC-code-src"],
+        "statement": "README.md 标注阶段二进度 0%，但 atelier/ 目录实际已基本完成阶段二（2.1-2.12）子任务；范围边界 BND-001/BND-002/BND-003 据此推导",
+        "epistemic_status": "confirmed"
+      },
+      {
+        "fact_id": "FACT-002",
+        "source_ids": ["SRC-code-src"],
+        "statement": "src 共 120 个 .ts/.tsx 文件（app 35 / components 36 / lib 42 / hooks 3 / i18n 3 + middleware）；功能点 FP-Essay-CRUD 等覆盖此规模",
+        "epistemic_status": "confirmed"
+      },
+      {
+        "fact_id": "FACT-003",
+        "source_ids": ["SRC-code-tests"],
+        "statement": "现有测试：L1 单元 14 文件 108 用例；L2 集成 5 文件 39 用例；L3 smoke 10 用例；L3 Playwright 8 spec（B1/B2/B7/B10/B11/B19/B20 + auth-setup）；功能点 FP-L3-Playwright 据此承接",
+        "epistemic_status": "confirmed"
+      },
+      {
+        "fact_id": "FACT-004",
+        "source_ids": ["SRC-coverage-report"],
+        "statement": "L1 行覆盖率 17.01%、函数 16.9%、分支 15.47%、语句 15.6（vitest.config.ts 阈值 85/90/80 严重不达标），主要缺口在 lib/actions/* (0%)、lib/queries/* (0%)、lib/audit.ts (0%)、components/admin/* (0%)、components/ui 大部分 (0%)；范围边界 BND-004 据此推导",
+        "epistemic_status": "confirmed"
+      },
+      {
+        "fact_id": "FACT-005",
+        "source_ids": ["SRC-code-src"],
+        "statement": "essays 表有 essays_sn_idx（uniqueIndex）、essays_slug_idx（uniqueIndex where slug IS NOT NULL 部分唯一索引）；agents 表有 agents_sn_idx（uniqueIndex）、agents_order_idx（uniqueIndex）；timeline_nodes 有 timeline_one_now_idx（uniqueIndex where is_now = true 部分唯一索引）；功能点 FP-Essay-Unique / FP-Agent-CRUD / FP-Timeline-NOW 据此推导",
+        "epistemic_status": "confirmed"
+      },
+      {
+        "fact_id": "FACT-006",
+        "source_ids": ["SRC-code-src"],
+        "statement": "essays.ts actions 在创建/更新/发布/归档/删除/恢复/批量/历史恢复时均调用 writeAuditLog + 写 essay_revisions；FP-Essay-CRUD 与 FP-Audit-Log 据此承接",
+        "epistemic_status": "confirmed"
+      },
+      {
+        "fact_id": "FACT-007",
+        "source_ids": ["SRC-code-src"],
+        "statement": "reorderAgents 实现使用两阶段（先整体抬升 order 到 n+1..2n 再落位 1..n）以避开 agents_order_idx 唯一索引中途冲突；FP-Agent-CRUD 据此承接",
+        "epistemic_status": "confirmed"
+      },
+      {
+        "fact_id": "FACT-008",
+        "source_ids": ["SRC-code-src"],
+        "statement": "createTimelineNode / updateTimelineNode / setAsNow 在写入 isNow=true 前先 UPDATE 取消其他 isNow=true 行；DB 还有 timeline_one_now_idx 部分唯一索引兜底；FP-Timeline-NOW 据此承接",
+        "epistemic_status": "confirmed"
+      },
+      {
+        "fact_id": "FACT-009",
+        "source_ids": ["SRC-code-src"],
+        "statement": "persistUpload 用 SHA-256 checksum 去重；图片类型生成 _thumbnails/*.webp 缩略图；deleteAssetIfUnreferenced 查 asset_links 有引用则返回 REFERENCED 拒绝；FP-Asset-Upload 据此承接",
+        "epistemic_status": "confirmed"
+      },
+      {
+        "fact_id": "FACT-010",
+        "source_ids": ["SRC-code-src"],
+        "statement": "session.ts：createSession 用 randomBytes(32).base64url 生成 token；TTL 14 天；cookie httpOnly + secure（生产）+ sameSite=lax；authenticateByEmailPassword 用户不存在/密码错均抛 INVALID_CREDENTIALS；FP-Auth-Session 据此承接",
+        "epistemic_status": "confirmed"
+      },
+      {
+        "fact_id": "FACT-011",
+        "source_ids": ["SRC-code-src"],
+        "statement": "writeAuditLog try/catch 吞错（console.error 但不抛），保证 DB 故障不阻断主流程；FP-Audit-Log 据此承接",
+        "epistemic_status": "confirmed"
+      },
+      {
+        "fact_id": "FACT-012",
+        "source_ids": ["SRC-code-src", "SRC-code-tests"],
+        "statement": "smoke 测试已覆盖：robots.ts/manifest.ts/sitemap.ts；middleware 无 cookie 重定向 + 有 cookie 放行 + 失效 cookie 不死循环；uploads 拒绝 `..`（403）+ 不存在文件 404；markdown Shiki 高亮；FP-Smoke-Regression 据此承接",
+        "epistemic_status": "confirmed"
+      },
+      {
+        "fact_id": "FACT-013",
+        "source_ids": ["SRC-test-strategy"],
+        "statement": "TEST-STRATEGY.md 计划 830-1330 用例 / 230-450 小时 / 5 层模型，是计划态文档；本轮按现实预算只覆盖 L1+L2+L3 关键路径",
+        "epistemic_status": "confirmed"
+      }
+    ]
+  },
+  "critical_unknowns": [
+    {
+      "unknown_id": "UNK-001",
+      "anchor_fact_ids": ["FACT-004", "FACT-006"],
+      "affected_function_ids": [
+        "FP-Essay-CRUD",
+        "FP-Agent-CRUD",
+        "FP-Timeline-NOW",
+        "FP-Site-Config",
+        "FP-Tag-Merge"
+      ],
+      "status": "open",
+      "spec_ref": "test-design.md#section-5"
+    },
+    {
+      "unknown_id": "UNK-002",
+      "anchor_fact_ids": ["FACT-003"],
+      "affected_function_ids": ["FP-L3-Playwright"],
+      "status": "open",
+      "spec_ref": "test-design.md#section-5"
+    }
+  ],
+  "scope_boundaries": [
+    {
+      "boundary_id": "BND-001",
+      "source_fact_ids": ["FACT-013"],
+      "statement": "本轮不实现 TEST-STRATEGY.md 全部 830-1330 用例",
+      "reason": "230+ 小时不现实；优先覆盖核心业务路径与不变量"
+    },
+    {
+      "boundary_id": "BND-002",
+      "source_fact_ids": ["FACT-013"],
+      "statement": "本轮不做 L4 性能基线（Lighthouse CI / k6）",
+      "reason": "需独立性能测试环境，作为单独任务"
+    },
+    {
+      "boundary_id": "BND-003",
+      "source_fact_ids": ["FACT-013"],
+      "statement": "本轮不做 L5 AI chrome MCP 录制回归",
+      "reason": "已有 reports/ 截图参考；新一轮需独立任务"
+    },
+    {
+      "boundary_id": "BND-004",
+      "source_fact_ids": ["FACT-004"],
+      "statement": "本轮不修改 vitest.config.ts 覆盖率阈值（保留 85/90/80）",
+      "reason": "本轮目标不是补到 85%；报告实际差距即可，避免阻塞 PR"
+    }
+  ],
+  "functional_points": [
+    {
+      "function_id": "FP-Essay-CRUD",
+      "name": "文章全生命周期 CRUD（创建/编辑/发布/归档/恢复/删除/批量/历史恢复 + revision + audit）",
+      "source_fact_ids": ["FACT-001", "FACT-002", "FACT-006"],
+      "spec_ref": "test-design.md#section-2",
+      "required_layers": ["L1", "L2", "L3"],
+      "omitted_layers": []
+    },
+    {
+      "function_id": "FP-Essay-Unique",
+      "name": "文章 SN/Slug 唯一性守卫（essays_sn_idx + essays_slug_idx 部分唯一索引）",
+      "source_fact_ids": ["FACT-005"],
+      "spec_ref": "test-design.md#section-3",
+      "required_layers": ["L2"],
+      "omitted_layers": [
+        { "layer": "L1", "reason": "唯一性由 DB 层强制，mock DB 无法证明真实约束" },
+        { "layer": "L3", "reason": "唯一性冲突在 admin 表单层验证 + DB 兜底，主路径已被 B1 覆盖" }
+      ]
+    },
+    {
+      "function_id": "FP-Agent-CRUD",
+      "name": "Agent 全生命周期 + reorder 两阶段避唯一索引 + status 枚举守卫",
+      "source_fact_ids": ["FACT-007"],
+      "spec_ref": "test-design.md#section-2",
+      "required_layers": ["L1", "L2", "L3"],
+      "omitted_layers": []
+    },
+    {
+      "function_id": "FP-Timeline-NOW",
+      "name": "Timeline isNow 唯一性（应用层取消 + DB 部分唯一索引兜底）",
+      "source_fact_ids": ["FACT-008", "FACT-005"],
+      "spec_ref": "test-design.md#section-3",
+      "required_layers": ["L1", "L2"],
+      "omitted_layers": [
+        { "layer": "L3", "reason": "无独立 UI 流程触发 isNow 切换的故障机制；admin 操作由 L2 兜底" }
+      ]
+    },
+    {
+      "function_id": "FP-Asset-Upload",
+      "name": "资产上传（checksum 去重 + 缩略图 + 引用检查 + Agent 截图 link/unlink/reorder）",
+      "source_fact_ids": ["FACT-009"],
+      "spec_ref": "test-design.md#section-2",
+      "required_layers": ["L1", "L2", "L3"],
+      "omitted_layers": []
+    },
+    {
+      "function_id": "FP-Auth-Session",
+      "name": "认证与会话（登录/强制改密/session 过期清理/middleware 守卫/失效 cookie 防死循环）",
+      "source_fact_ids": ["FACT-010", "FACT-012"],
+      "spec_ref": "test-design.md#section-2",
+      "required_layers": ["L1", "L2", "L3"],
+      "omitted_layers": []
+    },
+    {
+      "function_id": "FP-Audit-Log",
+      "name": "审计日志写入（容错吞错：DB 故障不阻断主流程）",
+      "source_fact_ids": ["FACT-011"],
+      "spec_ref": "test-design.md#section-3",
+      "required_layers": ["L1", "L2"],
+      "omitted_layers": [{ "layer": "L3", "reason": "审计持久化是后台副作用，无用户可见入口" }]
+    },
+    {
+      "function_id": "FP-Site-Config",
+      "name": "站点配置单行约束 + 更新（影响前台显示 + audit metadata.fields）",
+      "source_fact_ids": ["FACT-005"],
+      "spec_ref": "test-design.md#section-2",
+      "required_layers": ["L1", "L2"],
+      "omitted_layers": [{ "layer": "L3", "reason": "前台显示联动可观察，但本轮不新增 B12 用例" }]
+    },
+    {
+      "function_id": "FP-Tag-Merge",
+      "name": "标签合并 mergeTopicTag（替换 + 去重 + 同名返回 0 + 空值拒绝）",
+      "source_fact_ids": ["FACT-006"],
+      "spec_ref": "test-design.md#section-2",
+      "required_layers": ["L1", "L2"],
+      "omitted_layers": [{ "layer": "L3", "reason": "标签合并无独立用户旅程" }]
+    },
+    {
+      "function_id": "FP-Smoke-Regression",
+      "name": "SEO + middleware + uploads + markdown 关键链路烟雾回归",
+      "source_fact_ids": ["FACT-012"],
+      "spec_ref": "test-design.md#section-2",
+      "required_layers": ["L3"],
+      "omitted_layers": [
+        { "layer": "L1", "reason": "已是 smoke 集成级断言" },
+        { "layer": "L2", "reason": "已是 smoke 集成级断言" }
+      ]
+    },
+    {
+      "function_id": "FP-L3-Playwright",
+      "name": "Playwright E2E 全量回归（B1/B2/B7/B10/B11/B19/B20 + auth-setup）",
+      "source_fact_ids": ["FACT-003"],
+      "spec_ref": "test-design.md#section-2",
+      "required_layers": ["L3"],
+      "omitted_layers": [
+        { "layer": "L1", "reason": "已是 E2E" },
+        { "layer": "L2", "reason": "已是 E2E" }
+      ]
+    }
+  ],
+  "flow_models": [
+    {
+      "flow_id": "FLOW-Essay-Publish",
+      "name": "文章发布主流程",
+      "function_point_ids": ["FP-Essay-CRUD", "FP-Essay-Unique"],
+      "spec_ref": "test-design.md#section-1",
+      "transitions": [
+        {
+          "transition_id": "TR-Essay-01",
+          "function_point_ids": ["FP-Essay-CRUD"],
+          "spec_ref": "test-design.md#section-2"
+        },
+        {
+          "transition_id": "TR-Essay-02",
+          "function_point_ids": ["FP-Essay-Unique"],
+          "spec_ref": "test-design.md#section-3"
+        }
+      ]
+    },
+    {
+      "flow_id": "FLOW-Agent-Lifecycle",
+      "name": "Agent 创建/排序/删除主流程",
+      "function_point_ids": ["FP-Agent-CRUD"],
+      "spec_ref": "test-design.md#section-1",
+      "transitions": [
+        {
+          "transition_id": "TR-Agent-01",
+          "function_point_ids": ["FP-Agent-CRUD"],
+          "spec_ref": "test-design.md#section-2"
+        }
+      ]
+    },
+    {
+      "flow_id": "FLOW-Timeline-NOW",
+      "name": "Timeline NOW 节点切换",
+      "function_point_ids": ["FP-Timeline-NOW"],
+      "spec_ref": "test-design.md#section-1",
+      "transitions": [
+        {
+          "transition_id": "TR-TL-01",
+          "function_point_ids": ["FP-Timeline-NOW"],
+          "spec_ref": "test-design.md#section-3"
+        }
+      ]
+    },
+    {
+      "flow_id": "FLOW-Auth",
+      "name": "认证主流程",
+      "function_point_ids": ["FP-Auth-Session"],
+      "spec_ref": "test-design.md#section-1",
+      "transitions": [
+        {
+          "transition_id": "TR-Auth-01",
+          "function_point_ids": ["FP-Auth-Session"],
+          "spec_ref": "test-design.md#section-2"
+        }
+      ]
+    }
+  ],
+  "control_sets": [
+    {
+      "control_set_id": "CS-Mock-DB-Session-Audit",
+      "data": "vi.mock('@/lib/db') 返回内存 db 对象；vi.mock('@/lib/auth') 的 getSession 返回固定 SessionData；vi.mock('@/lib/audit') 捕获 writeAuditLog 调用；revalidatePath mock 为 no-op",
+      "dependencies": "vitest、@testing-library/react、jsdom",
+      "time_randomness": "Date.now / crypto.randomUUID 在生成 SN/slug 时注入固定值；测试用 RUN=Date.now() 避免唯一索引冲突",
+      "cleanup": "每个 it 后 resetModules + clearAllMocks；不写盘"
+    },
+    {
+      "control_set_id": "CS-Pglite-Real-DB",
+      "data": "tests/integration/_setup.ts 启动 PGlite atelier-test，跑 drizzle migrations；_seed-helper.ts 提供 owner user + site_config + 6 agents + 5 timeline 节点 + 5 essays",
+      "dependencies": "@electric-sql/pglite、drizzle-orm、drizzle migrations 0000+0001",
+      "time_randomness": "timestamp 字段由 DB defaultNow；测试用 SN/slug 后缀加随机数避免冲突",
+      "cleanup": "afterAll 关闭 PGlite + 删 .pglite/atelier-test 目录；uploads 资产在 .tmp-uploads-test 后 rm"
+    },
+    {
+      "control_set_id": "CS-Playwright-Dev-Server",
+      "data": "global-setup 启动 next dev -p 3100，UPLOAD_DIR=.pglite/atelier-e2e/uploads；auth-setup.spec.ts 登录 + 改密 + 保存 storageState；后续 spec 复用 storageState",
+      "dependencies": "@playwright/test、next dev、PGlite atelier-e2e 数据目录",
+      "time_randomness": "RUN=Date.now()%100000 生成唯一 SN/slug 避免上轮残留",
+      "cleanup": "global-teardown 关 dev server；test-results/ 保留失败 trace + video"
+    }
+  ],
+  "runners": [
+    {
+      "runner_id": "R-L1-Unit",
+      "implementation_status": "implemented",
+      "adapter": "vitest",
+      "command_template": "node node_modules/vitest/vitest.mjs run --coverage",
+      "run_on": ["local", "pr"],
+      "deterministic": true
+    },
+    {
+      "runner_id": "R-L2-Integration",
+      "implementation_status": "implemented",
+      "adapter": "vitest with vitest.integration.config.ts",
+      "command_template": "node node_modules/vitest/vitest.mjs run --config vitest.integration.config.ts",
+      "run_on": ["local", "pr"],
+      "deterministic": true
+    },
+    {
+      "runner_id": "R-L3-Smoke",
+      "implementation_status": "implemented",
+      "adapter": "vitest with vitest.smoke.config.ts",
+      "command_template": "node node_modules/vitest/vitest.mjs run --config vitest.smoke.config.ts",
+      "run_on": ["local", "pr"],
+      "deterministic": true
+    },
+    {
+      "runner_id": "R-L3-Playwright",
+      "implementation_status": "implemented",
+      "adapter": "@playwright/test",
+      "command_template": "pnpm test:e2e:pw",
+      "run_on": ["local", "scheduled", "release"],
+      "deterministic": true
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "L1-EXISTING-108",
+      "title": "L1 现有 14 文件 108 用例（auth/password、checksum、storage-path、markdown、chapters、subdials、sections、ui、i18n、hooks、schema-shape、sanity）",
+      "function_point_ids": ["FP-Auth-Session", "FP-Audit-Log", "FP-Asset-Upload", "FP-Essay-CRUD"],
+      "transition_ids": [],
+      "layer": "L1",
+      "direction": "positive",
+      "priority": "normal",
+      "lifecycle_status": "regression_active",
+      "spec_ref": "test-design.md#section-1",
+      "control_set_id": "CS-Mock-DB-Session-Audit",
+      "runner_id": "R-L1-Unit",
+      "automation_target": "tests/unit/**/*.test.{ts,tsx}"
+    },
+    {
+      "case_id": "L1-NEW-AUDIT",
+      "title": "writeAuditLog 正常写入 + DB 失败吞错（容错路径）",
+      "function_point_ids": ["FP-Audit-Log"],
+      "transition_ids": [],
+      "layer": "L1",
+      "direction": "negative",
+      "priority": "high",
+      "lifecycle_status": "automated",
+      "spec_ref": "test-design.md#section-3",
+      "control_set_id": "CS-Mock-DB-Session-Audit",
+      "runner_id": "R-L1-Unit",
+      "automation_target": "tests/unit/lib/audit.test.ts"
+    },
+    {
+      "case_id": "L1-NEW-ESSAY",
+      "title": "essay actions 全状态机：创建/更新/发布/归档/恢复/删除/批量/历史恢复 + revision 调用契约 + audit action 序列",
+      "function_point_ids": ["FP-Essay-CRUD"],
+      "transition_ids": [],
+      "layer": "L1",
+      "direction": "positive",
+      "priority": "high",
+      "lifecycle_status": "automated",
+      "spec_ref": "test-design.md#section-4",
+      "control_set_id": "CS-Mock-DB-Session-Audit",
+      "runner_id": "R-L1-Unit",
+      "automation_target": "tests/unit/actions/essays.test.ts"
+    },
+    {
+      "case_id": "L1-NEW-ESSAY-NEG",
+      "title": "essay actions 反向：未登录抛 UNAUTHORIZED / NOT_FOUND / lang 非法枚举",
+      "function_point_ids": ["FP-Essay-CRUD"],
+      "transition_ids": [],
+      "layer": "L1",
+      "direction": "negative",
+      "priority": "high",
+      "lifecycle_status": "automated",
+      "spec_ref": "test-design.md#section-4",
+      "control_set_id": "CS-Mock-DB-Session-Audit",
+      "runner_id": "R-L1-Unit",
+      "automation_target": "tests/unit/actions/essays.test.ts"
+    },
+    {
+      "case_id": "L1-NEW-AGENT",
+      "title": "agent actions：创建（order=max+1）/更新/删除/reorder 两阶段序列/SN 唯一 mock",
+      "function_point_ids": ["FP-Agent-CRUD"],
+      "transition_ids": [],
+      "layer": "L1",
+      "direction": "positive",
+      "priority": "high",
+      "lifecycle_status": "automated",
+      "spec_ref": "test-design.md#section-4",
+      "control_set_id": "CS-Mock-DB-Session-Audit",
+      "runner_id": "R-L1-Unit",
+      "automation_target": "tests/unit/actions/agents.test.ts"
+    },
+    {
+      "case_id": "L1-NEW-AGENT-NEG",
+      "title": "agent actions 反向：未登录抛 / reorder 空数组 early-return / status 非法枚举",
+      "function_point_ids": ["FP-Agent-CRUD"],
+      "transition_ids": [],
+      "layer": "L1",
+      "direction": "negative",
+      "priority": "normal",
+      "lifecycle_status": "automated",
+      "spec_ref": "test-design.md#section-4",
+      "control_set_id": "CS-Mock-DB-Session-Audit",
+      "runner_id": "R-L1-Unit",
+      "automation_target": "tests/unit/actions/agents.test.ts"
+    },
+    {
+      "case_id": "L1-NEW-TL",
+      "title": "timeline actions：create/update/setAsNow/delete + isNow=true 时先取消其他",
+      "function_point_ids": ["FP-Timeline-NOW"],
+      "transition_ids": [],
+      "layer": "L1",
+      "direction": "positive",
+      "priority": "high",
+      "lifecycle_status": "automated",
+      "spec_ref": "test-design.md#section-4",
+      "control_set_id": "CS-Mock-DB-Session-Audit",
+      "runner_id": "R-L1-Unit",
+      "automation_target": "tests/unit/actions/timeline.test.ts"
+    },
+    {
+      "case_id": "L1-NEW-SC",
+      "title": "site-config actions：updateSiteConfig 各字段写入 + audit metadata.fields 记录 + 未登录拒",
+      "function_point_ids": ["FP-Site-Config"],
+      "transition_ids": [],
+      "layer": "L1",
+      "direction": "positive",
+      "priority": "normal",
+      "lifecycle_status": "automated",
+      "spec_ref": "test-design.md#section-4",
+      "control_set_id": "CS-Mock-DB-Session-Audit",
+      "runner_id": "R-L1-Unit",
+      "automation_target": "tests/unit/actions/site-config.test.ts"
+    },
+    {
+      "case_id": "L1-NEW-TAG",
+      "title": "tags actions：mergeTopicTag 替换+去重 / 同名返回 0 / 空值抛 INVALID_INPUT",
+      "function_point_ids": ["FP-Tag-Merge"],
+      "transition_ids": [],
+      "layer": "L1",
+      "direction": "positive",
+      "priority": "normal",
+      "lifecycle_status": "automated",
+      "spec_ref": "test-design.md#section-4",
+      "control_set_id": "CS-Mock-DB-Session-Audit",
+      "runner_id": "R-L1-Unit",
+      "automation_target": "tests/unit/actions/tags.test.ts"
+    },
+    {
+      "case_id": "L1-NEW-ASHOT",
+      "title": "agent-screenshots actions：linkAgentScreenshot maxOrder+1 / unlink / reorder 顺序更新",
+      "function_point_ids": ["FP-Asset-Upload"],
+      "transition_ids": [],
+      "layer": "L1",
+      "direction": "positive",
+      "priority": "normal",
+      "lifecycle_status": "automated",
+      "spec_ref": "test-design.md#section-4",
+      "control_set_id": "CS-Mock-DB-Session-Audit",
+      "runner_id": "R-L1-Unit",
+      "automation_target": "tests/unit/actions/agent-screenshots.test.ts"
+    },
+    {
+      "case_id": "L2-EXISTING-39",
+      "title": "L2 现有 5 文件 39 用例（auth-session、assets-upload、admin-dashboard、audit-log、migration-and-seed）",
+      "function_point_ids": ["FP-Auth-Session", "FP-Asset-Upload", "FP-Audit-Log"],
+      "transition_ids": ["TR-Auth-01"],
+      "layer": "L2",
+      "direction": "positive",
+      "priority": "normal",
+      "lifecycle_status": "regression_active",
+      "spec_ref": "test-design.md#section-2",
+      "control_set_id": "CS-Pglite-Real-DB",
+      "runner_id": "R-L2-Integration",
+      "automation_target": "tests/integration/*.test.ts"
+    },
+    {
+      "case_id": "L2-NEW-ESSAY-CRUD",
+      "title": "真实 PGlite：essay 全状态机 + SN 唯一冲突（DB 拒绝）+ Slug 部分唯一索引（NULL 不冲突）+ translationGroupId 关联 + revision 行动序列 + audit 行",
+      "function_point_ids": ["FP-Essay-CRUD", "FP-Essay-Unique"],
+      "transition_ids": ["TR-Essay-01", "TR-Essay-02"],
+      "layer": "L2",
+      "direction": "positive",
+      "priority": "critical",
+      "lifecycle_status": "automated",
+      "spec_ref": "test-design.md#section-4",
+      "control_set_id": "CS-Pglite-Real-DB",
+      "runner_id": "R-L2-Integration",
+      "automation_target": "tests/integration/essays-crud.test.ts"
+    },
+    {
+      "case_id": "L2-NEW-ESSAY-NEG",
+      "title": "真实 PGlite 反向：同 SN 第二次插入抛错 / 同 slug 第二次插入抛错 / slug=NULL 多行允许 / lang 非法抛 enum 错",
+      "function_point_ids": ["FP-Essay-Unique"],
+      "transition_ids": [],
+      "layer": "L2",
+      "direction": "negative",
+      "priority": "critical",
+      "lifecycle_status": "automated",
+      "spec_ref": "test-design.md#section-3",
+      "control_set_id": "CS-Pglite-Real-DB",
+      "runner_id": "R-L2-Integration",
+      "automation_target": "tests/integration/essays-crud.test.ts"
+    },
+    {
+      "case_id": "L2-NEW-AGENT-REORDER",
+      "title": "真实 PGlite：reorderAgents 两阶段不撞 agents_order_idx + 最终 order=1..n + SN 唯一拒绝 + status 枚举",
+      "function_point_ids": ["FP-Agent-CRUD"],
+      "transition_ids": ["TR-Agent-01"],
+      "layer": "L2",
+      "direction": "positive",
+      "priority": "critical",
+      "lifecycle_status": "automated",
+      "spec_ref": "test-design.md#section-4",
+      "control_set_id": "CS-Pglite-Real-DB",
+      "runner_id": "R-L2-Integration",
+      "automation_target": "tests/integration/agents-reorder.test.ts"
+    },
+    {
+      "case_id": "L2-NEW-TL-NOW",
+      "title": "真实 PGlite：setAsNow 取消其他 + timeline_one_now_idx 部分唯一索引兜底（直接 INSERT 第二个 isNow=true 应被 DB 拒绝）",
+      "function_point_ids": ["FP-Timeline-NOW"],
+      "transition_ids": ["TR-TL-01"],
+      "layer": "L2",
+      "direction": "negative",
+      "priority": "critical",
+      "lifecycle_status": "automated",
+      "spec_ref": "test-design.md#section-3",
+      "control_set_id": "CS-Pglite-Real-DB",
+      "runner_id": "R-L2-Integration",
+      "automation_target": "tests/integration/agents-reorder.test.ts"
+    },
+    {
+      "case_id": "L2-NEW-CONFIG-TAG",
+      "title": "真实 PGlite：updateSiteConfig 写入 + CHECK id=1 约束 + mergeTopicTag 多文章替换 + 去重 + audit 行",
+      "function_point_ids": ["FP-Site-Config", "FP-Tag-Merge"],
+      "transition_ids": [],
+      "layer": "L2",
+      "direction": "positive",
+      "priority": "high",
+      "lifecycle_status": "automated",
+      "spec_ref": "test-design.md#section-4",
+      "control_set_id": "CS-Pglite-Real-DB",
+      "runner_id": "R-L2-Integration",
+      "automation_target": "tests/integration/site-config-tags.test.ts"
+    },
+    {
+      "case_id": "L3-SMOKE",
+      "title": "smoke 10 用例：robots/manifest/sitemap/middleware/uploads/markdown Shiki",
+      "function_point_ids": ["FP-Smoke-Regression"],
+      "transition_ids": [],
+      "layer": "L3",
+      "direction": "positive",
+      "priority": "high",
+      "lifecycle_status": "regression_active",
+      "spec_ref": "test-design.md#section-2",
+      "control_set_id": "CS-Mock-DB-Session-Audit",
+      "runner_id": "R-L3-Smoke",
+      "automation_target": "tests/e2e/smoke.spec.ts"
+    },
+    {
+      "case_id": "L3-PW-B1",
+      "title": "B1 文章发布全流程（含 404 守卫）",
+      "function_point_ids": ["FP-Essay-CRUD", "FP-L3-Playwright"],
+      "transition_ids": [],
+      "layer": "L3",
+      "direction": "positive",
+      "priority": "critical",
+      "lifecycle_status": "regression_active",
+      "spec_ref": "test-design.md#section-2",
+      "control_set_id": "CS-Playwright-Dev-Server",
+      "runner_id": "R-L3-Playwright",
+      "automation_target": "tests/e2e-pw/essay-publish.spec.ts"
+    },
+    {
+      "case_id": "L3-PW-B2",
+      "title": "B2 Agent 上线全流程",
+      "function_point_ids": ["FP-Agent-CRUD", "FP-L3-Playwright"],
+      "transition_ids": [],
+      "layer": "L3",
+      "direction": "positive",
+      "priority": "critical",
+      "lifecycle_status": "regression_active",
+      "spec_ref": "test-design.md#section-2",
+      "control_set_id": "CS-Playwright-Dev-Server",
+      "runner_id": "R-L3-Playwright",
+      "automation_target": "tests/e2e-pw/agent-publish.spec.ts"
+    },
+    {
+      "case_id": "L3-PW-B7",
+      "title": "B7 中英切换 + cookie 记忆",
+      "function_point_ids": ["FP-L3-Playwright"],
+      "transition_ids": [],
+      "layer": "L3",
+      "direction": "positive",
+      "priority": "high",
+      "lifecycle_status": "regression_active",
+      "spec_ref": "test-design.md#section-2",
+      "control_set_id": "CS-Playwright-Dev-Server",
+      "runner_id": "R-L3-Playwright",
+      "automation_target": "tests/e2e-pw/language-switch.spec.ts"
+    },
+    {
+      "case_id": "L3-PW-B10",
+      "title": "B10 404 错误页",
+      "function_point_ids": ["FP-L3-Playwright"],
+      "transition_ids": [],
+      "layer": "L3",
+      "direction": "negative",
+      "priority": "normal",
+      "lifecycle_status": "regression_active",
+      "spec_ref": "test-design.md#section-2",
+      "control_set_id": "CS-Playwright-Dev-Server",
+      "runner_id": "R-L3-Playwright",
+      "automation_target": "tests/e2e-pw/error-pages.spec.ts"
+    },
+    {
+      "case_id": "L3-PW-B11",
+      "title": "B11 登录退出权限",
+      "function_point_ids": ["FP-Auth-Session", "FP-L3-Playwright"],
+      "transition_ids": [],
+      "layer": "L3",
+      "direction": "positive",
+      "priority": "critical",
+      "lifecycle_status": "regression_active",
+      "spec_ref": "test-design.md#section-2",
+      "control_set_id": "CS-Playwright-Dev-Server",
+      "runner_id": "R-L3-Playwright",
+      "automation_target": "tests/e2e-pw/auth.spec.ts"
+    },
+    {
+      "case_id": "L3-PW-B19",
+      "title": "B19 Agent 拖拽排序持久化",
+      "function_point_ids": ["FP-Agent-CRUD", "FP-L3-Playwright"],
+      "transition_ids": [],
+      "layer": "L3",
+      "direction": "positive",
+      "priority": "high",
+      "lifecycle_status": "regression_active",
+      "spec_ref": "test-design.md#section-2",
+      "control_set_id": "CS-Playwright-Dev-Server",
+      "runner_id": "R-L3-Playwright",
+      "automation_target": "tests/e2e-pw/agent-reorder.spec.ts"
+    },
+    {
+      "case_id": "L3-PW-B20",
+      "title": "B20 Agent 截图上传/排序/移除",
+      "function_point_ids": ["FP-Asset-Upload", "FP-L3-Playwright"],
+      "transition_ids": [],
+      "layer": "L3",
+      "direction": "positive",
+      "priority": "high",
+      "lifecycle_status": "regression_active",
+      "spec_ref": "test-design.md#section-2",
+      "control_set_id": "CS-Playwright-Dev-Server",
+      "runner_id": "R-L3-Playwright",
+      "automation_target": "tests/e2e-pw/agent-screenshots.spec.ts"
+    },
+    {
+      "case_id": "L3-PW-SETUP",
+      "title": "首次改密后保存会话",
+      "function_point_ids": ["FP-Auth-Session", "FP-L3-Playwright"],
+      "transition_ids": [],
+      "layer": "L3",
+      "direction": "positive",
+      "priority": "critical",
+      "lifecycle_status": "regression_active",
+      "spec_ref": "test-design.md#section-2",
+      "control_set_id": "CS-Playwright-Dev-Server",
+      "runner_id": "R-L3-Playwright",
+      "automation_target": "tests/e2e-pw/auth-setup.spec.ts"
+    }
+  ],
+  "design_gate": {
+    "status": "approved",
+    "approval_required_before_implementation": true,
+    "approved_by": "user",
+    "blocking_reasons": []
+  },
+  "delivery_scope": {
+    "mode": "engineering_delivery",
+    "test_implementation_status": "implemented",
+    "test_execution_status": "complete",
+    "results_file": "test-results.json",
+    "note": "设计门已批准；本轮新增 L1 8 文件 + L2 3 文件，已实际运行 L1+L2+L3+smoke 全部 241 用例通过，证据见 test-results.json"
+  }
+}
