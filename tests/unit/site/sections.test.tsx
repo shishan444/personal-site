@@ -117,6 +117,54 @@ describe("L1 · WritingSection", () => {
     );
     expect(screen.getByText("观点")).toBeTruthy();
   });
+
+  it("F4 · section 不在视口中央时方向键不切换文章", () => {
+    render(
+      <IntlWrapper>
+        <WritingSection
+          essays={[
+            mockEssay,
+            { ...mockEssay, id: "e2", sn: "SN-002", title: "Second", deck: "second deck" },
+          ]}
+        />
+      </IntlWrapper>,
+    );
+    const section = document.getElementById("02") as HTMLElement;
+    // jsdom 默认 rect 全 0（bottom=0 不大于半视口），本就处于「不可见」分支；
+    // 显式 mock 一个完全在视口下方的 rect 使语义清晰
+    const spy = vi.spyOn(section, "getBoundingClientRect").mockReturnValue({
+      top: 2000,
+      bottom: 3000,
+      height: 1000,
+      left: 0,
+      right: 1000,
+      width: 1000,
+      x: 0,
+      y: 2000,
+      toJSON: () => ({}),
+    } as DOMRect);
+    fireEvent.keyDown(window, { key: "ArrowRight" });
+    expect(screen.queryByText("second deck")).toBeNull();
+    spy.mockRestore();
+  });
+
+  it("F5 · 焦点在输入框时方向键不切换文章", () => {
+    render(
+      <div>
+        <input data-testid="box" />
+        <IntlWrapper>
+          <WritingSection
+            essays={[
+              mockEssay,
+              { ...mockEssay, id: "e2", sn: "SN-002", title: "Second", deck: "second deck" },
+            ]}
+          />
+        </IntlWrapper>
+      </div>,
+    );
+    fireEvent.keyDown(screen.getByTestId("box"), { key: "ArrowRight" });
+    expect(screen.queryByText("second deck")).toBeNull();
+  });
 });
 
 describe("L1 · AgentsSection", () => {

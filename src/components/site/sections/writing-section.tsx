@@ -22,9 +22,24 @@ export function WritingSection({ essays }: WritingSectionProps) {
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
+      if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+      // 输入场景让路：文本框 / 可编辑区域内的方向键归还给光标移动
+      const target = e.target as HTMLElement | null;
+      if (
+        target &&
+        (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable)
+      ) {
+        return;
+      }
+      // 仅当本章节位于视口中央时才响应翻页，避免全局劫持方向键
+      const section = document.getElementById("02");
+      if (!section) return;
+      const rect = section.getBoundingClientRect();
+      const inView = rect.top < window.innerHeight * 0.5 && rect.bottom > window.innerHeight * 0.5;
+      if (!inView) return;
       if (e.key === "ArrowRight") {
         setActiveIdx((i) => Math.min(essays.length - 1, i + 1));
-      } else if (e.key === "ArrowLeft") {
+      } else {
         setActiveIdx((i) => Math.max(0, i - 1));
       }
     }
