@@ -77,7 +77,7 @@ function HeroMeta({ label, value }: { label: string; value: string }) {
         {label}
       </div>
       <div
-        className="text-2xl md:text-3xl font-bold text-[var(--color-ink)] truncate leading-none"
+        className="text-2xl md:text-3xl font-bold text-[var(--color-ink)] leading-none break-words"
         style={{ fontFamily: "var(--font-display)" }}
       >
         {value}
