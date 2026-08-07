@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { StatusBadge } from "@/components/shared";
 import { SectionReveal } from "@/components/site/section-reveal";
+import { useRafThrottle } from "@/hooks/use-raf-throttle";
 import type { HomeTimelineNode } from "@/lib/queries/site";
 
 export interface TimelineSectionProps {
@@ -26,30 +27,31 @@ export function TimelineSection({ nodes }: TimelineSectionProps) {
   const trackRef = useRef<HTMLDivElement | null>(null);
   const [activeIdx, setActiveIdx] = useState(0);
 
-  useEffect(() => {
+  // rAF 节流包装：滚动回调中读 getBoundingClientRect，避免每帧强制同步布局
+  const onScroll = useRafThrottle(() => {
     const el = trackRef.current;
     if (!el) return;
-    function onScroll() {
-      if (!el) return;
-      const rect = el.getBoundingClientRect();
-      const viewportH = window.innerHeight;
-      const sectionTop = rect.top;
-      const sectionBottom = rect.bottom;
-      const inView = sectionTop < viewportH * 0.5 && sectionBottom > viewportH * 0.5;
-      if (!inView) return;
+    const rect = el.getBoundingClientRect();
+    const viewportH = window.innerHeight;
+    const sectionTop = rect.top;
+    const sectionBottom = rect.bottom;
+    const inView = sectionTop < viewportH * 0.5 && sectionBottom > viewportH * 0.5;
+    if (!inView) return;
 
-      const rangeStart = viewportH * 0.5;
-      const rangeEnd = -(rect.height - viewportH * 0.5);
-      const span = rangeStart - rangeEnd;
-      const current = Math.min(rangeStart, Math.max(rangeEnd, sectionTop));
-      const ratio = (rangeStart - current) / span;
-      const next = Math.min(nodes.length - 1, Math.floor(ratio * nodes.length));
-      setActiveIdx(next);
-    }
+    const rangeStart = viewportH * 0.5;
+    const rangeEnd = -(rect.height - viewportH * 0.5);
+    const span = rangeStart - rangeEnd;
+    const current = Math.min(rangeStart, Math.max(rangeEnd, sectionTop));
+    const ratio = (rangeStart - current) / span;
+    const next = Math.min(nodes.length - 1, Math.floor(ratio * nodes.length));
+    setActiveIdx(next);
+  });
+
+  useEffect(() => {
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
     return () => window.removeEventListener("scroll", onScroll);
-  }, [nodes.length]);
+  }, [onScroll]);
 
   const totalWidth = Math.max(1, nodes.length * 220);
   const active = nodes[activeIdx];
