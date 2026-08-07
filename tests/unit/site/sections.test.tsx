@@ -1,6 +1,6 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { AgentsSection } from "@/components/site/sections/agents-section";
 import { HeroSection } from "@/components/site/sections/hero-section";
 import { OutroSection } from "@/components/site/sections/outro-section";
@@ -136,6 +136,25 @@ describe("L1 · AgentsSection", () => {
       </IntlWrapper>,
     );
     expect(screen.queryByText("开始使用")).toBeNull();
+  });
+
+  it("F3 · track 元素 scroll 时 activeIdx 随 scrollLeft 更新", async () => {
+    const agents = ["a1", "a2", "a3", "a4"].map((id) => ({ ...mockAgent, id }));
+    render(
+      <IntlWrapper>
+        <AgentsSection agents={agents} />
+      </IntlWrapper>,
+    );
+    const track = document.querySelector(".overflow-x-auto") as HTMLElement;
+    // jsdom 不计算布局，mock 滚动几何
+    Object.defineProperty(track, "scrollWidth", { value: 1600, configurable: true });
+    Object.defineProperty(track, "clientWidth", { value: 400, configurable: true });
+    track.scrollLeft = 1200; // ratio = 1200/(1600-400) = 1 → 最后一张
+    fireEvent.scroll(track);
+    // useRafThrottle 在 rAF 回调中执行更新，轮询等待一帧后的结果
+    await vi.waitFor(() => {
+      expect(screen.getByText(/4\/4/)).toBeTruthy();
+    });
   });
 });
 

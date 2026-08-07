@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { StatusBadge } from "@/components/shared";
 import { SectionReveal } from "@/components/site/section-reveal";
 import { Button } from "@/components/ui/button";
+import { useRafThrottle } from "@/hooks/use-raf-throttle";
 import type { HomeAgent } from "@/lib/queries/site";
 
 export interface AgentsSectionProps {
@@ -16,22 +17,24 @@ export function AgentsSection({ agents }: AgentsSectionProps) {
   const trackRef = useRef<HTMLDivElement | null>(null);
   const [activeIdx, setActiveIdx] = useState(0);
 
+  // track 是 overflow-x-auto 元素级横向滚动：scroll 事件不冒泡到 window，
+  // 必须监听 track 自身；激活位置由 scrollLeft/(scrollWidth-clientWidth) 得出。
+  const updateActive = useRafThrottle(() => {
+    const el = trackRef.current;
+    if (!el) return;
+    const max = el.scrollWidth - el.clientWidth;
+    const ratio = max > 0 ? el.scrollLeft / max : 0;
+    const next = Math.min(agents.length - 1, Math.max(0, Math.round(ratio * (agents.length - 1))));
+    setActiveIdx(next);
+  });
+
   useEffect(() => {
     const el = trackRef.current;
     if (!el) return;
-    function onScroll() {
-      if (!el) return;
-      const rect = el.getBoundingClientRect();
-      const totalWidth = el.scrollWidth - window.innerWidth;
-      const scrolled = Math.max(0, -rect.left);
-      const ratio = totalWidth > 0 ? scrolled / totalWidth : 0;
-      const next = Math.min(agents.length - 1, Math.max(0, Math.round(ratio * agents.length)));
-      setActiveIdx(next);
-    }
-    window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener("scroll", onScroll);
-  }, [agents.length]);
+    el.addEventListener("scroll", updateActive, { passive: true });
+    updateActive();
+    return () => el.removeEventListener("scroll", updateActive);
+  }, [updateActive]);
 
   const statusVariant: Record<HomeAgent["status"], "active" | "warn" | "neutral" | "archived"> = {
     active: "active",
