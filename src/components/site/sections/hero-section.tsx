@@ -72,11 +72,16 @@ export function HeroSection({ stats }: HeroSectionProps) {
 
 function HeroMeta({ label, value }: { label: string; value: string }) {
   return (
-    <div className="space-y-1.5">
+    <div className="space-y-2">
       <div className="text-[9px] uppercase tracking-[0.2em] text-[var(--color-ink-soft)]">
         {label}
       </div>
-      <div className="text-lg text-[var(--color-ink)] truncate">{value}</div>
+      <div
+        className="text-2xl md:text-3xl font-bold text-[var(--color-ink)] truncate leading-none"
+        style={{ fontFamily: "var(--font-display)" }}
+      >
+        {value}
+      </div>
     </div>
   );
 }
