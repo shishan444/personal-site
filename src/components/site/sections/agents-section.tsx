@@ -44,7 +44,7 @@ export function AgentsSection({ agents }: AgentsSectionProps) {
   };
 
   return (
-    <SectionReveal id="03" as="section" className="border-b border-[var(--color-line)]">
+    <SectionReveal id="03" as="section" className="section-fade-line">
       <div className="pl-6 md:pl-10 pr-6 md:pr-32 pt-32 pb-12">
         <div
           className="text-[10px] uppercase tracking-[0.3em] text-[var(--color-accent)] mb-2"

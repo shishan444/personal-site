@@ -50,11 +50,7 @@ export function WritingSection({ essays }: WritingSectionProps) {
   const active = essays[activeIdx];
 
   return (
-    <SectionReveal
-      id="02"
-      as="section"
-      className="min-h-screen border-b border-[var(--color-line)]"
-    >
+    <SectionReveal id="02" as="section" className="min-h-screen section-fade-line">
       <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-0 pl-6 md:pl-10">
         <aside className="border-r border-[var(--color-line)] glass-bar py-8 pr-6 lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto">
           <div

@@ -158,6 +158,28 @@ body {
   box-shadow: 0 0 8px color-mix(in oklab, var(--color-accent) 60%, transparent);
 }
 
+/* 章节分隔：渐变消隐线，替代贯穿实线，消除玻璃面板跨线处的视觉断层。
+   仅用于 section 根元素（章节级），卡片/列表内部 hairline 不动。 */
+.section-fade-line {
+  position: relative;
+}
+.section-fade-line::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-line) 12%,
+    var(--color-line) 88%,
+    transparent
+  );
+  pointer-events: none;
+}
+
 /* 底层光环境：暖金/暗绿径向光斑，为玻璃 blur 提供可透内容。
    fixed + 负 z-index 位于 canvas 背景之上、文档流内容之下。
    四层光斑：三层主光（14/10/9%）+ 一层小光斑（7%）制造明暗纵深。 */

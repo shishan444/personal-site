@@ -18,7 +18,7 @@ export function HeroSection({ stats }: HeroSectionProps) {
     <SectionReveal
       id="01"
       as="section"
-      className="min-h-[100dvh] flex flex-col justify-center pl-6 md:pl-10 pr-6 md:pr-32 py-32 border-b border-[var(--color-line)]"
+      className="min-h-[100dvh] flex flex-col justify-center pl-6 md:pl-10 pr-6 md:pr-32 py-32 section-fade-line"
       activeClassName="opacity-100"
     >
       <div className="w-full space-y-12">
