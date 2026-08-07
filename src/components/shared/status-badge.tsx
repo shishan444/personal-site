@@ -2,15 +2,15 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils/cn";
 
 export const statusBadgeVariants = cva(
-  "inline-flex items-center gap-1.5 border px-2 py-0.5 text-[10px] uppercase tracking-[0.15em] font-medium",
+  "inline-flex items-center gap-1.5 border px-2 py-0.5 text-[10px] uppercase tracking-[0.15em] font-medium glass-chip",
   {
     variants: {
       variant: {
-        neutral: "border-[var(--color-line)] text-[var(--color-ink-mute)] bg-transparent",
-        active: "border-[var(--color-accent-2)] text-[var(--color-accent-2)] bg-transparent",
-        warn: "border-[var(--color-accent)] text-[var(--color-accent)] bg-transparent",
-        danger: "border-[var(--color-danger)] text-[var(--color-danger)] bg-transparent",
-        archived: "border-[var(--color-ink-soft)] text-[var(--color-ink-soft)] bg-transparent",
+        neutral: "border-[var(--color-line)] text-[var(--color-ink-mute)]",
+        active: "border-[var(--color-accent-2)] text-[var(--color-accent-2)]",
+        warn: "border-[var(--color-accent)] text-[var(--color-accent)]",
+        danger: "border-[var(--color-danger)] text-[var(--color-danger)]",
+        archived: "border-[var(--color-ink-soft)] text-[var(--color-ink-soft)]",
       },
     },
     defaultVariants: { variant: "neutral" },

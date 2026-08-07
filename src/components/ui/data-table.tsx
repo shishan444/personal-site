@@ -19,7 +19,7 @@ export interface DataTableProps<T> {
 
 export function DataTable<T>({ columns, data, empty, onRowClick, rowKey }: DataTableProps<T>) {
   return (
-    <div className="border border-[var(--color-line)] overflow-x-auto">
+    <div className="glass-tint overflow-x-auto">
       <table className="w-full border-collapse text-sm">
         <thead>
           <tr className="border-b border-[var(--color-line)] bg-[var(--color-bg-2)]">
@@ -53,7 +53,7 @@ export function DataTable<T>({ columns, data, empty, onRowClick, rowKey }: DataT
                 key={rowKey(row)}
                 onClick={onRowClick ? () => onRowClick(row) : undefined}
                 className={cn(
-                  "border-b border-[var(--color-line)] last:border-b-0 hover:bg-[var(--color-bg-2)] transition-colors",
+                  "border-b border-[var(--color-line)] last:border-b-0 hover:bg-[var(--color-glass)] transition-colors",
                   onRowClick && "cursor-pointer",
                 )}
               >

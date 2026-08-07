@@ -89,7 +89,8 @@ describe("L1 · agents actions 契约（mock DB）", () => {
   });
 
   it("F2 · createAgent 在空表中 order = 1", async () => {
-    const { __chain } = await import("@/lib/db");
+    const dbMod = (await import("@/lib/db")) as unknown as { __chain: Record<string, unknown> };
+    const __chain = dbMod.__chain;
     const original = __chain.select;
     __chain.select = vi.fn(() => ({
       from: vi.fn(() => ({

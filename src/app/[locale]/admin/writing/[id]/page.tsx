@@ -1,5 +1,5 @@
 import { notFound, redirect } from "next/navigation";
-import { setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { EssayEditor } from "@/components/admin/essay-editor";
 import { EssayRevisions } from "@/components/admin/essay-revisions";
 import { archiveEssay, deleteEssay, publishEssay, updateEssay } from "@/lib/actions/essays";
@@ -12,6 +12,7 @@ export default async function EditEssayPage({
 }) {
   const { locale, id } = await params;
   setRequestLocale(locale);
+  const t = await getTranslations();
   const essay = await getEssayForEdit(id);
   if (!essay) notFound();
   const revisions = await listEssayRevisions(id);
@@ -94,7 +95,7 @@ export default async function EditEssayPage({
             type="submit"
             className="text-[var(--color-danger)] text-xs uppercase tracking-widest hover:underline"
           >
-            ✕ Delete
+            {t("admin.essay.delete")}
           </button>
         </form>
       </div>

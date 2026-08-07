@@ -51,7 +51,7 @@ export function HeroSection({ stats }: HeroSectionProps) {
         </p>
 
         <div
-          className="grid grid-cols-2 md:grid-cols-4 gap-8 pt-8 border-t border-[var(--color-line)] max-w-3xl"
+          className="grid grid-cols-2 md:grid-cols-4 gap-8 pt-8 max-w-3xl glass-panel p-6"
           style={{ fontFamily: "var(--font-mono)" }}
         >
           <HeroMeta

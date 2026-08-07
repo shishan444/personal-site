@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const valuesFn = vi.fn(async () => []);
+const valuesFn = vi.fn(async (_input?: unknown) => [] as unknown[]);
 const insertFn = vi.fn(() => ({ values: valuesFn }));
 
 vi.mock("@/lib/db", () => ({

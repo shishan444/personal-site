@@ -37,10 +37,7 @@ export const SelectContent = React.forwardRef<
     <SelectPrimitive.Content
       ref={ref}
       position={position}
-      className={cn(
-        "relative z-50 min-w-[8rem] bg-[var(--color-bg-2)] border border-[var(--color-line)] shadow-xl",
-        className,
-      )}
+      className={cn("relative z-50 min-w-[8rem] glass-panel", className)}
       {...props}
     >
       <SelectPrimitive.Viewport className="p-1">{children}</SelectPrimitive.Viewport>
@@ -56,7 +53,7 @@ export const SelectItem = React.forwardRef<
   <SelectPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex w-full cursor-pointer select-none items-center py-1.5 pl-8 pr-2 text-xs text-[var(--color-ink)] outline-none hover:bg-[var(--color-bg-3)] data-[disabled]:opacity-50",
+      "relative flex w-full cursor-pointer select-none items-center py-1.5 pl-8 pr-2 text-xs text-[var(--color-ink)] outline-none hover:bg-[var(--color-glass)] data-[disabled]:opacity-50",
       className,
     )}
     {...props}

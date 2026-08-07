@@ -24,13 +24,13 @@ export default async function AdminTagsPage({ params }: { params: Promise<{ loca
         className="text-3xl font-bold tracking-tight"
         style={{ fontFamily: "var(--font-display)" }}
       >
-        Tags
+        {t("admin.sidebar_tags")}
       </h1>
       <p
         className="text-xs text-[var(--color-ink-soft)]"
         style={{ fontFamily: "var(--font-mono)" }}
       >
-        topic_tags from {allEssays.length} essays
+        {t("admin.tags_page.subtitle", { count: allEssays.length })}
       </p>
       <TagMergeForm tags={sorted.map(([tag]) => tag)} />
       {sorted.length === 0 ? (

@@ -84,7 +84,7 @@ export function SearchPalette({ index }: SearchPaletteProps) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="fixed top-4 left-1/2 -translate-x-1/2 z-30 min-w-[220px] flex items-center gap-2.5 px-4 py-2 border border-[var(--color-line)] bg-[var(--color-bg)]/60 text-xs text-[var(--color-ink-soft)] hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors"
+        className="fixed top-4 left-1/2 -translate-x-1/2 z-30 min-w-[220px] flex items-center gap-2.5 px-4 py-2 border border-[var(--color-line)] glass-chip text-xs text-[var(--color-ink-soft)] hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors"
         style={{ fontFamily: "var(--font-mono)" }}
         aria-label="Open search"
       >
@@ -104,10 +104,7 @@ export function SearchPalette({ index }: SearchPaletteProps) {
       className="fixed inset-0 z-[100] flex items-start justify-center pt-[12vh] bg-black/75 backdrop-blur-sm"
       onClick={() => setOpen(false)}
     >
-      <div
-        className="w-full max-w-2xl bg-[var(--color-bg-2)] border border-[var(--color-line)] shadow-2xl"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className="w-full max-w-2xl glass-panel" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center gap-3 px-5 py-4 border-b border-[var(--color-line)]">
           <span
             className="text-[var(--color-accent)] text-lg"
@@ -150,7 +147,7 @@ export function SearchPalette({ index }: SearchPaletteProps) {
                 }}
                 className={`w-full flex items-center gap-3 px-5 py-2.5 text-left border-l-2 transition-colors ${
                   idx === selectedIdx
-                    ? "border-l-[var(--color-accent)] bg-[var(--color-bg-3)]"
+                    ? "border-l-[var(--color-accent)] bg-[var(--color-glass)]"
                     : "border-l-transparent"
                 }`}
               >

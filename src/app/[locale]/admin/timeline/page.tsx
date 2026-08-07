@@ -20,7 +20,7 @@ export default async function AdminTimelinePage({
   const columns: DataTableColumn<HomeTimelineNode>[] = [
     {
       key: "version",
-      header: "Version",
+      header: t("admin.timeline_node.col.version"),
       width: "80px",
       cell: (n) => (
         <Link
@@ -34,12 +34,12 @@ export default async function AdminTimelinePage({
     },
     {
       key: "name",
-      header: "Name",
+      header: t("admin.timeline_node.col.name"),
       cell: (n) => <span dangerouslySetInnerHTML={{ __html: n.name }} />,
     },
     {
       key: "type",
-      header: "Type",
+      header: t("admin.timeline_node.col.type"),
       width: "100px",
       cell: (n) => (
         <StatusBadge
@@ -60,7 +60,7 @@ export default async function AdminTimelinePage({
     },
     {
       key: "date",
-      header: "Date",
+      header: t("admin.timeline_node.col.date"),
       width: "100px",
       cell: (n) => (
         <span
@@ -73,7 +73,7 @@ export default async function AdminTimelinePage({
     },
     {
       key: "now",
-      header: "Now",
+      header: t("admin.timeline_node.col.now"),
       width: "120px",
       cell: (n) =>
         n.isNow ? (
@@ -81,7 +81,7 @@ export default async function AdminTimelinePage({
             className="text-[10px] uppercase tracking-widest text-[var(--color-accent)]"
             style={{ fontFamily: "var(--font-mono)" }}
           >
-            ★ NOW
+            {t("admin.timeline_node.now_badge")}
           </span>
         ) : (
           <form
@@ -95,7 +95,7 @@ export default async function AdminTimelinePage({
               className="text-[10px] uppercase tracking-widest text-[var(--color-ink-soft)] hover:text-[var(--color-accent)]"
               style={{ fontFamily: "var(--font-mono)" }}
             >
-              Set as NOW
+              {t("admin.timeline_node.set_as_now")}
             </button>
           </form>
         ),

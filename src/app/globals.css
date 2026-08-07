@@ -17,6 +17,12 @@
   --font-serif: "Newsreader", Georgia, serif;
   --font-body: "Inter", -apple-system, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  /* 暖玻璃 token：暖白半透 + 微光描边 + 琥珀 glow */
+  --color-glass: color-mix(in oklab, var(--color-ink) 7%, transparent);
+  --color-glass-line: color-mix(in oklab, var(--color-ink) 13%, transparent);
+  --color-glass-hi: color-mix(in oklab, var(--color-ink) 10%, transparent);
+  --shadow-glow: 0 0 26px color-mix(in oklab, var(--color-accent) 26%, transparent);
 }
 
 html,
@@ -51,6 +57,113 @@ body {
   100% {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* ===== 暖玻璃材质层（Sharp Glass，保持全站直角体系） ===== */
+
+/* 主玻璃面板：backdrop blur + 半透暖底 + 微光描边 + 顶部折射高光。
+   用于浮动层、sidebar/topbar、搜索面板、核心卡片等小面积固定区域。 */
+.glass-panel {
+  background: color-mix(in oklab, var(--color-bg-2) 68%, transparent);
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  border: 1px solid var(--color-glass-line);
+  box-shadow:
+    inset 0 1px 0 var(--color-glass-hi),
+    0 10px 34px rgb(0 0 0 / 0.28);
+}
+
+/* 轻量半透面板：无 blur（大面积/滚动区域使用，避免 repaint 开销）。 */
+.glass-tint {
+  background: color-mix(in oklab, var(--color-bg-2) 55%, transparent);
+  border: 1px solid var(--color-glass-line);
+}
+
+/* 小件玻璃：徽标、chip、线框按钮等小元素。 */
+.glass-chip {
+  background: color-mix(in oklab, var(--color-bg) 42%, transparent);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+/* 栏位玻璃：sidebar/topbar 等只要背景模糊、保留自有单边框的场景。 */
+.glass-bar {
+  background: color-mix(in oklab, var(--color-bg-2) 60%, transparent);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+}
+
+/* 暖金点亮：选中/激活态 glow（图片荧光绿点亮的 atelier 品牌转译）。 */
+.glow-accent {
+  border-color: color-mix(in oklab, var(--color-accent) 55%, transparent);
+  box-shadow:
+    inset 0 1px 0 var(--color-glass-hi),
+    var(--shadow-glow);
+}
+
+/* hover 微交互：描边提亮 + 微抬升（仅附加在交互元素上）。 */
+.glass-lift {
+  transition:
+    border-color 200ms ease,
+    box-shadow 200ms ease,
+    translate 200ms ease;
+}
+.glass-lift:hover {
+  border-color: color-mix(in oklab, var(--color-ink) 24%, transparent);
+  translate: 0 -1px;
+}
+
+/* 底层光环境：暖金/暗绿径向光斑，为玻璃 blur 提供可透内容。
+   fixed + 负 z-index 位于 canvas 背景之上、文档流内容之下。 */
+.atelier-glow {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      46vw 38vh at 16% 10%,
+      color-mix(in oklab, var(--color-accent) 8%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      40vw 34vh at 86% 82%,
+      color-mix(in oklab, var(--color-accent-2) 5%, transparent),
+      transparent 72%
+    ),
+    radial-gradient(
+      64vw 52vh at 58% 46%,
+      color-mix(in oklab, var(--color-accent-3) 5%, transparent),
+      transparent 76%
+    );
+}
+/* 后台光环境更克制：不干扰数据阅读。 */
+.atelier-glow-admin {
+  opacity: 0.5;
+}
+
+/* 系统要求降低透明度时：退回实色，保证对比度。 */
+@media (prefers-reduced-transparency: reduce) {
+  .glass-panel,
+  .glass-tint,
+  .glass-chip,
+  .glass-bar {
+    background: var(--color-bg-2);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .atelier-glow {
+    display: none;
+  }
+}
+
+/* reduced-motion：禁用玻璃微交互位移。 */
+@media (prefers-reduced-motion: reduce) {
+  .glass-lift,
+  .glass-lift:hover {
+    transition: none;
+    translate: none;
   }
 }
 
@@ -140,12 +253,14 @@ body {
   font-family: var(--font-serif);
   font-style: italic;
   color: var(--color-ink-mute);
-  background: var(--color-bg-2);
+  background: color-mix(in oklab, var(--color-bg-2) 62%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 .essay-prose code {
   font-family: var(--font-mono);
   font-size: 0.88em;
-  background: var(--color-bg-3);
+  background: color-mix(in oklab, var(--color-bg-3) 68%, transparent);
   color: var(--color-ink);
   padding: 0.15em 0.4em;
   border-radius: 2px;
@@ -154,7 +269,9 @@ body {
 .essay-prose pre {
   margin: 1.6em 0;
   padding: 1.1em 1.3em;
-  background: var(--color-bg-3);
+  background: color-mix(in oklab, var(--color-bg-3) 68%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border: 1px solid var(--color-line);
   border-radius: 3px;
   overflow-x: auto;
@@ -192,7 +309,7 @@ body {
   text-align: left;
 }
 .essay-prose th {
-  background: var(--color-bg-2);
+  background: color-mix(in oklab, var(--color-bg-2) 65%, transparent);
   font-family: var(--font-mono);
   font-size: 0.85em;
   text-transform: uppercase;

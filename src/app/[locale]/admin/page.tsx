@@ -2,6 +2,7 @@ import { AlertCircle, FileEdit, Plus } from "lucide-react";
 import Link from "next/link";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { KpiCard } from "@/components/shared";
+import { makeAuditLabeler } from "@/lib/audit-labels";
 import { getAdminDashboard } from "@/lib/queries/admin";
 
 export default async function AdminDashboardPage({
@@ -13,30 +14,23 @@ export default async function AdminDashboardPage({
   setRequestLocale(locale);
   const t = await getTranslations();
   const data = await getAdminDashboard();
+  const auditLabel = makeAuditLabeler(t);
 
   return (
     <div className="space-y-10 max-w-6xl">
       <div className="flex items-baseline justify-between">
-        <div>
-          <div
-            className="text-[10px] uppercase tracking-[0.25em] text-[var(--color-accent)] mb-1"
-            style={{ fontFamily: "var(--font-mono)" }}
+        <h1
+          className="text-4xl font-bold tracking-tight"
+          style={{ fontFamily: "var(--font-display)" }}
+        >
+          {t("dashboard.title")}{" "}
+          <span
+            className="text-[var(--color-accent)]"
+            style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontWeight: 400 }}
           >
-            {t("dashboard.last_sync")}
-          </div>
-          <h1
-            className="text-4xl font-bold tracking-tight"
-            style={{ fontFamily: "var(--font-display)" }}
-          >
-            {t("dashboard.title")}{" "}
-            <span
-              className="text-[var(--color-accent)]"
-              style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontWeight: 400 }}
-            >
-              {t("dashboard.title_accent")}
-            </span>
-          </h1>
-        </div>
+            {t("dashboard.title_accent")}
+          </span>
+        </h1>
       </div>
 
       <section>
@@ -44,15 +38,15 @@ export default async function AdminDashboardPage({
           className="text-[10px] uppercase tracking-[0.2em] text-[var(--color-ink-soft)] mb-3"
           style={{ fontFamily: "var(--font-mono)" }}
         >
-          KPI
+          {t("dashboard.section_kpi")}
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
           <KpiCard label={t("dashboard.kpi_agents")} value={data.kpi.agents} accent />
           <KpiCard label={t("dashboard.kpi_essays")} value={data.kpi.essays} />
           <KpiCard label={t("dashboard.kpi_drafts")} value={data.kpi.essaysDraft} />
-          <KpiCard label="PUBLISHED" value={data.kpi.essaysPublished} />
-          <KpiCard label="ACTIVE AGENTS" value={data.kpi.agentsActive} />
-          <KpiCard label="COMING" value={data.kpi.agentsComing} />
+          <KpiCard label={t("dashboard.kpi_published")} value={data.kpi.essaysPublished} />
+          <KpiCard label={t("dashboard.kpi_agents_active")} value={data.kpi.agentsActive} />
+          <KpiCard label={t("dashboard.kpi_agents_coming")} value={data.kpi.agentsComing} />
         </div>
       </section>
 
@@ -102,10 +96,7 @@ export default async function AdminDashboardPage({
           ) : (
             <ul className="space-y-2">
               {data.todo.draftEssays.map((e) => (
-                <li
-                  key={e.id}
-                  className="flex items-center gap-2 border border-[var(--color-line)] p-2.5"
-                >
+                <li key={e.id} className="flex items-center gap-2 glass-tint p-2.5">
                   <FileEdit className="w-3 h-3 text-[var(--color-accent)]" />
                   <span
                     className="text-xs text-[var(--color-ink-mute)]"
@@ -122,10 +113,7 @@ export default async function AdminDashboardPage({
                 </li>
               ))}
               {data.todo.incompleteAgents.map((a) => (
-                <li
-                  key={a.id}
-                  className="flex items-center gap-2 border border-[var(--color-line)] p-2.5"
-                >
+                <li key={a.id} className="flex items-center gap-2 glass-tint p-2.5">
                   <AlertCircle className="w-3 h-3 text-[var(--color-accent)]" />
                   <span
                     className="text-xs text-[var(--color-ink-mute)]"
@@ -167,20 +155,20 @@ export default async function AdminDashboardPage({
             — {t("common.label.empty")} —
           </div>
         ) : (
-          <ul className="border border-[var(--color-line)] divide-y divide-[var(--color-line)]">
+          <ul className="glass-tint divide-y divide-[var(--color-line)]">
             {data.recentActivity.map((log) => (
               <li key={log.id} className="px-3 py-2 flex items-center gap-3 text-sm">
                 <span
                   className="text-[10px] uppercase tracking-widest text-[var(--color-accent)]"
                   style={{ fontFamily: "var(--font-mono)" }}
                 >
-                  {log.action}
+                  {auditLabel.action(log.action)}
                 </span>
                 <span
                   className="text-xs text-[var(--color-ink-mute)]"
                   style={{ fontFamily: "var(--font-mono)" }}
                 >
-                  {log.targetType}
+                  {auditLabel.target(log.targetType)}
                 </span>
                 <span
                   className="flex-1 text-[var(--color-ink)] truncate"
@@ -209,7 +197,7 @@ function QuickAction({
   return (
     <Link
       href={href}
-      className="flex items-center gap-2 border border-[var(--color-line)] hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] p-2.5 text-sm text-[var(--color-ink)]"
+      className="flex items-center gap-2 glass-tint glass-lift hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] p-2.5 text-sm text-[var(--color-ink)]"
       style={{ fontFamily: "var(--font-body)" }}
     >
       {icon}

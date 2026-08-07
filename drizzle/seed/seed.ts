@@ -280,20 +280,20 @@ async function main() {
   const existingOwner = await db.select().from(users).where(eq(users.id, OWNER_ID)).limit(1);
   if (existingOwner.length === 0) {
     const { hashPassword } = await import("../../src/lib/auth/password");
-    const passwordHash = await hashPassword("ChangeMe-On-First-Login");
+    const passwordHash = await hashPassword("123456");
     await db
       .insert(users)
       .values({
         id: OWNER_ID,
-        email: "owner@atelier.com",
+        email: "admin@xx.com",
         name: "GLM",
         role: "owner",
         emailVerified: true,
-        mustChangePassword: true,
+        mustChangePassword: false,
         passwordHash,
       })
       .execute();
-    console.log("[seed] ✓ owner user (email=owner@atelier.com, password=ChangeMe-On-First-Login)");
+    console.log("[seed] ✓ owner user (email=admin@xx.com, password=123456)");
   } else {
     console.log("[seed] · owner exists, skip");
   }

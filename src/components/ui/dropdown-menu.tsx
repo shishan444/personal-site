@@ -17,10 +17,7 @@ export const DropdownMenuContent = React.forwardRef<
     <DropdownMenuPrimitive.Content
       ref={ref}
       sideOffset={sideOffset}
-      className={cn(
-        "z-50 min-w-[10rem] bg-[var(--color-bg-2)] border border-[var(--color-line)] py-1 shadow-xl",
-        className,
-      )}
+      className={cn("z-50 min-w-[10rem] glass-panel py-1", className)}
       {...props}
     />
   </DropdownMenuPrimitive.Portal>
@@ -34,7 +31,7 @@ export const DropdownMenuItem = React.forwardRef<
   <DropdownMenuPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex cursor-pointer select-none items-center px-3 py-2 text-xs text-[var(--color-ink)] outline-none hover:bg-[var(--color-bg-3)] data-[disabled]:opacity-50",
+      "relative flex cursor-pointer select-none items-center px-3 py-2 text-xs text-[var(--color-ink)] outline-none hover:bg-[var(--color-glass)] data-[disabled]:opacity-50",
       inset && "pl-8",
       className,
     )}
@@ -51,7 +48,7 @@ export const DropdownMenuCheckboxItem = React.forwardRef<
     ref={ref}
     checked={checked}
     className={cn(
-      "relative flex cursor-pointer select-none items-center py-2 pl-8 pr-3 text-xs text-[var(--color-ink)] outline-none hover:bg-[var(--color-bg-3)]",
+      "relative flex cursor-pointer select-none items-center py-2 pl-8 pr-3 text-xs text-[var(--color-ink)] outline-none hover:bg-[var(--color-glass)]",
       className,
     )}
     {...props}

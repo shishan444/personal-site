@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import { ChipInput, FormField, TextareaField } from "@/components/ui";
@@ -25,6 +26,7 @@ export interface EssayEditorProps {
 }
 
 export function EssayEditor({ action, initial, isNew }: EssayEditorProps) {
+  const t = useTranslations();
   const [state, formAction] = useFormState<void, FormData>(async (_prev, formData) => {
     await action(formData);
   }, undefined);
@@ -53,14 +55,25 @@ export function EssayEditor({ action, initial, isNew }: EssayEditorProps) {
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-6">
         <div className="space-y-4">
           <div className="grid grid-cols-[100px_1fr] gap-3">
-            <FormField id="sn" name="sn" label="SN" defaultValue={initial.sn} required />
-            <FormField id="lang" name="lang" label="Lang" defaultValue={initial.lang} />
+            <FormField
+              id="sn"
+              name="sn"
+              label={t("admin.essay.field.sn")}
+              defaultValue={initial.sn}
+              required
+            />
+            <FormField
+              id="lang"
+              name="lang"
+              label={t("admin.essay.field.lang")}
+              defaultValue={initial.lang}
+            />
           </div>
 
           <FormField
             id="title"
             name="title"
-            label="Title (supports <em>)"
+            label={t("admin.essay.field.title")}
             defaultValue={initial.title}
             required
           />
@@ -68,7 +81,7 @@ export function EssayEditor({ action, initial, isNew }: EssayEditorProps) {
           <TextareaField
             id="deck"
             name="deck"
-            label="Deck"
+            label={t("admin.essay.field.deck")}
             defaultValue={initial.deck}
             rows={2}
             required
@@ -79,18 +92,19 @@ export function EssayEditor({ action, initial, isNew }: EssayEditorProps) {
               className="block text-xs uppercase tracking-widest text-[var(--color-ink-soft)] font-mono"
               style={{ fontFamily: "var(--font-mono)" }}
             >
-              Body (Markdown)
+              {t("admin.essay.field.body")}
             </label>
             <div className="flex items-center justify-between text-[10px] text-[var(--color-ink-soft)] font-mono mb-1">
               <span>
-                {words} 字 · {minutes} 分钟
+                {words} {t("common.unit.words", { count: words })} · {minutes}{" "}
+                {t("common.unit.minutes", { count: minutes })}
               </span>
               <button
                 type="button"
                 onClick={() => setShowPreview((v) => !v)}
                 className="hover:text-[var(--color-accent)]"
               >
-                {showPreview ? "编辑" : "预览"}
+                {showPreview ? t("common.button.edit") : t("common.button.preview")}
               </button>
             </div>
             {showPreview ? (
@@ -113,64 +127,75 @@ export function EssayEditor({ action, initial, isNew }: EssayEditorProps) {
           <input type="hidden" name="topicTags" value={JSON.stringify(topicTags)} />
           <div className="space-y-1.5">
             <label className="block text-xs uppercase tracking-widest text-[var(--color-ink-soft)] font-mono">
-              Topic Tags
+              {t("admin.essay.field.topic_tags")}
             </label>
-            <ChipInput value={topicTags} onChange={setTopicTags} placeholder="AI, Agent..." />
+            <ChipInput
+              value={topicTags}
+              onChange={setTopicTags}
+              placeholder={t("admin.essay.placeholder_topic_tags")}
+            />
           </div>
         </div>
 
         <aside className="space-y-4 border-l border-[var(--color-line)] pl-6">
           <div>
             <label className="block text-xs uppercase tracking-widest text-[var(--color-ink-soft)] mb-1.5 font-mono">
-              Type
+              {t("admin.essay.field.type")}
             </label>
             <select
               name="typeTag"
               defaultValue={initial.typeTag}
               className="w-full bg-transparent border border-[var(--color-line)] px-3 py-2 text-[var(--color-ink)]"
             >
-              <option value="essay">Essay</option>
-              <option value="note">Note</option>
-              <option value="tutorial">Tutorial</option>
+              <option value="essay">{t("admin.enum.essay_type.essay")}</option>
+              <option value="note">{t("admin.enum.essay_type.note")}</option>
+              <option value="tutorial">{t("admin.enum.essay_type.tutorial")}</option>
             </select>
           </div>
 
           <div>
             <label className="block text-xs uppercase tracking-widest text-[var(--color-ink-soft)] mb-1.5 font-mono">
-              Status
+              {t("admin.essay.field.status")}
             </label>
             <select
               name="status"
               defaultValue={initial.status}
               className="w-full bg-transparent border border-[var(--color-line)] px-3 py-2 text-[var(--color-ink)]"
             >
-              <option value="draft">Draft</option>
-              <option value="published">Published</option>
-              <option value="archived">Archived</option>
+              <option value="draft">{t("admin.enum.essay_status.draft")}</option>
+              <option value="published">{t("admin.enum.essay_status.published")}</option>
+              <option value="archived">{t("admin.enum.essay_status.archived")}</option>
             </select>
           </div>
 
           <FormField
             id="slug"
             name="slug"
-            label="Slug"
+            label={t("admin.essay.field.slug")}
             defaultValue={initial.slug ?? ""}
-            placeholder="my-essay-zh"
+            placeholder={t("admin.essay.placeholder_slug")}
           />
 
           <SubmitButton isNew={isNew} />
         </aside>
       </div>
-      {state !== undefined && <div className="text-xs text-[var(--color-accent-2)]">✓ Saved</div>}
+      {state !== undefined && (
+        <div className="text-xs text-[var(--color-accent-2)]">{t("admin.common.saved")}</div>
+      )}
     </form>
   );
 }
 
 function SubmitButton({ isNew }: { isNew?: boolean }) {
+  const t = useTranslations();
   const { pending } = useFormStatus();
   return (
     <Button type="submit" disabled={pending} className="w-full">
-      {pending ? "Saving…" : isNew ? "Create" : "Save"}
+      {pending
+        ? t("admin.common.saving")
+        : isNew
+          ? t("admin.common.create")
+          : t("admin.common.save")}
     </Button>
   );
 }

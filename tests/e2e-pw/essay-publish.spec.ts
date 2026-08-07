@@ -17,7 +17,7 @@ test("B1 · 文章发布全流程", async ({ page }) => {
   await page.locator("#deck").fill("E2E 测试 deck");
   await page.locator("[name=body]").fill("## 测试章节\n\nE2E 正文内容。");
   await page.locator("#slug").fill(SLUG);
-  await page.getByRole("button", { name: /SAVE|CREATE/i }).click();
+  await page.getByRole("button", { name: /SAVE|CREATE|保存|创建/i }).click();
   await expect(page).toHaveURL(/\/zh\/admin\/writing\/[0-9a-f-]{36}$/);
 
   // 2. 回到列表 → 进入编辑页 → 发布
@@ -34,7 +34,7 @@ test("B1 · 文章发布全流程", async ({ page }) => {
   // 4. 清理：删除
   await page.goto("/zh/admin/writing");
   await page.getByRole("link", { name: TITLE }).click();
-  await page.getByRole("button", { name: /✕ Delete/i }).click();
+  await page.getByRole("button", { name: /✕ Delete|✕ 删除/i }).click();
   await expect(page).toHaveURL(/\/zh\/admin\/writing$/);
 
   // 5. 前台不可见（404）

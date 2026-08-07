@@ -28,11 +28,10 @@ export const toastVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-[var(--color-bg-2)] border-[var(--color-line)] text-[var(--color-ink)]",
-        success:
-          "bg-[var(--color-bg-2)] border-l-2 border-l-[var(--color-accent-2)] text-[var(--color-ink)]",
+        default: "glass-panel text-[var(--color-ink)]",
+        success: "glass-panel border-l-2 border-l-[var(--color-accent-2)] text-[var(--color-ink)]",
         destructive:
-          "bg-[var(--color-bg-2)] border-l-2 border-l-[var(--color-danger)] text-[var(--color-ink)]",
+          "glass-panel border-l-2 border-l-[var(--color-danger)] text-[var(--color-ink)]",
       },
     },
     defaultVariants: { variant: "default" },

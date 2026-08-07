@@ -28,13 +28,13 @@ export function Sidebar({ locale }: { locale: string }) {
 
   const systemItems = [
     { href: `/${locale}/admin/assets`, label: t("admin.sidebar_assets"), icon: Image },
-    { href: `/${locale}/admin/tags`, label: "Tags", icon: Tag },
+    { href: `/${locale}/admin/tags`, label: t("admin.sidebar_tags"), icon: Tag },
     { href: `/${locale}/admin/settings`, label: t("admin.sidebar_settings"), icon: Settings },
-    { href: `/${locale}/admin/logs`, label: "Logs", icon: Folder },
+    { href: `/${locale}/admin/logs`, label: t("admin.sidebar_logs"), icon: Folder },
   ];
 
   return (
-    <aside className="w-56 border-r border-[var(--color-line)] bg-[var(--color-bg-2)] flex flex-col py-4">
+    <aside className="w-56 border-r border-[var(--color-line)] glass-bar flex flex-col py-4">
       <SidebarGroup label={t("admin.sidebar_section_main")} items={mainItems} pathname={pathname} />
       <SidebarGroup
         label={t("admin.sidebar_section_system")}
@@ -79,8 +79,8 @@ function SidebarGroup({
               className={cn(
                 "flex items-center gap-2.5 px-2 py-1.5 text-sm transition-colors border-l-2",
                 isActive
-                  ? "border-l-[var(--color-accent)] bg-[var(--color-bg-3)] text-[var(--color-ink)]"
-                  : "border-l-transparent text-[var(--color-ink-mute)] hover:bg-[var(--color-bg-3)]/50 hover:text-[var(--color-ink)]",
+                  ? "border-l-[var(--color-accent)] bg-[var(--color-glass)] text-[var(--color-ink)]"
+                  : "border-l-transparent text-[var(--color-ink-mute)] hover:bg-[var(--color-glass)] hover:text-[var(--color-ink)]",
               )}
               style={{ fontFamily: "var(--font-body)" }}
             >

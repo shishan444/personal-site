@@ -103,7 +103,6 @@ export function TimelineSection({ nodes }: TimelineSectionProps) {
             />
             {nodes.map((node, idx) => {
               const x = (idx + 0.5) * (totalWidth / nodes.length);
-              const reached = true;
               return (
                 <g key={node.id}>
                   <circle

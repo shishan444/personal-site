@@ -83,8 +83,8 @@ export function AgentsSection({ agents }: AgentsSectionProps) {
           return (
             <article
               key={agent.id}
-              className={`flex-shrink-0 w-[80vw] md:w-[440px] border border-[var(--color-line)] bg-[var(--color-bg-2)] p-8 snap-center transition-all duration-300 ${
-                idx === activeIdx ? "scale-100 opacity-100" : "scale-95 opacity-70"
+              className={`flex-shrink-0 w-[80vw] md:w-[440px] glass-panel p-8 snap-center transition-all duration-300 ${
+                idx === activeIdx ? "scale-100 glow-accent" : "scale-95"
               }`}
             >
               <div className="flex items-center justify-between mb-6">

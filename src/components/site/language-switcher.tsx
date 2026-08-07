@@ -23,7 +23,7 @@ export function LanguageSwitcher() {
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="border border-[var(--color-line)] px-3 py-1.5 text-[10px] uppercase tracking-widest text-[var(--color-ink-mute)] hover:border-[var(--color-accent)] hover:text-[var(--color-accent)]"
+        className="border border-[var(--color-line)] glass-chip px-3 py-1.5 text-[10px] uppercase tracking-widest text-[var(--color-ink-mute)] hover:border-[var(--color-accent)] hover:text-[var(--color-accent)]"
         style={{ fontFamily: "var(--font-mono)" }}
       >
         {locale === "zh" ? "中" : "EN"} ▾
@@ -31,11 +31,11 @@ export function LanguageSwitcher() {
       {open && (
         <>
           <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} aria-hidden />
-          <div className="absolute right-0 mt-1 z-20 bg-[var(--color-bg-2)] border border-[var(--color-line)] min-w-[100px]">
+          <div className="absolute right-0 mt-1 z-20 glass-panel min-w-[100px]">
             <button
               type="button"
               onClick={() => switchTo("zh")}
-              className={`block w-full text-left px-3 py-2 text-xs hover:bg-[var(--color-bg-3)] ${
+              className={`block w-full text-left px-3 py-2 text-xs hover:bg-[var(--color-glass)] ${
                 locale === "zh" ? "text-[var(--color-accent)]" : "text-[var(--color-ink)]"
               }`}
               style={{ fontFamily: "var(--font-body)" }}
@@ -45,7 +45,7 @@ export function LanguageSwitcher() {
             <button
               type="button"
               onClick={() => switchTo("en")}
-              className={`block w-full text-left px-3 py-2 text-xs hover:bg-[var(--color-bg-3)] ${
+              className={`block w-full text-left px-3 py-2 text-xs hover:bg-[var(--color-glass)] ${
                 locale === "en" ? "text-[var(--color-accent)]" : "text-[var(--color-ink)]"
               }`}
               style={{ fontFamily: "var(--font-body)" }}

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { StatusBadge } from "@/components/shared";
 import { reorderAgents } from "@/lib/actions/agents";
@@ -21,6 +22,7 @@ export function SortableAgentsList({
   emptyText,
 }: SortableAgentsListProps) {
   const router = useRouter();
+  const t = useTranslations();
   const [rows, setRows] = useState(initialAgents);
   const [dragId, setDragId] = useState<string | null>(null);
   // dragstart/drop 可能在同一同步事件序列内触发（如程序化分发），
@@ -74,7 +76,14 @@ export function SortableAgentsList({
         <table className="w-full border-collapse text-sm">
           <thead>
             <tr className="border-b border-[var(--color-line)] bg-[var(--color-bg-2)]">
-              {["", "#", "SN", "Name", "Status", "Specs"].map((h) => (
+              {[
+                "",
+                t("admin.agent.col.index"),
+                t("admin.agent.col.sn"),
+                t("admin.agent.col.name"),
+                t("admin.agent.col.status"),
+                t("admin.agent.col.specs"),
+              ].map((h) => (
                 <th
                   key={h}
                   className="text-left px-4 py-3 text-[10px] uppercase tracking-[0.2em] text-[var(--color-ink-soft)] font-normal"

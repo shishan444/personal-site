@@ -25,7 +25,7 @@ export default async function AdminWritingListPage({
   const columns: DataTableColumn<AdminEssayRow>[] = [
     {
       key: "sn",
-      header: "SN",
+      header: t("admin.essay.col.sn"),
       width: "80px",
       cell: (e) => (
         <span
@@ -38,7 +38,7 @@ export default async function AdminWritingListPage({
     },
     {
       key: "title",
-      header: "Title",
+      header: t("admin.essay.col.title"),
       cell: (e) => (
         <Link
           href={`/${locale}/admin/writing/${e.id}`}
@@ -50,26 +50,28 @@ export default async function AdminWritingListPage({
     },
     {
       key: "type",
-      header: "Type",
+      header: t("admin.essay.col.type"),
       width: "100px",
-      cell: (e) => <StatusBadge variant="neutral">{t(`writing.tag_${e.typeTag}`)}</StatusBadge>,
+      cell: (e) => (
+        <StatusBadge variant="neutral">{t(`admin.enum.essay_type.${e.typeTag}`)}</StatusBadge>
+      ),
     },
     {
       key: "status",
-      header: "Status",
+      header: t("admin.essay.col.status"),
       width: "120px",
       cell: (e) => (
         <StatusBadge
           variant={e.status === "published" ? "active" : e.status === "draft" ? "warn" : "archived"}
           dot
         >
-          {e.status.toUpperCase()}
+          {t(`admin.enum.essay_status.${e.status}`)}
         </StatusBadge>
       ),
     },
     {
       key: "lang",
-      header: "Lang",
+      header: t("admin.essay.col.lang"),
       width: "60px",
       cell: (e) => (
         <span className="text-[10px] uppercase" style={{ fontFamily: "var(--font-mono)" }}>
@@ -79,7 +81,7 @@ export default async function AdminWritingListPage({
     },
     {
       key: "words",
-      header: "Words",
+      header: t("admin.essay.col.words"),
       width: "80px",
       cell: (e) => (
         <span className="text-[10px]" style={{ fontFamily: "var(--font-mono)" }}>
@@ -115,7 +117,7 @@ export default async function AdminWritingListPage({
               : "text-[var(--color-ink-soft)]"
           }`}
         >
-          ALL ({essays.length})
+          {t("admin.essay.filter.all", { count: essays.length })}
         </Link>
         {(["draft", "published", "archived"] as const).map((s) => (
           <Link
@@ -127,7 +129,7 @@ export default async function AdminWritingListPage({
                 : "text-[var(--color-ink-soft)]"
             }`}
           >
-            {s.toUpperCase()}
+            {t(`admin.enum.essay_status.${s}`)}
           </Link>
         ))}
       </div>

@@ -12,9 +12,9 @@ export const buttonVariants = cva(
       variant: {
         default: "bg-[var(--color-accent)] text-[var(--color-bg)] hover:bg-[var(--color-ink)]",
         outline:
-          "border border-[var(--color-line)] bg-transparent text-[var(--color-ink)] hover:border-[var(--color-accent)] hover:text-[var(--color-accent)]",
+          "border border-[var(--color-line)] glass-chip text-[var(--color-ink)] hover:border-[var(--color-accent)] hover:text-[var(--color-accent)]",
         ghost:
-          "text-[var(--color-ink-mute)] hover:bg-[var(--color-bg-2)] hover:text-[var(--color-ink)]",
+          "text-[var(--color-ink-mute)] hover:bg-[var(--color-glass)] hover:text-[var(--color-ink)]",
         destructive: "bg-[var(--color-danger)] text-white hover:opacity-90",
         link: "text-[var(--color-accent)] underline-offset-4 hover:underline",
       },

@@ -15,7 +15,7 @@ export function RdSubdial({ progress, metaLine1, metaLine2 }: RdSubdialProps) {
   const needleRotation = -90 + clamped * 360;
 
   return (
-    <div className="flex items-center gap-3 select-none">
+    <div className="flex items-center gap-3 select-none glass-panel p-2.5">
       <div className="relative" style={{ width: 92, height: 92 }}>
         <svg
           width="92"

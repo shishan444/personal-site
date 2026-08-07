@@ -16,7 +16,8 @@ describe("L1 · Button 组件", () => {
     render(<Button variant="outline">Cancel</Button>);
     const btn = screen.getByRole("button", { name: "Cancel" });
     expect(btn.className).toContain("border");
-    expect(btn.className).toContain("bg-transparent");
+    // 暖玻璃改造后 outline 变体使用 glass-chip 半透明底，替代原 bg-transparent
+    expect(btn.className).toContain("glass-chip");
   });
 
   it("F3 · size=lg 应用大尺寸", () => {

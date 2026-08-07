@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Sidebar } from "@/components/admin/sidebar";
 import { Topbar } from "@/components/admin/topbar";
+import { GlowBackdrop } from "@/components/shared/glow-backdrop";
 import { getSession } from "@/lib/auth";
 
 export default async function AdminLayout({
@@ -26,6 +27,7 @@ export default async function AdminLayout({
 
   return (
     <div className="min-h-screen flex flex-col">
+      <GlowBackdrop variant="admin" />
       <Topbar userEmail={session.user.email} />
       <div className="flex-1 flex">
         <Sidebar locale={locale} />

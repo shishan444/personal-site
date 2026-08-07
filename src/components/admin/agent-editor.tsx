@@ -1,6 +1,7 @@
 "use client";
 
 import { X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import { FormField, TextareaField } from "@/components/ui";
@@ -27,6 +28,7 @@ export interface AgentEditorProps {
 }
 
 export function AgentEditor({ action, initial, isNew }: AgentEditorProps) {
+  const t = useTranslations();
   const [state, formAction] = useFormState<void, FormData>(async (_prev, formData) => {
     await action(formData);
   }, undefined);
@@ -56,11 +58,17 @@ export function AgentEditor({ action, initial, isNew }: AgentEditorProps) {
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
         <div className="space-y-4">
           <div className="grid grid-cols-[120px_1fr] gap-3">
-            <FormField id="sn" name="sn" label="SN" defaultValue={initial.sn} required />
+            <FormField
+              id="sn"
+              name="sn"
+              label={t("admin.agent.field.sn")}
+              defaultValue={initial.sn}
+              required
+            />
             <FormField
               id="name"
               name="name"
-              label="Name (supports <em>)"
+              label={t("admin.agent.field.name")}
               defaultValue={initial.name}
               required
             />
@@ -69,7 +77,7 @@ export function AgentEditor({ action, initial, isNew }: AgentEditorProps) {
           <TextareaField
             id="desc"
             name="desc"
-            label="Desc"
+            label={t("admin.agent.field.desc")}
             defaultValue={initial.desc}
             rows={2}
             required
@@ -78,7 +86,7 @@ export function AgentEditor({ action, initial, isNew }: AgentEditorProps) {
           <TextareaField
             id="longDesc"
             name="longDesc"
-            label="Long Desc (Markdown)"
+            label={t("admin.agent.field.long_desc")}
             defaultValue={initial.longDesc ?? ""}
             rows={6}
           />
@@ -89,14 +97,14 @@ export function AgentEditor({ action, initial, isNew }: AgentEditorProps) {
                 className="text-xs uppercase tracking-widest text-[var(--color-ink-soft)]"
                 style={{ fontFamily: "var(--font-mono)" }}
               >
-                Specs ({specs.length})
+                {t("admin.agent.field.specs")} ({specs.length})
               </label>
               <button
                 type="button"
                 onClick={addSpec}
                 className="text-xs text-[var(--color-accent)] hover:underline"
               >
-                + Add Spec
+                {t("admin.agent.add_spec")}
               </button>
             </div>
             <div className="space-y-2">
@@ -115,14 +123,14 @@ export function AgentEditor({ action, initial, isNew }: AgentEditorProps) {
                   <input
                     value={spec.label}
                     onChange={(e) => updateSpec(spec.id, { label: e.target.value })}
-                    placeholder="LABEL"
+                    placeholder={t("admin.agent.spec_label_placeholder")}
                     className="bg-transparent border border-[var(--color-line)] px-2 py-1 text-xs uppercase tracking-widest text-[var(--color-ink)]"
                     style={{ fontFamily: "var(--font-mono)" }}
                   />
                   <input
                     value={spec.value}
                     onChange={(e) => updateSpec(spec.id, { value: e.target.value })}
-                    placeholder="value"
+                    placeholder={t("admin.agent.spec_value_placeholder")}
                     className="bg-transparent border border-[var(--color-line)] px-2 py-1 text-sm text-[var(--color-ink)]"
                   />
                   <input type="hidden" name={`spec-${spec.id}`} value={JSON.stringify(spec)} />
@@ -140,7 +148,7 @@ export function AgentEditor({ action, initial, isNew }: AgentEditorProps) {
                   className="text-[10px] text-[var(--color-ink-soft)]"
                   style={{ fontFamily: "var(--font-mono)" }}
                 >
-                  No specs. Click "+ Add Spec" to create.
+                  {t("admin.agent.no_specs")}
                 </p>
               )}
             </div>
@@ -154,17 +162,17 @@ export function AgentEditor({ action, initial, isNew }: AgentEditorProps) {
               className="block text-xs uppercase tracking-widest text-[var(--color-ink-soft)] mb-1.5"
               style={{ fontFamily: "var(--font-mono)" }}
             >
-              Status
+              {t("admin.agent.field.status")}
             </label>
             <select
               name="status"
               defaultValue={initial.status}
               className="w-full bg-transparent border border-[var(--color-line)] px-3 py-2 text-[var(--color-ink)]"
             >
-              <option value="active">Active</option>
-              <option value="beta">Beta</option>
-              <option value="coming">Coming</option>
-              <option value="archived">Archived</option>
+              <option value="active">{t("admin.enum.agent_status.active")}</option>
+              <option value="beta">{t("admin.enum.agent_status.beta")}</option>
+              <option value="coming">{t("admin.enum.agent_status.coming")}</option>
+              <option value="archived">{t("admin.enum.agent_status.archived")}</option>
             </select>
           </div>
 
@@ -173,15 +181,15 @@ export function AgentEditor({ action, initial, isNew }: AgentEditorProps) {
               className="block text-xs uppercase tracking-widest text-[var(--color-ink-soft)] mb-1.5"
               style={{ fontFamily: "var(--font-mono)" }}
             >
-              Click Target
+              {t("admin.agent.field.click_target")}
             </label>
             <select
               name="clickTarget"
               defaultValue={initial.clickTarget}
               className="w-full bg-transparent border border-[var(--color-line)] px-3 py-2 text-[var(--color-ink)]"
             >
-              <option value="internal">Internal (detail page)</option>
-              <option value="external">External (URL)</option>
+              <option value="internal">{t("admin.enum.click_target.internal")}</option>
+              <option value="external">{t("admin.enum.click_target.external")}</option>
             </select>
           </div>
 
@@ -190,39 +198,46 @@ export function AgentEditor({ action, initial, isNew }: AgentEditorProps) {
               className="block text-xs uppercase tracking-widest text-[var(--color-ink-soft)] mb-1.5"
               style={{ fontFamily: "var(--font-mono)" }}
             >
-              Launch Type
+              {t("admin.agent.field.launch_type")}
             </label>
             <select
               name="launchType"
               defaultValue={initial.launchType}
               className="w-full bg-transparent border border-[var(--color-line)] px-3 py-2 text-[var(--color-ink)]"
             >
-              <option value="external">External</option>
-              <option value="iframe">iframe</option>
-              <option value="modal">Modal</option>
+              <option value="external">{t("admin.enum.launch_type.external")}</option>
+              <option value="iframe">{t("admin.enum.launch_type.iframe")}</option>
+              <option value="modal">{t("admin.enum.launch_type.modal")}</option>
             </select>
           </div>
 
           <FormField
             id="launchUrl"
             name="launchUrl"
-            label="Launch URL"
+            label={t("admin.agent.field.launch_url")}
             defaultValue={initial.launchUrl ?? ""}
           />
 
           <SubmitButton isNew={isNew} />
         </aside>
       </div>
-      {state !== undefined && <div className="text-xs text-[var(--color-accent-2)]">✓ Saved</div>}
+      {state !== undefined && (
+        <div className="text-xs text-[var(--color-accent-2)]">{t("admin.common.saved")}</div>
+      )}
     </form>
   );
 }
 
 function SubmitButton({ isNew }: { isNew?: boolean }) {
+  const t = useTranslations();
   const { pending } = useFormStatus();
   return (
     <Button type="submit" disabled={pending} className="w-full">
-      {pending ? "Saving…" : isNew ? "Create" : "Save"}
+      {pending
+        ? t("admin.common.saving")
+        : isNew
+          ? t("admin.common.create")
+          : t("admin.common.save")}
     </Button>
   );
 }

@@ -1,5 +1,5 @@
 import { notFound, redirect } from "next/navigation";
-import { setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { AgentEditor } from "@/components/admin/agent-editor";
 import { AgentScreenshots } from "@/components/admin/agent-screenshots";
 import { listAgentScreenshotLinks } from "@/lib/actions/agent-screenshots";
@@ -13,6 +13,7 @@ export default async function EditAgentPage({
 }) {
   const { locale, id } = await params;
   setRequestLocale(locale);
+  const t = await getTranslations();
   const agent = await getAgentForEdit(id);
   if (!agent) notFound();
   const screenshots = await listAgentScreenshotLinks(id);
@@ -66,7 +67,7 @@ export default async function EditAgentPage({
             type="submit"
             className="text-[var(--color-danger)] text-xs uppercase tracking-widest hover:underline"
           >
-            ✕ Delete Agent
+            {t("admin.agent.delete")}
           </button>
         </form>
       </div>

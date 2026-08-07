@@ -177,21 +177,168 @@
     "sidebar_timeline": "Timeline",
     "sidebar_assets": "Assets",
     "sidebar_settings": "Settings",
-    "sidebar_users": "Users"
+    "sidebar_users": "Users",
+    "sidebar_tags": "Tags",
+    "sidebar_logs": "Audit Logs",
+    "logs_title": "Operation Logs",
+    "logs_col_time": "Time",
+    "logs_col_action": "Action",
+    "logs_col_target": "Target",
+    "logs_col_summary": "Summary",
+    "essay": {
+      "field": {
+        "sn": "SN",
+        "lang": "Language",
+        "title": "Title",
+        "deck": "Deck",
+        "body": "Body (Markdown)",
+        "topic_tags": "Topic Tags",
+        "type": "Type",
+        "status": "Status",
+        "slug": "Slug"
+      },
+      "col": {
+        "sn": "SN",
+        "title": "Title",
+        "type": "Type",
+        "status": "Status",
+        "lang": "Lang",
+        "words": "Words"
+      },
+      "filter": {
+        "all": "All ({count})",
+        "draft": "Draft",
+        "published": "Published",
+        "archived": "Archived"
+      },
+      "placeholder_topic_tags": "AI, Agent...",
+      "placeholder_slug": "my-essay-zh",
+      "delete": "✕ Delete"
+    },
+    "agent": {
+      "field": {
+        "sn": "SN",
+        "name": "Name",
+        "desc": "Desc",
+        "long_desc": "Long Desc (Markdown)",
+        "specs": "Specs",
+        "status": "Status",
+        "click_target": "Click Target",
+        "launch_type": "Launch Type",
+        "launch_url": "Launch URL"
+      },
+      "col": {
+        "index": "#",
+        "sn": "SN",
+        "name": "Name",
+        "status": "Status",
+        "specs": "Specs"
+      },
+      "no_specs": "No specs. Click \"+ Add Spec\" to create.",
+      "add_spec": "+ Add Spec",
+      "spec_label_placeholder": "Label",
+      "spec_value_placeholder": "Value",
+      "delete": "✕ Delete Agent"
+    },
+    "timeline_node": {
+      "field": {
+        "version": "Version",
+        "name": "Name",
+        "desc": "Desc",
+        "type": "Type",
+        "date": "Date",
+        "changes": "Changes",
+        "files_changed": "Files Changed",
+        "lines_add": "Lines Add",
+        "lines_del": "Lines Del",
+        "is_now": "Current Version"
+      },
+      "col": {
+        "version": "Version",
+        "name": "Name",
+        "type": "Type",
+        "date": "Date",
+        "now": "Now"
+      },
+      "set_as_now": "Set as Now",
+      "now_badge": "★ NOW"
+    },
+    "settings_form": {
+      "field": {
+        "site_name": "Site Name",
+        "subtitle": "Subtitle",
+        "current_version": "Current Version",
+        "current_calibre": "Current Calibre",
+        "theme": "Theme",
+        "hero_sub": "Hero Sub",
+        "rd_meta1": "RD Meta 1",
+        "rd_meta2": "RD Meta 2"
+      },
+      "save": "Save Settings"
+    },
+    "tags_page": {
+      "subtitle": "topic_tags from {count} essays"
+    },
+    "assets_page": {
+      "subtitle": "{count} ASSETS · Upload via /api/upload"
+    },
+    "enum": {
+      "essay_type": { "essay": "Essay", "note": "Note", "tutorial": "Tutorial" },
+      "essay_status": { "draft": "Draft", "published": "Published", "archived": "Archived" },
+      "agent_status": {
+        "active": "Active",
+        "beta": "Beta",
+        "coming": "Coming",
+        "archived": "Archived"
+      },
+      "click_target": { "internal": "Internal (detail page)", "external": "External (URL)" },
+      "launch_type": { "external": "External", "iframe": "iframe", "modal": "Modal" },
+      "timeline_type": { "genesis": "Genesis", "now": "Now", "normal": "Normal", "major": "Major" },
+      "lang": { "zh": "Chinese", "en": "English" }
+    },
+    "common": {
+      "saving": "Saving…",
+      "saved": "✓ Saved",
+      "create": "Create",
+      "save": "Save"
+    }
   },
   "dashboard": {
     "title": "Site",
     "title_accent": "Overview",
-    "last_sync": "Last sync",
+    "last_activity": "Last activity",
+    "section_kpi": "Key metrics",
     "kpi_agents": "Agents",
     "kpi_essays": "Essays",
     "kpi_visit": "Visit",
     "kpi_uptime": "Uptime",
     "kpi_assets": "Assets",
     "kpi_drafts": "Drafts",
+    "kpi_published": "Published",
+    "kpi_agents_active": "Active",
+    "kpi_agents_coming": "Coming",
     "recent_activity": "Recent activity",
     "quick_actions": "Quick actions",
     "todo": "Todo"
+  },
+  "audit": {
+    "action": {
+      "create": "Create",
+      "update": "Update",
+      "delete": "Delete",
+      "login": "Login",
+      "logout": "Logout"
+    },
+    "target": {
+      "user": "User",
+      "essay": "Essay",
+      "agent": "Agent",
+      "asset": "Asset",
+      "asset_link": "Asset link",
+      "tag": "Tag",
+      "timeline_node": "Timeline",
+      "site_config": "Site config"
+    }
   },
   "error": {
     "404_title": "Page not found",

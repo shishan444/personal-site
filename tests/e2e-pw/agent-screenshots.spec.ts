@@ -15,7 +15,7 @@ test("B20 · Agent 截图上传 / 拖拽排序 / 移除", async ({ page }) => {
   await page.locator("#name").fill(NAME);
   await page.locator("[name=desc]").fill("截图管理 E2E 测试");
   await page.locator("[name=status]").selectOption("active");
-  await page.getByRole("button", { name: /SAVE|CREATE/i }).click();
+  await page.getByRole("button", { name: /SAVE|CREATE|保存|创建/i }).click();
   await expect(page).toHaveURL(/\/zh\/admin\/agents\/[0-9a-f-]{36}$/);
 
   // 1. 上传两张截图
@@ -45,6 +45,6 @@ test("B20 · Agent 截图上传 / 拖拽排序 / 移除", async ({ page }) => {
   // 4. 清理：删除 Agent
   await page.goto("/zh/admin/agents");
   await page.getByRole("link", { name: NAME }).click();
-  await page.getByRole("button", { name: /✕ Delete Agent/i }).click();
+  await page.getByRole("button", { name: /Delete Agent|删除 Agent/i }).click();
   await expect(page).toHaveURL(/\/zh\/admin\/agents$/);
 });

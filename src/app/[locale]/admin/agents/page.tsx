@@ -15,10 +15,10 @@ export default async function AdminAgentsListPage({
   const agents = await listAgentsForAdmin();
 
   const statusLabels: Record<string, string> = {
-    active: t("agent.status_active"),
-    beta: t("agent.status_beta"),
-    coming: t("agent.status_coming"),
-    archived: t("agent.status_archived"),
+    active: t("admin.enum.agent_status.active"),
+    beta: t("admin.enum.agent_status.beta"),
+    coming: t("admin.enum.agent_status.coming"),
+    archived: t("admin.enum.agent_status.archived"),
   };
 
   return (

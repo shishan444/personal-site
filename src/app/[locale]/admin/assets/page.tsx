@@ -20,7 +20,7 @@ export default async function AdminAssetsPage({ params }: { params: Promise<{ lo
           className="text-xs text-[var(--color-ink-soft)] mt-1"
           style={{ fontFamily: "var(--font-mono)" }}
         >
-          {assets.length} ASSETS · Upload via /api/upload
+          {t("admin.assets_page.subtitle", { count: assets.length })}
         </p>
       </div>
 
@@ -34,10 +34,7 @@ export default async function AdminAssetsPage({ params }: { params: Promise<{ lo
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
           {assets.map((a) => (
-            <div
-              key={a.id}
-              className="border border-[var(--color-line)] bg-[var(--color-bg-2)] p-3 space-y-2"
-            >
+            <div key={a.id} className="glass-panel glass-lift p-3 space-y-2">
               {a.mimeType.startsWith("image/") ? (
                 <div className="aspect-square bg-[var(--color-bg-3)] overflow-hidden">
                   <img

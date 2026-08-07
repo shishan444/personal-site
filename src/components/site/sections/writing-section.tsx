@@ -41,7 +41,7 @@ export function WritingSection({ essays }: WritingSectionProps) {
       className="min-h-screen border-b border-[var(--color-line)]"
     >
       <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-0 pl-6 md:pl-10">
-        <aside className="border-r border-[var(--color-line)] py-8 pr-6 lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto">
+        <aside className="border-r border-[var(--color-line)] glass-bar py-8 pr-6 lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto">
           <div
             className="text-[11px] uppercase tracking-[0.3em] text-[var(--color-accent)] mb-2"
             style={{ fontFamily: "var(--font-mono)" }}
@@ -78,7 +78,7 @@ export function WritingSection({ essays }: WritingSectionProps) {
                 onClick={() => setActiveIdx(idx)}
                 className={`grid grid-cols-[40px_1fr_60px_40px] gap-2 py-2 text-left text-[13px] border-b border-[var(--color-line)]/40 transition-colors w-full ${
                   idx === activeIdx
-                    ? "text-[var(--color-accent)] bg-[var(--color-bg-2)]/40"
+                    ? "text-[var(--color-accent)] bg-[var(--color-glass)]"
                     : "text-[var(--color-ink)] hover:text-[var(--color-accent)]"
                 }`}
                 style={{ fontFamily: "var(--font-body)" }}
@@ -135,7 +135,7 @@ export function WritingSection({ essays }: WritingSectionProps) {
                 {active.topicTags.map((tag) => (
                   <span
                     key={tag}
-                    className="px-2 py-1 border border-[var(--color-line)] text-[11px] uppercase tracking-widest text-[var(--color-ink-mute)]"
+                    className="px-2 py-1 border border-[var(--color-line)] glass-chip text-[11px] uppercase tracking-widest text-[var(--color-ink-mute)]"
                     style={{ fontFamily: "var(--font-mono)" }}
                   >
                     {tag}

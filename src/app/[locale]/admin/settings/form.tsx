@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useFormState, useFormStatus } from "react-dom";
 import { FormField, TextareaField } from "@/components/ui";
 import { Button } from "@/components/ui/button";
@@ -19,6 +20,7 @@ interface FormProps {
 }
 
 export function SiteConfigForm({ action, initial }: FormProps) {
+  const t = useTranslations();
   const [, formAction] = useFormState<void, FormData>(async (_p, fd) => {
     await action(fd);
   }, undefined);
@@ -29,37 +31,57 @@ export function SiteConfigForm({ action, initial }: FormProps) {
         <FormField
           id="siteName"
           name="siteName"
-          label="Site Name"
+          label={t("admin.settings_form.field.site_name")}
           defaultValue={initial.siteName}
           required
         />
-        <FormField id="subtitle" name="subtitle" label="Subtitle" defaultValue={initial.subtitle} />
+        <FormField
+          id="subtitle"
+          name="subtitle"
+          label={t("admin.settings_form.field.subtitle")}
+          defaultValue={initial.subtitle}
+        />
         <FormField
           id="currentVersion"
           name="currentVersion"
-          label="Current Version"
+          label={t("admin.settings_form.field.current_version")}
           defaultValue={initial.currentVersion}
         />
         <FormField
           id="currentCalibre"
           name="currentCalibre"
-          label="Current Calibre"
+          label={t("admin.settings_form.field.current_calibre")}
           defaultValue={initial.currentCalibre}
         />
-        <FormField id="theme" name="theme" label="Theme" defaultValue={initial.theme} />
+        <FormField
+          id="theme"
+          name="theme"
+          label={t("admin.settings_form.field.theme")}
+          defaultValue={initial.theme}
+        />
       </div>
 
       <TextareaField
         id="heroSub"
         name="heroSub"
-        label="Hero Sub"
+        label={t("admin.settings_form.field.hero_sub")}
         defaultValue={initial.heroSub}
         rows={3}
       />
 
       <div className="grid grid-cols-2 gap-4">
-        <FormField id="rdMeta1" name="rdMeta1" label="RD Meta 1" defaultValue={initial.rdMeta1} />
-        <FormField id="rdMeta2" name="rdMeta2" label="RD Meta 2" defaultValue={initial.rdMeta2} />
+        <FormField
+          id="rdMeta1"
+          name="rdMeta1"
+          label={t("admin.settings_form.field.rd_meta1")}
+          defaultValue={initial.rdMeta1}
+        />
+        <FormField
+          id="rdMeta2"
+          name="rdMeta2"
+          label={t("admin.settings_form.field.rd_meta2")}
+          defaultValue={initial.rdMeta2}
+        />
       </div>
 
       <SubmitButton />
@@ -68,10 +90,11 @@ export function SiteConfigForm({ action, initial }: FormProps) {
 }
 
 function SubmitButton() {
+  const t = useTranslations();
   const { pending } = useFormStatus();
   return (
     <Button type="submit" disabled={pending}>
-      {pending ? "Saving…" : "Save Settings"}
+      {pending ? t("admin.common.saving") : t("admin.settings_form.save")}
     </Button>
   );
 }
