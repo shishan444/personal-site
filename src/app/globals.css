@@ -148,7 +148,8 @@ body {
 }
 
 /* 底层光环境：暖金/暗绿径向光斑，为玻璃 blur 提供可透内容。
-   fixed + 负 z-index 位于 canvas 背景之上、文档流内容之下。 */
+   fixed + 负 z-index 位于 canvas 背景之上、文档流内容之下。
+   四层光斑：三层主光（14/10/9%）+ 一层小光斑（7%）制造明暗纵深。 */
 .atelier-glow {
   position: fixed;
   inset: 0;
@@ -157,18 +158,23 @@ body {
   background:
     radial-gradient(
       46vw 38vh at 16% 10%,
-      color-mix(in oklab, var(--color-accent) 8%, transparent),
+      color-mix(in oklab, var(--color-accent) 14%, transparent),
       transparent 70%
     ),
     radial-gradient(
       40vw 34vh at 86% 82%,
-      color-mix(in oklab, var(--color-accent-2) 5%, transparent),
+      color-mix(in oklab, var(--color-accent-2) 10%, transparent),
       transparent 72%
     ),
     radial-gradient(
       64vw 52vh at 58% 46%,
-      color-mix(in oklab, var(--color-accent-3) 5%, transparent),
+      color-mix(in oklab, var(--color-accent-3) 9%, transparent),
       transparent 76%
+    ),
+    radial-gradient(
+      30vw 26vh at 70% 18%,
+      color-mix(in oklab, var(--color-accent) 7%, transparent),
+      transparent 68%
     );
 }
 /* 后台光环境更克制：不干扰数据阅读。 */
