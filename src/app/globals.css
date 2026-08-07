@@ -147,6 +147,17 @@ body {
   translate: 0 -1px;
 }
 
+/* 焦点点亮（焦点纪律：常驻层 RU 唯一发光点 + 文档流每屏唯一发光容器）。
+   纯 box-shadow 无背景半透明，无需登记 reduced-transparency 降级清单。 */
+.toc-active-glow {
+  box-shadow:
+    inset 2px 0 0 var(--color-accent),
+    0 0 12px color-mix(in oklab, var(--color-accent) 18%, transparent);
+}
+.dot-glow {
+  box-shadow: 0 0 8px color-mix(in oklab, var(--color-accent) 60%, transparent);
+}
+
 /* 底层光环境：暖金/暗绿径向光斑，为玻璃 blur 提供可透内容。
    fixed + 负 z-index 位于 canvas 背景之上、文档流内容之下。
    四层光斑：三层主光（14/10/9%）+ 一层小光斑（7%）制造明暗纵深。 */

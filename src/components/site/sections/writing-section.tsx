@@ -93,7 +93,7 @@ export function WritingSection({ essays }: WritingSectionProps) {
                 onClick={() => setActiveIdx(idx)}
                 className={`grid grid-cols-[40px_1fr_60px_40px] gap-2 py-2 text-left text-[13px] border-b border-[var(--color-line)]/40 transition-colors w-full ${
                   idx === activeIdx
-                    ? "text-[var(--color-accent)] bg-[var(--color-glass)]"
+                    ? "text-[var(--color-accent)] bg-[var(--color-glass)] toc-active-glow"
                     : "text-[var(--color-ink)] hover:text-[var(--color-accent)]"
                 }`}
                 style={{ fontFamily: "var(--font-body)" }}

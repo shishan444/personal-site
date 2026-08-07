@@ -59,7 +59,7 @@ export function RuSubdial({ chapterIds, activeId, visitedIds }: RuSubdialProps) 
               <span
                 className={`rounded-full transition-all duration-300 ${
                   isActive
-                    ? "w-1.5 h-1.5 bg-[var(--color-accent)]"
+                    ? "w-1.5 h-1.5 bg-[var(--color-accent)] dot-glow"
                     : isVisited
                       ? "w-1 h-1 bg-[var(--color-ink-mute)]"
                       : "w-1 h-1 bg-[var(--color-ink-soft)]/60 group-hover:bg-[var(--color-ink-mute)]"
