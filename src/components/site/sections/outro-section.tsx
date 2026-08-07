@@ -9,7 +9,7 @@ export function OutroSection() {
     <SectionReveal
       id="05"
       as="section"
-      className="min-h-screen flex flex-col justify-center pl-6 md:pl-10 pr-6 md:pr-32 py-32"
+      className="min-h-[100dvh] flex flex-col justify-center pl-6 md:pl-10 pr-6 md:pr-32 py-32"
     >
       <div className="w-full space-y-12">
         <div
