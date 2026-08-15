@@ -38,7 +38,7 @@ describe("L1 · globalStats 模板插值（renderStatsTemplate）", () => {
       "6 IN SERVICE",
     );
     expect(
-      renderStatsTemplate("CAL.{calibre} · v{version}", { calibre: "04", version: "v0.6" }),
+      renderStatsTemplate("CAL.{calibre} · v{version}", { calibre: "04", version: "0.6" }),
     ).toBe("CAL.04 · v0.6");
   });
 
