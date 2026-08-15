@@ -1,4 +1,4 @@
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq, isNull } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { agents, essays, siteConfig, timelineNodes } from "@/lib/db/schema";
 import type { AgentSpec } from "@/lib/db/schema/agents";
@@ -56,7 +56,7 @@ export async function getHomeEssays(locale: string = "zh"): Promise<HomeEssay[]>
   const rows = await db
     .select()
     .from(essays)
-    .where(eq(essays.status, "published"))
+    .where(and(eq(essays.status, "published"), isNull(essays.deletedAt)))
     .orderBy(desc(essays.publishedAt))
     .limit(20);
   return rows
@@ -77,7 +77,7 @@ export async function getHomeEssays(locale: string = "zh"): Promise<HomeEssay[]>
 
 export async function getHomeAgents(): Promise<HomeAgent[]> {
   const db = await getDb();
-  const rows = await db.select().from(agents).orderBy(agents.order);
+  const rows = await db.select().from(agents).where(isNull(agents.deletedAt)).orderBy(agents.order);
   return rows
     .filter((a) => a.status !== "archived")
     .map((a) => ({
@@ -119,9 +119,12 @@ export async function getSiteConfig() {
 
 export async function getSiteStats(): Promise<SiteStats> {
   const db = await getDb();
-  const allAgents = await db.select().from(agents);
+  const allAgents = await db.select().from(agents).where(isNull(agents.deletedAt));
   const config = await getSiteConfig();
-  const essaysPublishedRows = await db.select().from(essays).where(eq(essays.status, "published"));
+  const essaysPublishedRows = await db
+    .select()
+    .from(essays)
+    .where(and(eq(essays.status, "published"), isNull(essays.deletedAt)));
   return {
     agentsActive: allAgents.filter((a) => a.status === "active").length,
     agentsBeta: allAgents.filter((a) => a.status === "beta").length,

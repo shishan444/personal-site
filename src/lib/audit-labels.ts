@@ -13,6 +13,9 @@ export function makeAuditLabeler(t: TFunc): AuditLabeler {
     create: t("audit.action.create"),
     update: t("audit.action.update"),
     delete: t("audit.action.delete"),
+    publish: t("audit.action.publish"),
+    archive: t("audit.action.archive"),
+    restore: t("audit.action.restore"),
     login: t("audit.action.login"),
     logout: t("audit.action.logout"),
   };

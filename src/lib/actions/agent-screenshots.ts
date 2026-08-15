@@ -12,7 +12,7 @@ const USAGE = "screenshot";
 
 export interface AgentScreenshotLink {
   linkId: string;
-  assetId: string;
+  assetId: string | null;
   url: string;
   caption: string | null;
   orderIndex: number;

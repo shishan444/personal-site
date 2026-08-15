@@ -160,10 +160,46 @@ export async function restoreEssay(id: string): Promise<void> {
   await updateEssay(id, { status: "published" });
 }
 
+/** 删除到回收站（用户裁决 2026-08-15）：写 deletedAt，正文与 revisions 全部保留。 */
 export async function deleteEssay(id: string): Promise<void> {
   const session = await getSession();
   if (!session) throw new Error("UNAUTHORIZED");
   const db = await getDb();
+  await db.update(essays).set({ deletedAt: new Date() }).where(eq(essays.id, id));
+  await writeAuditLog({
+    userId: session.userId,
+    action: "delete",
+    targetType: "essay",
+    targetId: id,
+    summary: "删除文章（移入回收站）",
+  });
+  revalidatePath("/[locale]");
+}
+
+/** 从回收站恢复。 */
+export async function restoreEssayFromTrash(id: string): Promise<void> {
+  const session = await getSession();
+  if (!session) throw new Error("UNAUTHORIZED");
+  const db = await getDb();
+  await db.update(essays).set({ deletedAt: null }).where(eq(essays.id, id));
+  await writeAuditLog({
+    userId: session.userId,
+    action: "restore",
+    targetType: "essay",
+    targetId: id,
+    summary: "从回收站恢复文章",
+  });
+  revalidatePath("/[locale]");
+}
+
+/** 彻底删除（仅回收站内文章可行）：删除行与全部 revisions，不可恢复。 */
+export async function purgeEssay(id: string): Promise<{ ok: boolean; reason?: string }> {
+  const session = await getSession();
+  if (!session) throw new Error("UNAUTHORIZED");
+  const db = await getDb();
+  const target = await db.select().from(essays).where(eq(essays.id, id)).limit(1);
+  if (target.length === 0) return { ok: false, reason: "NOT_FOUND" };
+  if (target[0].deletedAt === null) return { ok: false, reason: "NOT_IN_TRASH" };
   await db.delete(essayRevisions).where(eq(essayRevisions.essayId, id));
   await db.delete(essays).where(eq(essays.id, id));
   await writeAuditLog({
@@ -171,9 +207,10 @@ export async function deleteEssay(id: string): Promise<void> {
     action: "delete",
     targetType: "essay",
     targetId: id,
-    summary: "删除文章",
+    summary: "彻底删除文章（不可恢复）",
   });
   revalidatePath("/[locale]");
+  return { ok: true };
 }
 
 export async function batchUpdateStatus(

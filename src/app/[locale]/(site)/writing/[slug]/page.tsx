@@ -109,7 +109,8 @@ export default async function EssayDetailPage({
                   className="text-sm text-[var(--color-accent)] hover:underline"
                   style={{ fontFamily: "var(--font-body)" }}
                 >
-                  ↓ {a.filename} ({Math.round(a.sizeBytes / 1024)} KB)
+                  ↓ {a.filename}
+                  {a.sizeBytes != null ? ` (${Math.round(a.sizeBytes / 1024)} KB)` : " ↗"}
                 </a>
               </li>
             ))}

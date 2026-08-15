@@ -283,25 +283,62 @@
       "subtitle": "{count} 个资产 · 通过 /api/upload 上传"
     },
     "enum": {
-      "essay_type": { "essay": "文章", "note": "笔记", "tutorial": "教程" },
-      "essay_status": { "draft": "草稿", "published": "已发布", "archived": "已归档" },
+      "essay_type": {
+        "essay": "文章",
+        "note": "笔记",
+        "tutorial": "教程"
+      },
+      "essay_status": {
+        "draft": "草稿",
+        "published": "已发布",
+        "archived": "已归档"
+      },
       "agent_status": {
         "active": "运行中",
         "beta": "测试中",
         "coming": "即将上线",
         "archived": "已归档"
       },
-      "click_target": { "internal": "内部（详情页）", "external": "外部（URL）" },
-      "launch_type": { "external": "外部链接", "iframe": "内嵌 iframe", "modal": "弹窗" },
-      "timeline_type": { "genesis": "起源", "now": "当前", "normal": "常规", "major": "重大" },
-      "lang": { "zh": "中文", "en": "英文" }
+      "click_target": {
+        "internal": "内部（详情页）",
+        "external": "外部（URL）"
+      },
+      "launch_type": {
+        "external": "外部链接",
+        "iframe": "内嵌 iframe",
+        "modal": "弹窗"
+      },
+      "timeline_type": {
+        "genesis": "起源",
+        "now": "当前",
+        "normal": "常规",
+        "major": "重大"
+      },
+      "lang": {
+        "zh": "中文",
+        "en": "英文"
+      }
     },
     "common": {
       "saving": "保存中…",
       "saved": "✓ 已保存",
       "create": "创建",
       "save": "保存"
-    }
+    },
+    "trash_page": {
+      "title": "回收站",
+      "hint": "删除的内容先进入回收站；彻底删除不可恢复。",
+      "empty": "回收站是空的",
+      "restore": "恢复",
+      "purge": "彻底删除",
+      "purge_confirm": "确认彻底删除",
+      "cancel": "取消",
+      "kind_essay": "文章",
+      "kind_agent": "Agent",
+      "kind_asset": "资产",
+      "subtitle": "软删除条目管理"
+    },
+    "sidebar_trash": "回收站"
   },
   "dashboard": {
     "title": "站点",
@@ -327,7 +364,10 @@
       "update": "更新",
       "delete": "删除",
       "login": "登录",
-      "logout": "登出"
+      "logout": "登出",
+      "publish": "发布",
+      "archive": "归档",
+      "restore": "恢复"
     },
     "target": {
       "user": "用户",

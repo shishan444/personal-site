@@ -42,6 +42,7 @@ export const essays = pgTable(
     words: integer("words").default(0).notNull(),
     readMinutes: integer("read_minutes").default(0).notNull(),
     authorId: uuid("author_id").notNull(),
+    deletedAt: timestamp("deleted_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },

@@ -30,4 +30,5 @@ export const auditActionEnum = pgEnum("audit_action", [
   "archive",
   "login",
   "logout",
+  "restore",
 ]);

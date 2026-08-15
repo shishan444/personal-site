@@ -16,7 +16,7 @@ export async function getEssayBySlug(slug: string, locale: string): Promise<Essa
   const rows = await db
     .select()
     .from(essays)
-    .where(and(eq(essays.slug, slug), eq(essays.status, "published")))
+    .where(and(eq(essays.slug, slug), eq(essays.status, "published"), isNull(essays.deletedAt)))
     .limit(1);
   if (rows.length === 0) return null;
   const e = rows[0];
@@ -55,6 +55,7 @@ export async function getEssayTranslationSlug(
         eq(essays.lang, targetLang as "zh" | "en"),
         eq(essays.status, "published"),
         ne(essays.id, excludeId),
+        isNull(essays.deletedAt),
       ),
     )
     .limit(1);
@@ -66,7 +67,10 @@ export async function getAdjacentEssays(
   locale: string,
 ): Promise<{ prev: HomeEssay | null; next: HomeEssay | null }> {
   const db = await getDb();
-  const all = await db.select().from(essays).where(eq(essays.status, "published"));
+  const all = await db
+    .select()
+    .from(essays)
+    .where(and(eq(essays.status, "published"), isNull(essays.deletedAt)));
   const filtered = all
     .filter((e) => e.lang === (locale as "zh" | "en"))
     .sort((a, b) => (b.publishedAt?.getTime() ?? 0) - (a.publishedAt?.getTime() ?? 0));
@@ -101,7 +105,11 @@ export interface AgentDetail extends HomeAgent {
 
 export async function getAgentBySn(sn: string): Promise<AgentDetail | null> {
   const db = await getDb();
-  const rows = await db.select().from(agents).where(eq(agents.sn, sn)).limit(1);
+  const rows = await db
+    .select()
+    .from(agents)
+    .where(and(eq(agents.sn, sn), isNull(agents.deletedAt)))
+    .limit(1);
   if (rows.length === 0) return null;
   const a = rows[0];
   return {
@@ -156,6 +164,7 @@ export async function getRelatedEssays(agentId: string, locale: string): Promise
         eq(essays.relatedAgentId, agentId),
         eq(essays.status, "published"),
         eq(essays.lang, locale as "zh" | "en"),
+        isNull(essays.deletedAt),
       ),
     )
     .orderBy(desc(essays.publishedAt));
@@ -176,8 +185,14 @@ export async function getSearchIndex(locale: string): Promise<SearchEntry[]> {
   const allEssays = await db
     .select()
     .from(essays)
-    .where(and(eq(essays.status, "published"), eq(essays.lang, locale as "zh" | "en")));
-  const allAgents = await db.select().from(agents);
+    .where(
+      and(
+        eq(essays.status, "published"),
+        eq(essays.lang, locale as "zh" | "en"),
+        isNull(essays.deletedAt),
+      ),
+    );
+  const allAgents = await db.select().from(agents).where(isNull(agents.deletedAt));
   const { timelineNodes } = await import("@/lib/db/schema");
 
   const entries: SearchEntry[] = [];
@@ -217,6 +232,7 @@ export async function getSearchIndex(locale: string): Promise<SearchEntry[]> {
   return entries;
 }
 
+/** 附件列表：本地文件（assetId）与云盘外链（externalUrl，用户裁决 2026-08-15）双形态。 */
 export async function getEssayAttachments(essayId: string) {
   const db = await getDb();
   const links = await db
@@ -233,6 +249,18 @@ export async function getEssayAttachments(essayId: string) {
   const assetsRows = await db.select().from(assets).where(isNull(assets.deletedAt));
   return links
     .map((l) => {
+      // 外链附件：无本地资产，点击直接跳转云盘 URL
+      if (!l.assetId) {
+        if (!l.externalUrl) return null;
+        return {
+          id: l.id,
+          url: l.externalUrl,
+          filename: l.caption ?? l.externalUrl,
+          sizeBytes: null,
+          caption: l.caption,
+          external: true,
+        };
+      }
       const a = assetsRows.find((x) => x.id === l.assetId);
       if (!a) return null;
       return {
@@ -241,6 +269,7 @@ export async function getEssayAttachments(essayId: string) {
         filename: a.originalFilename,
         sizeBytes: a.sizeBytes,
         caption: l.caption,
+        external: false,
       };
     })
     .filter((x): x is NonNullable<typeof x> => x !== null);

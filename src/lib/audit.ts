@@ -8,7 +8,8 @@ export type AuditAction =
   | "publish"
   | "archive"
   | "login"
-  | "logout";
+  | "logout"
+  | "restore";
 
 export interface AuditLogInput {
   userId?: string | null;

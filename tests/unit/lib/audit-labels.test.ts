@@ -66,8 +66,8 @@ describe("L1 · makeAuditLabeler fallback 行为", () => {
   it("F3 · 未知 action 返回原值（不抛错，不返回 key 路径）", () => {
     const t = makeFakeT(ALL_KEYS);
     const labeler = makeAuditLabeler(t);
-    expect(labeler.action("publish")).toBe("publish");
-    expect(labeler.action("archive")).toBe("archive");
+    // publish/archive/restore 已补映射（2026-08-15 回收站轮），改用真正未知的值
+    expect(labeler.action("unknown_action")).toBe("unknown_action");
     expect(labeler.action("")).toBe("");
   });
 

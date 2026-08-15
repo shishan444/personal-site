@@ -283,25 +283,62 @@
       "subtitle": "{count} ASSETS · Upload via /api/upload"
     },
     "enum": {
-      "essay_type": { "essay": "Essay", "note": "Note", "tutorial": "Tutorial" },
-      "essay_status": { "draft": "Draft", "published": "Published", "archived": "Archived" },
+      "essay_type": {
+        "essay": "Essay",
+        "note": "Note",
+        "tutorial": "Tutorial"
+      },
+      "essay_status": {
+        "draft": "Draft",
+        "published": "Published",
+        "archived": "Archived"
+      },
       "agent_status": {
         "active": "Active",
         "beta": "Beta",
         "coming": "Coming",
         "archived": "Archived"
       },
-      "click_target": { "internal": "Internal (detail page)", "external": "External (URL)" },
-      "launch_type": { "external": "External", "iframe": "iframe", "modal": "Modal" },
-      "timeline_type": { "genesis": "Genesis", "now": "Now", "normal": "Normal", "major": "Major" },
-      "lang": { "zh": "Chinese", "en": "English" }
+      "click_target": {
+        "internal": "Internal (detail page)",
+        "external": "External (URL)"
+      },
+      "launch_type": {
+        "external": "External",
+        "iframe": "iframe",
+        "modal": "Modal"
+      },
+      "timeline_type": {
+        "genesis": "Genesis",
+        "now": "Now",
+        "normal": "Normal",
+        "major": "Major"
+      },
+      "lang": {
+        "zh": "Chinese",
+        "en": "English"
+      }
     },
     "common": {
       "saving": "Saving…",
       "saved": "✓ Saved",
       "create": "Create",
       "save": "Save"
-    }
+    },
+    "trash_page": {
+      "title": "Trash",
+      "hint": "Deleted items land here first; purging is irreversible.",
+      "empty": "Trash is empty",
+      "restore": "Restore",
+      "purge": "Purge",
+      "purge_confirm": "Confirm purge",
+      "cancel": "Cancel",
+      "kind_essay": "Essay",
+      "kind_agent": "Agent",
+      "kind_asset": "Asset",
+      "subtitle": "Soft-deleted items"
+    },
+    "sidebar_trash": "Trash"
   },
   "dashboard": {
     "title": "Site",
@@ -327,7 +364,10 @@
       "update": "Update",
       "delete": "Delete",
       "login": "Login",
-      "logout": "Logout"
+      "logout": "Logout",
+      "publish": "Publish",
+      "archive": "Archive",
+      "restore": "Restore"
     },
     "target": {
       "user": "User",

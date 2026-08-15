@@ -175,16 +175,31 @@ vi.mock("@/lib/db", () => ({
     }
     const buildChain = (initial: unknown[]) => {
       let rows = initial;
+      let currentTable: "essays" | "agents" | "timelineNodes" | "siteConfig" | "" = "";
       const self = {
         from: (table: unknown) => {
-          if (table === schemaRefs?.essays) rows = essaysResult;
-          else if (table === schemaRefs?.agents) rows = agentsResult;
-          else if (table === schemaRefs?.timelineNodes) rows = timelineResult;
-          else if (table === schemaRefs?.siteConfig) rows = configResult;
+          if (table === schemaRefs?.essays) {
+            rows = essaysResult;
+            currentTable = "essays";
+          } else if (table === schemaRefs?.agents) {
+            rows = agentsResult;
+            currentTable = "agents";
+          } else if (table === schemaRefs?.timelineNodes) {
+            rows = timelineResult;
+            currentTable = "timelineNodes";
+          } else if (table === schemaRefs?.siteConfig) {
+            rows = configResult;
+            currentTable = "siteConfig";
+          }
           return self;
         },
         where: () => {
-          rows = rows.filter((row) => (row as { status?: string }).status === "published");
+          // essays 的条件含 status=published；agents/timeline 仅过滤软删（deletedAt）
+          if (currentTable === "essays") {
+            rows = rows.filter((row) => (row as { status?: string }).status === "published");
+          } else {
+            rows = rows.filter((row) => !(row as { deletedAt?: Date | null }).deletedAt);
+          }
           return self;
         },
         orderBy: () => self,
