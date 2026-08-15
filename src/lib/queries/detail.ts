@@ -37,6 +37,7 @@ export async function getEssayBySlug(slug: string, locale: string): Promise<Essa
     relatedAgentId: e.relatedAgentId,
     ogTitle: e.ogTitle,
     ogDescription: e.ogDescription,
+    ogImageUrl: null,
   };
 }
 
@@ -93,6 +94,7 @@ function toHomeEssay(e: typeof essays.$inferSelect): HomeEssay {
     slug: e.slug,
     words: e.words,
     readMinutes: e.readMinutes,
+    ogImageUrl: null,
   };
 }
 

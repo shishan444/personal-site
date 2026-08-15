@@ -28,6 +28,7 @@ const mockEssay: HomeEssay = {
   slug: "test",
   words: 100,
   readMinutes: 1,
+  ogImageUrl: null,
 };
 
 const mockAgent: HomeAgent = {
@@ -83,7 +84,7 @@ describe("L1 · HeroSection", () => {
 });
 
 describe("L1 · WritingSection", () => {
-  it("F1 · 渲染所有 essays 在 TOC", () => {
+  it("F1 · 渲染所有 essays 在 TOC（改版后按标题，剔除 SN/日期/分钟列）", () => {
     render(
       <IntlWrapper>
         <WritingSection
@@ -91,8 +92,8 @@ describe("L1 · WritingSection", () => {
         />
       </IntlWrapper>,
     );
-    const allSn = screen.getAllByText(/SN-00[12]/);
-    expect(allSn.length).toBeGreaterThanOrEqual(2);
+    expect(screen.getByText("Test Essay")).toBeTruthy();
+    expect(screen.getByText("Second")).toBeTruthy();
   });
 
   it("F2 · 初始 active 显示第一篇 deck", () => {
@@ -109,13 +110,52 @@ describe("L1 · WritingSection", () => {
     expect(screen.getByText("deck text")).toBeTruthy();
   });
 
-  it("F3 · 渲染 type tag", () => {
+  it("F3 · 摘要卡 meta 行含日期/类型标签/时长", () => {
     render(
       <IntlWrapper>
         <WritingSection essays={[mockEssay]} />
       </IntlWrapper>,
     );
-    expect(screen.getByText("观点")).toBeTruthy();
+    // meta 行由多个 JSX 表达式组成，函数 matcher 合并判断
+    const metas = screen.getAllByText((_, el) => {
+      const text = el?.textContent ?? "";
+      return (
+        el?.tagName === "DIV" &&
+        text.includes("2026.07") &&
+        text.includes("观点") &&
+        text.includes("1 min")
+      );
+    });
+    expect(metas.length).toBeGreaterThan(0);
+  });
+
+  it("F6 · 摘要卡渲染查看原文链接（新标签页指向详情页）", () => {
+    render(
+      <IntlWrapper>
+        <WritingSection essays={[mockEssay]} />
+      </IntlWrapper>,
+    );
+    const link = screen.getByText(/查看原文/).closest("a");
+    expect(link).toBeTruthy();
+    expect(link?.getAttribute("href")).toContain("/writing/test");
+    expect(link?.getAttribute("target")).toBe("_blank");
+  });
+
+  it("F7 · 有 OG 图时渲染配图，无图时 SN 占位", () => {
+    const { rerender } = render(
+      <IntlWrapper>
+        <WritingSection essays={[{ ...mockEssay, ogImageUrl: "/uploads/2026/08/og.png" }]} />
+      </IntlWrapper>,
+    );
+    expect(document.querySelector('img[src*="og.png"]')).toBeTruthy();
+
+    rerender(
+      <IntlWrapper>
+        <WritingSection essays={[mockEssay]} />
+      </IntlWrapper>,
+    );
+    expect(document.querySelector("img")).toBeNull();
+    expect(screen.getByText("SN-001")).toBeTruthy();
   });
 
   it("F4 · section 不在视口中央时方向键不切换文章", () => {

@@ -87,7 +87,8 @@
     "attachments_download": "Download",
     "detail_eyebrow": "ESSAY",
     "detail_back": "Back to chapter",
-    "detail_related_agent": "Related agent"
+    "detail_related_agent": "Related agent",
+    "view_original": "View original"
   },
   "agent": {
     "section_label": "§ 03 · Agents in motion",

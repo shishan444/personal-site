@@ -388,3 +388,55 @@ body {
   letter-spacing: 0.1em;
   color: var(--color-ink-mute);
 }
+
+/* Writing 目录选择交互（改版 2026-08-15）：hover 指示线 + 激活凸出 + 摘要入场。 */
+.toc-item {
+  position: relative;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease,
+    translate 200ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.toc-item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 20%;
+  bottom: 20%;
+  width: 2px;
+  background: var(--color-accent);
+  transform: scaleY(0);
+  transition: transform 150ms ease;
+}
+.toc-item:hover {
+  background: var(--color-glass);
+  color: var(--color-accent);
+}
+.toc-item:hover::before {
+  transform: scaleY(1);
+}
+.toc-item.toc-active {
+  translate: 4px 0;
+}
+.summary-enter {
+  animation: summary-enter 240ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+@keyframes summary-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .toc-item,
+  .toc-item::before,
+  .summary-enter {
+    transition: none;
+    animation: none;
+    translate: none;
+  }
+}
