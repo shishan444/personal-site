@@ -280,7 +280,14 @@
       "subtitle": "topic_tags from {count} essays"
     },
     "assets_page": {
-      "subtitle": "{count} ASSETS · Upload via /api/upload"
+      "subtitle": "{count} ASSETS · Upload via /api/upload",
+      "upload_button": "+ Upload",
+      "uploading": "Uploading…",
+      "upload_hint": "Drop files here or click · multiple · 20MB max · use external links for oversized",
+      "toast_uploaded": "{count} file(s) uploaded",
+      "err_mime": "Type not allowed",
+      "err_size": "Exceeds 20MB",
+      "err_generic": "Upload failed"
     },
     "enum": {
       "essay_type": {

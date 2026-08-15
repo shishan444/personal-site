@@ -280,7 +280,14 @@
       "subtitle": "来自 {count} 篇文章的 topic_tags"
     },
     "assets_page": {
-      "subtitle": "{count} 个资产 · 通过 /api/upload 上传"
+      "subtitle": "{count} 个资产 · 通过 /api/upload 上传",
+      "upload_button": "+ 上传文件",
+      "uploading": "上传中…",
+      "upload_hint": "拖拽文件到此处或点击选择 · 多文件 · 上限 20MB · 超大文件请用文章外链附件",
+      "toast_uploaded": "已上传 {count} 个文件",
+      "err_mime": "类型不在白名单",
+      "err_size": "超过 20MB 上限",
+      "err_generic": "上传失败"
     },
     "enum": {
       "essay_type": {
