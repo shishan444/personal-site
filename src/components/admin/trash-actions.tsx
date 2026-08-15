@@ -26,8 +26,12 @@ export function TrashActions({
         onClick={() =>
           startTransition(() =>
             restoreFromTrash(kind, id)
-              .then(() => toast.success(t("toast_restored"), title))
-              .catch(() => toast.error(t("toast_failed"))),
+              .then(() => {
+                toast.success(t("toast_restored"), title);
+              })
+              .catch(() => {
+                toast.error(t("toast_failed"));
+              }),
           )
         }
         className="text-xs uppercase tracking-widest px-3 py-2 border border-[var(--color-line)] glass-chip text-[var(--color-ink)] hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] disabled:opacity-40"
@@ -45,10 +49,15 @@ export function TrashActions({
                 purgeFromTrash(kind, id)
                   .then((r) => {
                     setConfirming(false);
-                    if (r.ok) toast.success(t("toast_purged"), title);
-                    else toast.error(t("toast_failed"));
+                    if (r.ok) {
+                      toast.success(t("toast_purged"), title);
+                    } else {
+                      toast.error(t("toast_failed"));
+                    }
                   })
-                  .catch(() => toast.error(t("toast_failed"))),
+                  .catch(() => {
+                    toast.error(t("toast_failed"));
+                  }),
               )
             }
             className="text-xs uppercase tracking-widest px-3 py-2 border border-[var(--color-danger)] text-[var(--color-danger)] hover:bg-[var(--color-danger)]/10 disabled:opacity-40"
