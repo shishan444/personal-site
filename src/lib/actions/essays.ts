@@ -7,9 +7,10 @@ import { getSession } from "@/lib/auth";
 import { getDb } from "@/lib/db";
 import { essayRevisions, essays } from "@/lib/db/schema";
 import { countWords, readingTime } from "@/lib/markdown";
+import { nextSequenceSn } from "@/lib/utils/sn";
 
 export interface EssayInput {
-  sn: string;
+  sn?: string;
   lang: "zh" | "en";
   translationGroupId?: string;
   title: string;
@@ -39,7 +40,7 @@ export async function createEssay(input: EssayInput): Promise<{ id: string; sn: 
     .insert(essays)
     .values({
       id,
-      sn: input.sn,
+      sn: input.sn ?? (await nextSequenceSn("essays", "SN-")),
       lang: input.lang,
       translationGroupId,
       title: input.title,

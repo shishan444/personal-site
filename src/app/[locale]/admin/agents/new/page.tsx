@@ -11,7 +11,7 @@ export default async function NewAgentPage({ params }: { params: Promise<{ local
     "use server";
     const specs = JSON.parse(String(formData.get("specs") ?? "[]"));
     const result = await createAgent({
-      sn: String(formData.get("sn") ?? ""),
+      sn: String(formData.get("sn") ?? "") || undefined,
       name: String(formData.get("name") ?? ""),
       desc: String(formData.get("desc") ?? ""),
       longDesc: formData.get("longDesc") ? String(formData.get("longDesc")) : null,
@@ -29,7 +29,7 @@ export default async function NewAgentPage({ params }: { params: Promise<{ local
       <AgentEditor
         action={save}
         initial={{
-          sn: `CAL.A-${Math.floor(Math.random() * 90) + 10}`,
+          sn: "", // 留空由服务端按 max+1 生成
           name: "",
           desc: "",
           longDesc: null,

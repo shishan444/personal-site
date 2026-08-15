@@ -7,9 +7,10 @@ import { getSession } from "@/lib/auth";
 import { getDb } from "@/lib/db";
 import { agents } from "@/lib/db/schema";
 import type { AgentSpec } from "@/lib/db/schema/agents";
+import { nextSequenceSn } from "@/lib/utils/sn";
 
 export interface AgentInput {
-  sn: string;
+  sn?: string;
   name: string;
   desc: string;
   longDesc?: string | null;
@@ -36,7 +37,7 @@ export async function createAgent(input: AgentInput): Promise<{ id: string; sn: 
     .insert(agents)
     .values({
       id,
-      sn: input.sn,
+      sn: input.sn ?? (await nextSequenceSn("agents", "CAL.A-")),
       name: input.name,
       desc: input.desc,
       longDesc: input.longDesc ?? null,
