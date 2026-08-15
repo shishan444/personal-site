@@ -293,3 +293,51 @@ describe("L1 · OutroSection", () => {
     expect(container.querySelector('[id="05"]')).toBeTruthy();
   });
 });
+
+describe("L1 · WritingSection 点击落点（错位修复回归）", () => {
+  it("F8 · 目录点击滚动目标为条目区间中央（idx+0.5×per），亚像素偏差不掉档", async () => {
+    const essays = ["e1", "e2", "e3", "e4", "e5"].map((id, i) => ({
+      ...mockEssay,
+      id,
+      sn: `SN-00${i + 1}`,
+      title: `Essay ${i + 1}`,
+      deck: `deck ${i + 1}`,
+    }));
+    render(
+      <IntlWrapper>
+        <WritingSection essays={essays} />
+      </IntlWrapper>,
+    );
+    // mock 几何：pin 占位 1000px，视口 400px → scrollable=600，per=120
+    const pin = document.querySelector(".relative") as HTMLElement;
+    vi.spyOn(pin, "getBoundingClientRect").mockReturnValue({
+      top: -600,
+      bottom: 400,
+      height: 1000,
+      left: 0,
+      right: 1000,
+      width: 1000,
+      x: 0,
+      y: -600,
+      toJSON: () => ({}),
+    } as DOMRect);
+    Object.defineProperty(pin, "offsetHeight", { value: 1000, configurable: true });
+    Object.defineProperty(window, "innerHeight", { value: 400, configurable: true });
+    Object.defineProperty(window, "scrollY", { value: 600, configurable: true });
+    const scrollCalls: number[] = [];
+    vi.spyOn(window, "scrollTo").mockImplementation(((opt: { top?: number }) => {
+      if (typeof opt?.top === "number") scrollCalls.push(opt.top);
+    }) as never);
+
+    // 点击第二篇（idx=1）
+    fireEvent.click(screen.getByText("Essay 2"));
+    expect(scrollCalls.length).toBe(1);
+    // 目标 = (top+scrollY)=0 + per*(1+0.5) = 180（中央落点；边界落法为 120）
+    expect(scrollCalls[0]).toBe(180);
+
+    // 反算验证：落点对应 pin.top=-180，progress=180/600=0.3；亚像素 +0.9px → 0.3015 或 -0.9px → 0.2985，floor(×5) 均为 1 ✓ 不掉档
+    const progressWithSubpixelError = (180 - 0.9) / 600;
+    expect(Math.floor(progressWithSubpixelError * 5)).toBe(1);
+    vi.spyOn(window, "scrollTo").mockRestore();
+  });
+});

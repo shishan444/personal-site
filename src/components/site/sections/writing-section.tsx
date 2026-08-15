@@ -66,7 +66,9 @@ export function WritingSection({ essays }: WritingSectionProps) {
     const top = pin.getBoundingClientRect().top + window.scrollY;
     const scrollable = pin.offsetHeight - window.innerHeight;
     const per = essays.length > 0 ? scrollable / essays.length : 0;
-    window.scrollTo({ top: top + per * idx, behavior: "smooth" });
+    // 落点取条目区间中央（idx + 0.5）：idx*N 边界处 floor 反算会被亚像素偏差打回上一档，
+    // 造成「点击第二篇选中第一篇」错位；中央落点对浮点鲁棒。
+    window.scrollTo({ top: top + per * (idx + 0.5), behavior: "smooth" });
   }
 
   useEffect(() => {
