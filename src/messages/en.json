@@ -261,7 +261,15 @@
         "now": "Now"
       },
       "set_as_now": "Set as Now",
-      "now_badge": "★ NOW"
+      "now_badge": "★ NOW",
+      "new_title": "New Timeline Node",
+      "edit_title": "Edit Timeline Node",
+      "create_button": "Create",
+      "save_button": "Save",
+      "cancel_button": "Cancel",
+      "toast_created": "Created",
+      "toast_saved": "Saved",
+      "toast_failed": "Save failed"
     },
     "settings_form": {
       "field": {

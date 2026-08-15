@@ -261,7 +261,15 @@
         "now": "当前"
       },
       "set_as_now": "设为当前",
-      "now_badge": "★ 当前"
+      "now_badge": "★ 当前",
+      "new_title": "新建 Timeline 节点",
+      "edit_title": "编辑 Timeline 节点",
+      "create_button": "创建",
+      "save_button": "保存",
+      "cancel_button": "取消",
+      "toast_created": "已创建",
+      "toast_saved": "已保存",
+      "toast_failed": "保存失败"
     },
     "settings_form": {
       "field": {
