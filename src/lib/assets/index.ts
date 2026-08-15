@@ -15,6 +15,7 @@ export {
   type LinkAssetInput,
   linkAsset,
   persistUpload,
+  purgeAsset,
   type UploadInput,
   type UploadResult,
   unlinkAsset,

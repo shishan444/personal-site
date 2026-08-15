@@ -193,8 +193,8 @@ describe("L2 · 文件上传 + 资产管理（upload.ts）", () => {
     });
 
     const refs = await findAssetReferences(result.asset.id);
-    expect(refs.length).toBeGreaterThan(0);
-    expect(refs.some((r) => r.usage === "screenshot")).toBe(true);
+    expect(refs.links.length).toBeGreaterThan(0);
+    expect(refs.links.some((r) => r.usage === "screenshot")).toBe(true);
   });
 
   it("F6 · unlinkAsset 解除单个关联", async () => {
@@ -246,10 +246,10 @@ describe("L2 · 文件上传 + 资产管理（upload.ts）", () => {
     const r = await deleteAssetIfUnreferenced(result.asset.id);
     expect(r.ok).toBe(false);
     expect(r.reason).toBe("REFERENCED");
-    expect((r.references ?? []).length).toBeGreaterThan(0);
+    expect((r.references?.links ?? []).length).toBeGreaterThan(0);
   });
 
-  it("F8 · deleteAssetIfUnreferenced 无引用时成功删除", async () => {
+  it("F8 · deleteAssetIfUnreferenced 无引用时软删除（行保留，deletedAt 写入）", async () => {
     await ensureOwner();
     const result = await persistUpload({
       buffer: Buffer.from(`deletable-${Math.random()}`),
@@ -264,7 +264,14 @@ describe("L2 · 文件上传 + 资产管理（upload.ts）", () => {
 
     const db = await getPgliteDb();
     const stored = await db.select().from(assets).where(eq(assets.id, result.asset.id));
-    expect(stored.length).toBe(0);
+    expect(stored.length).toBe(1);
+    expect(stored[0].deletedAt).not.toBeNull();
+
+    const { purgeAsset } = await import("@/lib/assets");
+    const purged = await purgeAsset(result.asset.id);
+    expect(purged.ok).toBe(true);
+    const after = await db.select().from(assets).where(eq(assets.id, result.asset.id));
+    expect(after.length).toBe(0);
   });
 
   it("F9 · deleteAssetIfUnreferenced 不存在的资产返回 NOT_FOUND", async () => {

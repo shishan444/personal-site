@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, ne } from "drizzle-orm";
+import { and, asc, desc, eq, isNull, ne } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { agents, assetLinks, assets, essays } from "@/lib/db/schema";
 import type { HomeAgent, HomeEssay } from "./site";
@@ -135,7 +135,7 @@ export async function getAgentScreenshots(agentId: string) {
     )
     .orderBy(asc(assetLinks.orderIndex));
   if (links.length === 0) return [];
-  const assetsRows = await db.select().from(assets);
+  const assetsRows = await db.select().from(assets).where(isNull(assets.deletedAt));
   return links
     .map((l) => assetsRows.find((a) => a.id === l.assetId))
     .filter((a): a is NonNullable<typeof a> => Boolean(a))
@@ -230,7 +230,7 @@ export async function getEssayAttachments(essayId: string) {
       ),
     );
   if (links.length === 0) return [];
-  const assetsRows = await db.select().from(assets);
+  const assetsRows = await db.select().from(assets).where(isNull(assets.deletedAt));
   return links
     .map((l) => {
       const a = assetsRows.find((x) => x.id === l.assetId);
