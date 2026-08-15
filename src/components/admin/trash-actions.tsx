@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
+import { toast } from "@/components/ui/toaster";
 import { purgeFromTrash, restoreFromTrash } from "@/lib/actions/trash";
 
 export function TrashActions({
@@ -22,7 +23,13 @@ export function TrashActions({
       <button
         type="button"
         disabled={pending}
-        onClick={() => startTransition(() => restoreFromTrash(kind, id).then(() => {}))}
+        onClick={() =>
+          startTransition(() =>
+            restoreFromTrash(kind, id)
+              .then(() => toast.success(t("toast_restored"), title))
+              .catch(() => toast.error(t("toast_failed"))),
+          )
+        }
         className="text-xs uppercase tracking-widest px-3 py-2 border border-[var(--color-line)] glass-chip text-[var(--color-ink)] hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] disabled:opacity-40"
         style={{ fontFamily: "var(--font-mono)" }}
       >
@@ -34,7 +41,15 @@ export function TrashActions({
             type="button"
             disabled={pending}
             onClick={() =>
-              startTransition(() => purgeFromTrash(kind, id).then(() => setConfirming(false)))
+              startTransition(() =>
+                purgeFromTrash(kind, id)
+                  .then((r) => {
+                    setConfirming(false);
+                    if (r.ok) toast.success(t("toast_purged"), title);
+                    else toast.error(t("toast_failed"));
+                  })
+                  .catch(() => toast.error(t("toast_failed"))),
+              )
             }
             className="text-xs uppercase tracking-widest px-3 py-2 border border-[var(--color-danger)] text-[var(--color-danger)] hover:bg-[var(--color-danger)]/10 disabled:opacity-40"
             style={{ fontFamily: "var(--font-mono)" }}

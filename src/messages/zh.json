@@ -336,7 +336,10 @@
       "kind_essay": "文章",
       "kind_agent": "Agent",
       "kind_asset": "资产",
-      "subtitle": "软删除条目管理"
+      "subtitle": "软删除条目管理",
+      "toast_restored": "已恢复",
+      "toast_purged": "已彻底删除",
+      "toast_failed": "操作失败"
     },
     "sidebar_trash": "回收站"
   },

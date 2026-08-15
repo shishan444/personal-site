@@ -336,7 +336,10 @@
       "kind_essay": "Essay",
       "kind_agent": "Agent",
       "kind_asset": "Asset",
-      "subtitle": "Soft-deleted items"
+      "subtitle": "Soft-deleted items",
+      "toast_restored": "Restored",
+      "toast_purged": "Purged",
+      "toast_failed": "Operation failed"
     },
     "sidebar_trash": "Trash"
   },
