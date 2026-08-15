@@ -40,6 +40,30 @@ export function SubdialFrame({
   const activeChapter = chapters[activeIndex] ?? chapters[0];
   const meta = chapterMetas[activeChapter?.id ?? ""];
 
+  // LD 联动（用户裁决 2026-08-15 #D3）：章节内活跃条目（slide/卡片/节点）经
+  // atelier:active-item 事件上报，覆盖 chapterMetas 的静态首条目。
+  const [liveItem, setLiveItem] = useState<{
+    chapterId: string;
+    title: string;
+    meta: string;
+  } | null>(null);
+  useEffect(() => {
+    function onActiveItem(e: Event) {
+      const detail = (e as CustomEvent).detail as {
+        chapterId: string;
+        title: string;
+        meta: string;
+      };
+      setLiveItem(detail);
+    }
+    window.addEventListener("atelier:active-item", onActiveItem);
+    return () => window.removeEventListener("atelier:active-item", onActiveItem);
+  }, []);
+  const ldTitle =
+    liveItem?.chapterId === (activeChapter?.id ?? "") ? liveItem.title : (meta?.title ?? "");
+  const ldDesc =
+    liveItem?.chapterId === (activeChapter?.id ?? "") ? liveItem.meta : (meta?.desc ?? "");
+
   return (
     <>
       <div className="fixed top-6 left-6 z-40 pointer-events-none">
@@ -58,8 +82,8 @@ export function SubdialFrame({
         {meta && (
           <LdSubdial
             eyebrow={meta.eyebrow}
-            title={meta.title}
-            desc={meta.desc}
+            title={ldTitle || meta.title}
+            desc={ldDesc || meta.desc}
             visible={Boolean(activeId)}
           />
         )}

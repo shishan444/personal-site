@@ -186,22 +186,38 @@ describe("L1 · AgentsSection", () => {
     expect(screen.queryByText("开始使用")).toBeNull();
   });
 
-  it("F3 · track 元素 scroll 时 activeIdx 随 scrollLeft 更新", async () => {
+  it("F3 · 滚动进度驱动水平推进（占位容器 rect → activeIdx + track 位移）", async () => {
     const agents = ["a1", "a2", "a3", "a4"].map((id) => ({ ...mockAgent, id }));
     render(
       <IntlWrapper>
         <AgentsSection agents={agents} />
       </IntlWrapper>,
     );
-    const track = document.querySelector(".overflow-x-auto") as HTMLElement;
-    // jsdom 不计算布局，mock 滚动几何
-    Object.defineProperty(track, "scrollWidth", { value: 1600, configurable: true });
-    Object.defineProperty(track, "clientWidth", { value: 400, configurable: true });
-    track.scrollLeft = 1200; // ratio = 1200/(1600-400) = 1 → 最后一张
-    fireEvent.scroll(track);
-    // useRafThrottle 在 rAF 回调中执行更新，轮询等待一帧后的结果
+    // 占位容器（pinRef）：N×67vh 高度块；jsdom 无布局，mock rect 模拟滚到底
+    const pin = document.querySelector(".relative") as HTMLElement;
+    const pinRect = {
+      top: -900,
+      bottom: 100,
+      height: 1000,
+      left: 0,
+      right: 1000,
+      width: 1000,
+      x: 0,
+      y: -900,
+      toJSON: () => ({}),
+    };
+    vi.spyOn(pin, "getBoundingClientRect").mockReturnValue(pinRect as DOMRect);
+    // track 位移量基于 scrollWidth
+    const track = document.querySelector(".will-change-transform") as HTMLElement;
+    Object.defineProperty(track, "scrollWidth", { value: 2400, configurable: true });
+    Object.defineProperty(window, "innerWidth", { value: 800, configurable: true });
+    Object.defineProperty(window, "innerHeight", { value: 400, configurable: true });
+
+    fireEvent.scroll(window);
+    // useRafThrottle 在 rAF 回调中执行：progress=1 → 最后一张 + 满位移
     await vi.waitFor(() => {
       expect(screen.getByText(/4\/4/)).toBeTruthy();
+      expect(track.style.transform).toContain("-1600px"); // -(2400-800)
     });
   });
 });
