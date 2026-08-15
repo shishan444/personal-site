@@ -17,7 +17,7 @@ function contrastRatio(foreground: string, background: string): number {
 }
 
 function readToken(name: string): string {
-  const css = readFileSync(path.resolve(__dirname, "../../src/app/globals.css"), "utf-8");
+  const css = readFileSync(path.resolve(process.cwd(), "src/app/globals.css"), "utf-8");
   const m = css.match(new RegExp(`--color-${name}:\\s*(#[0-9a-fA-F]{6})`));
   if (!m) throw new Error(`token --color-${name} not found`);
   return m[1].toLowerCase();
