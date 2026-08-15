@@ -1,5 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { ConfirmSubmit } from "@/components/admin/confirm-submit";
 import { EssayEditor } from "@/components/admin/essay-editor";
 import { EssayRevisions } from "@/components/admin/essay-revisions";
 import { archiveEssay, deleteEssay, publishEssay, updateEssay } from "@/lib/actions/essays";
@@ -90,19 +91,13 @@ export default async function EditEssayPage({
             </button>
           </form>
         )}
-        <form
-          action={remove}
-          className="ml-auto"
-          onSubmit={(e) => {
-            if (!window.confirm("确认删除？将移入回收站，可在回收站恢复")) e.preventDefault();
-          }}
-        >
-          <button
-            type="submit"
+        <form action={remove} className="ml-auto">
+          <ConfirmSubmit
+            message="确认删除？将移入回收站，可在回收站恢复"
             className="text-[var(--color-danger)] text-xs uppercase tracking-widest hover:underline"
           >
             {t("admin.essay.delete")}
-          </button>
+          </ConfirmSubmit>
         </form>
       </div>
     </div>
