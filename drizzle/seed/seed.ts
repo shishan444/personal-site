@@ -298,6 +298,30 @@ async function main() {
     console.log("[seed] · owner exists, skip");
   }
 
+  // E2E 专用账号（playwright E2E_OWNER 契约）：首次登录强制改密；与演示账号并存，
+  // 不影响用户裁决 #3（admin@xx.com 保持现状）。
+  const { hashPassword: hashE2E } = await import("../../src/lib/auth/password");
+  const existingE2E = await db
+    .select()
+    .from(users)
+    .where(eq(users.email, "owner@atelier.com"))
+    .limit(1);
+  if (existingE2E.length === 0) {
+    await db
+      .insert(users)
+      .values({
+        id: "00000000-0000-0000-0000-0000000000e2",
+        email: "owner@atelier.com",
+        name: "E2E Owner",
+        role: "owner",
+        emailVerified: true,
+        mustChangePassword: true,
+        passwordHash: await hashE2E("ChangeMe-On-First-Login"),
+      })
+      .execute();
+    console.log("[seed] ✓ e2e owner user (owner@atelier.com, 强制首登改密)");
+  }
+
   await db.insert(siteConfig).values(demoSiteConfig).onConflictDoNothing().execute();
   console.log("[seed] ✓ site_config");
 

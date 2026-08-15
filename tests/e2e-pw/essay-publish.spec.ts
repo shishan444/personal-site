@@ -24,7 +24,7 @@ test("B1 · 文章发布全流程", async ({ page }) => {
   await page.goto("/zh/admin/writing");
   await page.getByRole("link", { name: TITLE }).click();
   await expect(page).toHaveURL(/\/zh\/admin\/writing\/[0-9a-f-]{36}$/);
-  await page.getByRole("button", { name: /✓ Publish/i }).click();
+  await page.getByRole("button", { name: /✓ 发布|✓ Publish/i }).click();
   await expect(page).toHaveURL(/\/zh\/admin\/writing$/);
 
   // 3. 前台可见
@@ -34,7 +34,8 @@ test("B1 · 文章发布全流程", async ({ page }) => {
   // 4. 清理：删除
   await page.goto("/zh/admin/writing");
   await page.getByRole("link", { name: TITLE }).click();
-  await page.getByRole("button", { name: /✕ Delete|✕ 删除/i }).click();
+  await page.on("dialog", (d) => d.accept());
+  await page.getByRole("button", { name: /✕ 删除|✕ Delete/i }).click();
   await expect(page).toHaveURL(/\/zh\/admin\/writing$/);
 
   // 5. 前台不可见（404）

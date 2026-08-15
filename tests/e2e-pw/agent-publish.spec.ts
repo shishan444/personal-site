@@ -23,7 +23,7 @@ test("B2 · Agent 上线全流程", async ({ page }) => {
   await page.getByRole("link", { name: NAME }).click();
   await page.locator("[name=status]").selectOption("active");
   await page.getByRole("button", { name: /SAVE|CREATE|保存|创建/i }).click();
-  await expect(page).toHaveURL(/\/zh\/admin\/agents$/);
+  await expect(page).toHaveURL(/\/zh\/admin\/agents\/[0-9a-f-]{36}$/);
 
   // 3. 前台详情页可见
   await page.goto(`/zh/agents/${SN}`);
@@ -32,7 +32,8 @@ test("B2 · Agent 上线全流程", async ({ page }) => {
   // 4. 清理
   await page.goto("/zh/admin/agents");
   await page.getByRole("link", { name: NAME }).click();
-  await page.getByRole("button", { name: /Delete Agent|删除 Agent/i }).click();
+  await page.on("dialog", (d) => d.accept());
+  await page.getByRole("button", { name: /✕ 删除|Delete/i }).click();
   await expect(page).toHaveURL(/\/zh\/admin\/agents$/);
 
   const res = await page.goto(`/zh/agents/${SN}`);
