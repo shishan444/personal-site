@@ -37,12 +37,15 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   // 站点配置接线（审计 #24：chaptersConfig/subdialsConfig/globalStats 此前保存不生效）
   const chapters = resolveChapters(config?.chaptersConfig ?? null);
   const subdials = config?.subdialsConfig;
+  // 占位符别名双向兼容：seed 模板用 spec 8.6 命名（essays_published/current_cal）
   const templateVars = {
     version: config?.currentVersion ?? "v0.4",
     agents_active: String(stats.agentsActive),
     agents_beta: String(stats.agentsBeta),
     essays: String(stats.essaysPublished),
+    essays_published: String(stats.essaysPublished),
     calibre: stats.currentCalibre,
+    current_cal: stats.currentCalibre,
   };
   const heroOverrides = config?.globalStats
     ? {
