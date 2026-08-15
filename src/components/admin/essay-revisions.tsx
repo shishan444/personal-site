@@ -1,17 +1,12 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 import { restoreEssayRevision } from "@/lib/actions/essays";
 import type { EssayRevisionRow } from "@/lib/queries/admin-list";
 
-const ACTION_LABELS: Record<EssayRevisionRow["action"], string> = {
-  created: "创建",
-  edited: "编辑",
-  published: "发布",
-  archived: "归档",
-  restored: "恢复",
-};
+// 审计 #47：硬编码中文改 i18n（en 环境渗漏修复）
 
 export interface EssayRevisionsProps {
   essayId: string;
@@ -19,6 +14,7 @@ export interface EssayRevisionsProps {
 }
 
 export function EssayRevisions({ essayId, revisions }: EssayRevisionsProps) {
+  const t = useTranslations("admin.essay");
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [pendingId, setPendingId] = useState<string | null>(null);
@@ -69,7 +65,7 @@ export function EssayRevisions({ essayId, revisions }: EssayRevisionsProps) {
                 className="text-[10px] uppercase tracking-widest text-[var(--color-accent-2)] w-14 shrink-0"
                 style={{ fontFamily: "var(--font-mono)" }}
               >
-                {ACTION_LABELS[r.action]}
+                {t(`admin.essay.revision_r.action`)}
               </span>
               <span className="flex-1 truncate text-[var(--color-ink)]">{r.title}</span>
               <span

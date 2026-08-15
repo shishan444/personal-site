@@ -213,7 +213,14 @@
       },
       "placeholder_topic_tags": "AI, Agent...",
       "placeholder_slug": "my-essay-zh",
-      "delete": "✕ Delete"
+      "delete": "✕ Delete",
+      "revision_created": "Created",
+      "revision_edited": "Edited",
+      "revision_published": "Published",
+      "revision_archived": "Archived",
+      "revision_restored": "Restored",
+      "action_publish": "✓ Publish",
+      "action_archive": "▤ Archive"
     },
     "agent": {
       "field": {

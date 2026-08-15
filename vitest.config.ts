@@ -25,10 +25,12 @@ export default defineConfig({
         "src/**/*.{test,spec}.{ts,tsx}",
       ],
       thresholds: {
-        lines: 85,
-        functions: 90,
-        branches: 80,
-        statements: 85,
+        // 2026-08-15 校准（用户裁决 #15A）：门槛=当前真实水位，exit 0 让质量门可信；
+        // 提升目标走 backlog（admin 组件 0%/auth 8% 优先），不再虚挂 85 长期红。
+        lines: 33,
+        functions: 26,
+        branches: 33,
+        statements: 32,
         perFile: false,
       },
     },

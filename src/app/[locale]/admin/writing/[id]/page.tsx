@@ -76,7 +76,7 @@ export default async function EditEssayPage({
               type="submit"
               className="bg-[var(--color-accent-2)] text-[var(--color-bg)] px-4 py-2 text-xs uppercase tracking-widest"
             >
-              ✓ Publish
+              {t("admin.essay.action_publish")}
             </button>
           </form>
         )}
@@ -86,7 +86,7 @@ export default async function EditEssayPage({
               type="submit"
               className="border border-[var(--color-line)] text-[var(--color-ink-mute)] px-4 py-2 text-xs uppercase tracking-widest hover:border-[var(--color-accent)]"
             >
-              ▤ Archive
+              {t("admin.essay.action_archive")}
             </button>
           </form>
         )}

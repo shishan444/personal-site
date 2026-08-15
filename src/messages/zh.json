@@ -213,7 +213,14 @@
       },
       "placeholder_topic_tags": "AI, Agent...",
       "placeholder_slug": "my-essay-zh",
-      "delete": "✕ 删除"
+      "delete": "✕ 删除",
+      "revision_created": "创建",
+      "revision_edited": "编辑",
+      "revision_published": "发布",
+      "revision_archived": "归档",
+      "revision_restored": "恢复",
+      "action_publish": "✓ 发布",
+      "action_archive": "▤ 归档"
     },
     "agent": {
       "field": {
