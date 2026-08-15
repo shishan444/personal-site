@@ -62,7 +62,12 @@ export default async function EditAgentPage({
       <AgentScreenshots agentId={id} initial={screenshots} />
 
       <div className="pt-8 border-t border-[var(--color-line)]">
-        <form action={remove}>
+        <form
+          action={remove}
+          onSubmit={(e) => {
+            if (!window.confirm("确认删除？将移入回收站，可在回收站恢复")) e.preventDefault();
+          }}
+        >
           <button
             type="submit"
             className="text-[var(--color-danger)] text-xs uppercase tracking-widest hover:underline"

@@ -90,7 +90,13 @@ export default async function EditEssayPage({
             </button>
           </form>
         )}
-        <form action={remove} className="ml-auto">
+        <form
+          action={remove}
+          className="ml-auto"
+          onSubmit={(e) => {
+            if (!window.confirm("确认删除？将移入回收站，可在回收站恢复")) e.preventDefault();
+          }}
+        >
           <button
             type="submit"
             className="text-[var(--color-danger)] text-xs uppercase tracking-widest hover:underline"
