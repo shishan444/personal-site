@@ -226,8 +226,12 @@ describe("L1 · AgentsSection", () => {
     expect(screen.queryByText("开始使用")).toBeNull();
   });
 
-  it("F3 · 滚动进度驱动水平推进（占位容器 rect → activeIdx + track 位移）", async () => {
-    const agents = ["a1", "a2", "a3", "a4"].map((id) => ({ ...mockAgent, id }));
+  it("F3 · 滚动驱动离散反算（progress → floor×N → 选中卡对齐偏移）", async () => {
+    const agents = ["a1", "a2", "a3", "a4"].map((id, i) => ({
+      ...mockAgent,
+      id,
+      name: `Agent ${i + 1}`,
+    }));
     render(
       <IntlWrapper>
         <AgentsSection agents={agents} />
@@ -235,7 +239,7 @@ describe("L1 · AgentsSection", () => {
     );
     // 占位容器（pinRef）：N×67vh 高度块；jsdom 无布局，mock rect 模拟滚到底
     const pin = document.querySelector(".relative") as HTMLElement;
-    const pinRect = {
+    vi.spyOn(pin, "getBoundingClientRect").mockReturnValue({
       top: -900,
       bottom: 100,
       height: 1000,
@@ -245,22 +249,205 @@ describe("L1 · AgentsSection", () => {
       x: 0,
       y: -900,
       toJSON: () => ({}),
-    };
-    vi.spyOn(pin, "getBoundingClientRect").mockReturnValue(pinRect as DOMRect);
-    // track 位移量基于 scrollWidth
-    const track = document.querySelector(".will-change-transform") as HTMLElement;
-    Object.defineProperty(track, "scrollWidth", { value: 2400, configurable: true });
-    Object.defineProperty(window, "innerWidth", { value: 800, configurable: true });
+    } as DOMRect);
     Object.defineProperty(window, "innerHeight", { value: 400, configurable: true });
+    // 卡片几何：第 0 张自然位 40px（pl-10），步进 472px（440 卡宽 + 32 gap）
+    const cards = document.querySelectorAll("article");
+    cards.forEach((c, i) => {
+      Object.defineProperty(c, "offsetLeft", { value: 40 + i * 472, configurable: true });
+    });
 
     fireEvent.scroll(window);
-    // useRafThrottle 在 rAF 回调中执行：progress=1 → 最后一张 + 满位移
+    // progress = 900/600 → clamp 1 → floor(1×4)=3（第 4 张）；offset = 40 − (40+3×472) = −1416
+    const track = document.querySelector(".will-change-transform") as HTMLElement;
     await vi.waitFor(() => {
       expect(screen.getByText(/4\/4/)).toBeTruthy();
-      expect(track.style.transform).toContain("-1600px"); // -(2400-800)
+      expect(track.style.transform).toContain("-1416px");
     });
   });
+
+  it("F4 · 点击第 2 张卡 → 选中态迁移 + 滚动落点为段中央（idx+0.5×per）", async () => {
+    const agents = ["a1", "a2", "a3", "a4"].map((id, i) => ({
+      ...mockAgent,
+      id,
+      name: `Agent ${i + 1}`,
+    }));
+    render(
+      <IntlWrapper>
+        <AgentsSection agents={agents} />
+      </IntlWrapper>,
+    );
+    // 稳态几何：progress=150/600=0.25 → floor(×4)=1，与点击目标一致（rAF 重算不打架）
+    mockAgentGeometry({ top: -150, height: 1000, scrollY: 150, viewport: 400 });
+    const scrollCalls: number[] = [];
+    vi.spyOn(window, "scrollTo").mockImplementation(((opt: { top?: number }) => {
+      if (typeof opt?.top === "number") scrollCalls.push(opt.top);
+    }) as never);
+
+    const cards = document.querySelectorAll("article");
+    expect(cards[0].className).toContain("glow-accent");
+    fireEvent.click(screen.getByText("Agent 2"));
+    // per = (1000−400)/4 = 150；top+scrollY = −150+150 = 0；落点 = 0 + 150×(1+0.5) = 225
+    expect(scrollCalls).toEqual([225]);
+    await vi.waitFor(() => {
+      expect(cards[1].className).toContain("glow-accent");
+      expect(cards[0].className).not.toContain("glow-accent");
+    });
+    vi.spyOn(window, "scrollTo").mockRestore();
+  });
+
+  it("F5 · 点击卡片内部按钮/链接不触发选卡", () => {
+    const agents = ["a1", "a2"].map((id, i) => ({ ...mockAgent, id, name: `Agent ${i + 1}` }));
+    render(
+      <IntlWrapper>
+        <AgentsSection agents={agents} />
+      </IntlWrapper>,
+    );
+    mockAgentGeometry({ top: 0, height: 1000, scrollY: 0, viewport: 400 });
+    const scrollSpy = vi.spyOn(window, "scrollTo").mockImplementation((() => {}) as never);
+
+    // 卡片内第一个真按钮（手记 outline Button）
+    const innerButton = document.querySelector("article button") as HTMLElement;
+    fireEvent.click(innerButton);
+    expect(scrollSpy).not.toHaveBeenCalled();
+    expect(document.querySelectorAll("article")[0].className).toContain("glow-accent");
+    scrollSpy.mockRestore();
+  });
+
+  it("F6 · 卡片区滚轮向下 → 拦截默认滚动并翻到下一张", async () => {
+    const agents = ["a1", "a2", "a3"].map((id, i) => ({
+      ...mockAgent,
+      id,
+      name: `Agent ${i + 1}`,
+    }));
+    render(
+      <IntlWrapper>
+        <AgentsSection agents={agents} />
+      </IntlWrapper>,
+    );
+    // 稳态几何：progress=0.25 → idx 1，与滚轮目标一致
+    mockAgentGeometry({ top: -150, height: 1000, scrollY: 150, viewport: 400 });
+    const scrollSpy = vi.spyOn(window, "scrollTo").mockImplementation((() => {}) as never);
+    const track = document.querySelector(".will-change-transform") as HTMLElement;
+
+    const cancelled = !fireEvent.wheel(track, { deltaY: 100 });
+    expect(cancelled).toBe(true); // preventDefault 生效（页面不动）
+    expect(scrollSpy).toHaveBeenCalledTimes(1);
+    await vi.waitFor(() => {
+      expect(document.querySelectorAll("article")[1].className).toContain("glow-accent");
+    });
+    scrollSpy.mockRestore();
+  });
+
+  it("F7 · 边界放行：第一张卡向上滚 → 不拦截、不翻卡", () => {
+    render(
+      <IntlWrapper>
+        <AgentsSection
+          agents={["a1", "a2"].map((id, i) => ({ ...mockAgent, id, name: `Agent ${i + 1}` }))}
+        />
+      </IntlWrapper>,
+    );
+    mockAgentGeometry({ top: 0, height: 1000, scrollY: 0, viewport: 400 });
+    const scrollSpy = vi.spyOn(window, "scrollTo").mockImplementation((() => {}) as never);
+    const track = document.querySelector(".will-change-transform") as HTMLElement;
+
+    const cancelled = !fireEvent.wheel(track, { deltaY: -100 });
+    expect(cancelled).toBe(false); // 放行页面滚动
+    expect(scrollSpy).not.toHaveBeenCalled();
+    expect(document.querySelectorAll("article")[0].className).toContain("glow-accent");
+    scrollSpy.mockRestore();
+  });
+
+  it("F8 · 手势锁：450ms 窗口内惯性尾流只翻一张", () => {
+    render(
+      <IntlWrapper>
+        <AgentsSection
+          agents={["a1", "a2", "a3"].map((id, i) => ({
+            ...mockAgent,
+            id,
+            name: `Agent ${i + 1}`,
+          }))}
+        />
+      </IntlWrapper>,
+    );
+    // 稳态几何：progress=0.25×3 段 → top=−150 时 progress=150/600=0.25 → floor(×3)=0（初始），首次滚轮 → 1
+    mockAgentGeometry({ top: -150, height: 1000, scrollY: 150, viewport: 400 });
+    const scrollSpy = vi.spyOn(window, "scrollTo").mockImplementation((() => {}) as never);
+    const track = document.querySelector(".will-change-transform") as HTMLElement;
+    const nowSpy = vi.spyOn(performance, "now").mockReturnValue(1000);
+
+    fireEvent.wheel(track, { deltaY: 100 }); // 首个 wheel → 翻卡 + 上锁
+    const tailCancelled = !fireEvent.wheel(track, { deltaY: 100 }); // 同时刻尾流
+    expect(tailCancelled).toBe(true); // 仍拦截（吞掉尾流防页面中途起滚）
+    expect(scrollSpy).toHaveBeenCalledTimes(1); // 但不再翻卡
+
+    nowSpy.mockReturnValue(2000); // 锁过期
+    fireEvent.wheel(track, { deltaY: 100 });
+    expect(scrollSpy).toHaveBeenCalledTimes(2);
+    nowSpy.mockRestore();
+    scrollSpy.mockRestore();
+  });
+
+  it("F9 · 键盘 ←→：章节在视口时翻卡，落点段中央", () => {
+    render(
+      <IntlWrapper>
+        <AgentsSection
+          agents={["a1", "a2", "a3", "a4"].map((id, i) => ({
+            ...mockAgent,
+            id,
+            name: `Agent ${i + 1}`,
+          }))}
+        />
+      </IntlWrapper>,
+    );
+    mockAgentGeometry({ top: 0, height: 1000, scrollY: 0, viewport: 400 });
+    // 键盘守卫读的是 #03 section 自身 rect（jsdom 默认全 0 → bottom=0 不在视口），需单独 mock
+    const section = document.getElementById("03") as HTMLElement;
+    const sectionSpy = vi
+      .spyOn(section, "getBoundingClientRect")
+      .mockReturnValue({ top: -400, bottom: 600, height: 1000 } as DOMRect);
+    const scrollCalls: number[] = [];
+    vi.spyOn(window, "scrollTo").mockImplementation(((opt: { top?: number }) => {
+      if (typeof opt?.top === "number") scrollCalls.push(opt.top);
+    }) as never);
+
+    fireEvent.keyDown(window, { key: "ArrowRight" });
+    fireEvent.keyDown(window, { key: "ArrowLeft" });
+    // per = 600/4 = 150；top+scrollY = 0+0 = 0；落点 150×1.5=225 → 150×0.5=75
+    expect(scrollCalls).toEqual([225, 75]);
+    sectionSpy.mockRestore();
+    vi.spyOn(window, "scrollTo").mockRestore();
+  });
 });
+
+/** Agents 测试共用几何 mock：pin rect + offsetHeight + 视口/滚动位置。 */
+function mockAgentGeometry({
+  top,
+  height,
+  scrollY,
+  viewport,
+}: {
+  top: number;
+  height: number;
+  scrollY: number;
+  viewport: number;
+}) {
+  const pin = document.querySelector(".relative") as HTMLElement;
+  vi.spyOn(pin, "getBoundingClientRect").mockReturnValue({
+    top,
+    bottom: top + height,
+    height,
+    left: 0,
+    right: 1000,
+    width: 1000,
+    x: 0,
+    y: top,
+    toJSON: () => ({}),
+  } as DOMRect);
+  Object.defineProperty(pin, "offsetHeight", { value: height, configurable: true });
+  Object.defineProperty(window, "innerHeight", { value: viewport, configurable: true });
+  Object.defineProperty(window, "scrollY", { value: scrollY, configurable: true });
+}
 
 describe("L1 · TimelineSection", () => {
   it("F1 · 渲染 SVG timeline + 节点 circle", () => {
