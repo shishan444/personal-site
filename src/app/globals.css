@@ -113,6 +113,15 @@ body {
   border: 1px solid var(--color-glass-line);
 }
 
+/* 隐藏滚动条但保留原生滚动能力（横向列表，玻璃美学；裁决 2026-08-16 P11） */
+.no-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* legacy Edge */
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
 /* 小件玻璃：徽标、chip、线框按钮等小元素。 */
 .glass-chip {
   background: color-mix(in oklab, var(--color-bg) 42%, transparent);
