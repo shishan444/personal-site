@@ -1,5 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { ConfirmSubmit } from "@/components/admin/confirm-submit";
 import { EssayEditor } from "@/components/admin/essay-editor";
 import { EssayRevisions } from "@/components/admin/essay-revisions";
 import { archiveEssay, deleteEssay, publishEssay, updateEssay } from "@/lib/actions/essays";
@@ -76,7 +77,7 @@ export default async function EditEssayPage({
               type="submit"
               className="bg-[var(--color-accent-2)] text-[var(--color-bg)] px-4 py-2 text-xs uppercase tracking-widest"
             >
-              ✓ Publish
+              {t("admin.essay.action_publish")}
             </button>
           </form>
         )}
@@ -86,17 +87,17 @@ export default async function EditEssayPage({
               type="submit"
               className="border border-[var(--color-line)] text-[var(--color-ink-mute)] px-4 py-2 text-xs uppercase tracking-widest hover:border-[var(--color-accent)]"
             >
-              ▤ Archive
+              {t("admin.essay.action_archive")}
             </button>
           </form>
         )}
         <form action={remove} className="ml-auto">
-          <button
-            type="submit"
+          <ConfirmSubmit
+            message="确认删除？将移入回收站，可在回收站恢复"
             className="text-[var(--color-danger)] text-xs uppercase tracking-widest hover:underline"
           >
             {t("admin.essay.delete")}
-          </button>
+          </ConfirmSubmit>
         </form>
       </div>
     </div>

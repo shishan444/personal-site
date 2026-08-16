@@ -87,7 +87,8 @@
     "attachments_download": "Download",
     "detail_eyebrow": "ESSAY",
     "detail_back": "Back to chapter",
-    "detail_related_agent": "Related agent"
+    "detail_related_agent": "Related agent",
+    "view_original": "View original"
   },
   "agent": {
     "section_label": "§ 03 · Agents in motion",
@@ -213,7 +214,14 @@
       },
       "placeholder_topic_tags": "AI, Agent...",
       "placeholder_slug": "my-essay-zh",
-      "delete": "✕ Delete"
+      "delete": "✕ Delete",
+      "revision_created": "Created",
+      "revision_edited": "Edited",
+      "revision_published": "Published",
+      "revision_archived": "Archived",
+      "revision_restored": "Restored",
+      "action_publish": "✓ Publish",
+      "action_archive": "▤ Archive"
     },
     "agent": {
       "field": {
@@ -261,7 +269,15 @@
         "now": "Now"
       },
       "set_as_now": "Set as Now",
-      "now_badge": "★ NOW"
+      "now_badge": "★ NOW",
+      "new_title": "New Timeline Node",
+      "edit_title": "Edit Timeline Node",
+      "create_button": "Create",
+      "save_button": "Save",
+      "cancel_button": "Cancel",
+      "toast_created": "Created",
+      "toast_saved": "Saved",
+      "toast_failed": "Save failed"
     },
     "settings_form": {
       "field": {
@@ -280,28 +296,75 @@
       "subtitle": "topic_tags from {count} essays"
     },
     "assets_page": {
-      "subtitle": "{count} ASSETS · Upload via /api/upload"
+      "subtitle": "{count} ASSETS · Upload via /api/upload",
+      "upload_button": "+ Upload",
+      "uploading": "Uploading…",
+      "upload_hint": "Drop files here or click · multiple · 20MB max · use external links for oversized",
+      "toast_uploaded": "{count} file(s) uploaded",
+      "err_mime": "Type not allowed",
+      "err_size": "Exceeds 20MB",
+      "err_generic": "Upload failed"
     },
     "enum": {
-      "essay_type": { "essay": "Essay", "note": "Note", "tutorial": "Tutorial" },
-      "essay_status": { "draft": "Draft", "published": "Published", "archived": "Archived" },
+      "essay_type": {
+        "essay": "Essay",
+        "note": "Note",
+        "tutorial": "Tutorial"
+      },
+      "essay_status": {
+        "draft": "Draft",
+        "published": "Published",
+        "archived": "Archived"
+      },
       "agent_status": {
         "active": "Active",
         "beta": "Beta",
         "coming": "Coming",
         "archived": "Archived"
       },
-      "click_target": { "internal": "Internal (detail page)", "external": "External (URL)" },
-      "launch_type": { "external": "External", "iframe": "iframe", "modal": "Modal" },
-      "timeline_type": { "genesis": "Genesis", "now": "Now", "normal": "Normal", "major": "Major" },
-      "lang": { "zh": "Chinese", "en": "English" }
+      "click_target": {
+        "internal": "Internal (detail page)",
+        "external": "External (URL)"
+      },
+      "launch_type": {
+        "external": "External",
+        "iframe": "iframe",
+        "modal": "Modal"
+      },
+      "timeline_type": {
+        "genesis": "Genesis",
+        "now": "Now",
+        "normal": "Normal",
+        "major": "Major"
+      },
+      "lang": {
+        "zh": "Chinese",
+        "en": "English"
+      }
     },
     "common": {
       "saving": "Saving…",
       "saved": "✓ Saved",
       "create": "Create",
       "save": "Save"
-    }
+    },
+    "trash_page": {
+      "title": "Trash",
+      "hint": "Deleted items land here first; purging is irreversible.",
+      "empty": "Trash is empty",
+      "restore": "Restore",
+      "purge": "Purge",
+      "purge_confirm": "Confirm purge",
+      "cancel": "Cancel",
+      "kind_essay": "Essay",
+      "kind_agent": "Agent",
+      "kind_asset": "Asset",
+      "subtitle": "Soft-deleted items",
+      "toast_restored": "Restored",
+      "toast_purged": "Purged",
+      "toast_failed": "Operation failed"
+    },
+    "sidebar_trash": "Trash"
   },
   "dashboard": {
     "title": "Site",
@@ -327,7 +390,10 @@
       "update": "Update",
       "delete": "Delete",
       "login": "Login",
-      "logout": "Logout"
+      "logout": "Logout",
+      "publish": "Publish",
+      "archive": "Archive",
+      "restore": "Restore"
     },
     "target": {
       "user": "User",

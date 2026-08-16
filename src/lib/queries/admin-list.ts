@@ -1,4 +1,4 @@
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, isNull } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { agents, essays } from "@/lib/db/schema";
 
@@ -29,9 +29,13 @@ export async function listEssaysForAdmin(opts?: {
       ? await db
           .select()
           .from(essays)
-          .where(and(...conditions))
+          .where(and(...conditions, isNull(essays.deletedAt)))
           .orderBy(desc(essays.updatedAt))
-      : await db.select().from(essays).orderBy(desc(essays.updatedAt));
+      : await db
+          .select()
+          .from(essays)
+          .where(isNull(essays.deletedAt))
+          .orderBy(desc(essays.updatedAt));
 
   return rows.map((e) => ({
     id: e.id,
@@ -59,7 +63,7 @@ export interface AdminAgentRow {
 
 export async function listAgentsForAdmin(): Promise<AdminAgentRow[]> {
   const db = await getDb();
-  const rows = await db.select().from(agents).orderBy(agents.order);
+  const rows = await db.select().from(agents).where(isNull(agents.deletedAt)).orderBy(agents.order);
   return rows.map((a) => ({
     id: a.id,
     sn: a.sn,

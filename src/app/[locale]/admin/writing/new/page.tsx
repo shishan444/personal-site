@@ -10,9 +10,8 @@ export default async function NewEssayPage({ params }: { params: Promise<{ local
   async function save(formData: FormData) {
     "use server";
     const sn = String(formData.get("sn") ?? "");
-    if (!sn) throw new Error("SN required");
     const result = await createEssay({
-      sn,
+      sn: sn || undefined,
       lang: String(formData.get("lang") ?? "zh") as "zh" | "en",
       title: String(formData.get("title") ?? ""),
       deck: String(formData.get("deck") ?? ""),
@@ -30,7 +29,7 @@ export default async function NewEssayPage({ params }: { params: Promise<{ local
       <EssayEditor
         action={save}
         initial={{
-          sn: `SN-${Math.floor(Math.random() * 900) + 100}`,
+          sn: "", // 留空由服务端按 max+1 生成
           title: "",
           deck: "",
           body: "",

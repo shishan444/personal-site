@@ -15,7 +15,8 @@ export const assetLinks = pgTable(
   "asset_links",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    assetId: uuid("asset_id").notNull(),
+    assetId: uuid("asset_id"),
+    externalUrl: varchar("external_url", { length: 512 }),
     sourceType: varchar("source_type", { length: 32 }).notNull(),
     sourceId: uuid("source_id").notNull(),
     usage: varchar("usage", { length: 32 }).notNull(),

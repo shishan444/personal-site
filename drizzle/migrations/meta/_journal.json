@@ -15,6 +15,20 @@
       "when": 1785509518027,
       "tag": "0001_0001_user_auth_fields",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1786786992030,
+      "tag": "0002_nebulous_lyja",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1786787270461,
+      "tag": "0003_lethal_baron_zemo",
+      "breakpoints": true
     }
   ]
 }

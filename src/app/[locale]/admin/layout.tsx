@@ -3,6 +3,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Sidebar } from "@/components/admin/sidebar";
 import { Topbar } from "@/components/admin/topbar";
 import { GlowBackdrop } from "@/components/shared/glow-backdrop";
+import { Toaster } from "@/components/ui/toaster";
 import { getSession } from "@/lib/auth";
 
 export default async function AdminLayout({
@@ -33,6 +34,7 @@ export default async function AdminLayout({
         <Sidebar locale={locale} />
         <main className="flex-1 p-8">{children}</main>
       </div>
+      <Toaster />
     </div>
   );
 }

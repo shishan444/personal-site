@@ -1,4 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { AssetUploader } from "@/components/admin/asset-uploader";
 import { listAssetsForAdmin, softDeleteAsset } from "@/lib/actions/assets";
 
 export default async function AdminAssetsPage({ params }: { params: Promise<{ locale: string }> }) {
@@ -9,6 +10,8 @@ export default async function AdminAssetsPage({ params }: { params: Promise<{ lo
 
   return (
     <div className="max-w-6xl space-y-6">
+      <AssetUploader />
+
       <div>
         <h1
           className="text-3xl font-bold tracking-tight"

@@ -45,6 +45,15 @@ export function TimelineSection({ nodes }: TimelineSectionProps) {
     const ratio = (rangeStart - current) / span;
     const next = Math.min(nodes.length - 1, Math.floor(ratio * nodes.length));
     setActiveIdx(next);
+    window.dispatchEvent(
+      new CustomEvent("atelier:active-item", {
+        detail: {
+          chapterId: "04",
+          title: nodes[next]?.name ?? "",
+          meta: nodes[next]?.version ?? "",
+        },
+      }),
+    );
   });
 
   useEffect(() => {

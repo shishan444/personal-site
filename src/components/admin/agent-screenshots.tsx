@@ -171,7 +171,7 @@ export function AgentScreenshots({ agentId, initial }: AgentScreenshotsProps) {
                   style={{ fontFamily: "var(--font-mono)" }}
                   title={s.caption ?? undefined}
                 >
-                  ⠿ {s.caption ?? s.assetId.slice(0, 8)}
+                  ⠿ {s.caption ?? (s.assetId ? s.assetId.slice(0, 8) : "external")}
                 </span>
                 <button
                   type="button"

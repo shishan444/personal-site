@@ -10,9 +10,16 @@ export interface HeroSectionProps {
     essaysPublished: number;
     currentCalibre: string;
   };
+  /** 站点设置 globalStats 模板渲染结果（审计 #24 接线）；未配置时用 i18n 默认格式。 */
+  overrides?: {
+    inService?: string;
+    inBeta?: string;
+    writing?: string;
+    calibre?: string;
+  };
 }
 
-export function HeroSection({ stats }: HeroSectionProps) {
+export function HeroSection({ stats, overrides }: HeroSectionProps) {
   const t = useTranslations();
   return (
     <SectionReveal
@@ -56,14 +63,20 @@ export function HeroSection({ stats }: HeroSectionProps) {
         >
           <HeroMeta
             label={t("agent.spec_uptime")}
-            value={t("hero.meta_in_service", { count: stats.agentsActive })}
+            value={overrides?.inService ?? t("hero.meta_in_service", { count: stats.agentsActive })}
           />
-          <HeroMeta label="BETA" value={t("hero.meta_in_beta", { count: stats.agentsBeta })} />
+          <HeroMeta
+            label="BETA"
+            value={overrides?.inBeta ?? t("hero.meta_in_beta", { count: stats.agentsBeta })}
+          />
           <HeroMeta
             label={t("writing.section_label")}
-            value={t("hero.meta_writing", { count: stats.essaysPublished })}
+            value={overrides?.writing ?? t("hero.meta_writing", { count: stats.essaysPublished })}
           />
-          <HeroMeta label="CALIBRE" value={t("hero.meta_calibre", { cal: stats.currentCalibre })} />
+          <HeroMeta
+            label="CALIBRE"
+            value={overrides?.calibre ?? t("hero.meta_calibre", { cal: stats.currentCalibre })}
+          />
         </div>
       </div>
     </SectionReveal>

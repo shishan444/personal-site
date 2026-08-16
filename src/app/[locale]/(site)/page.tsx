@@ -19,6 +19,7 @@ import {
   getSiteConfig,
   getSiteStats,
 } from "@/lib/queries/site";
+import { renderStatsTemplate, resolveChapters } from "@/lib/site/chapters";
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -33,6 +34,28 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     getSearchIndex(locale),
   ]);
 
+  // 站点配置接线（审计 #24：chaptersConfig/subdialsConfig/globalStats 此前保存不生效）
+  const chapters = resolveChapters(config?.chaptersConfig ?? null);
+  const subdials = config?.subdialsConfig;
+  // 占位符别名双向兼容：seed 模板用 spec 8.6 命名（essays_published/current_cal）
+  const templateVars = {
+    version: config?.currentVersion ?? "v0.4",
+    agents_active: String(stats.agentsActive),
+    agents_beta: String(stats.agentsBeta),
+    essays: String(stats.essaysPublished),
+    essays_published: String(stats.essaysPublished),
+    calibre: stats.currentCalibre,
+    current_cal: stats.currentCalibre,
+  };
+  const heroOverrides = config?.globalStats
+    ? {
+        inService: renderStatsTemplate(config.globalStats.inService, templateVars),
+        inBeta: renderStatsTemplate(config.globalStats.inBeta, templateVars),
+        writing: renderStatsTemplate(config.globalStats.writing, templateVars),
+        calibre: renderStatsTemplate(config.globalStats.calibre, templateVars),
+      }
+    : undefined;
+
   return (
     <>
       <div className="fixed top-4 right-4 z-30">
@@ -41,6 +64,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       <SearchPalette index={searchIndex} />
 
       <SubdialFrame
+        chapters={chapters}
         chapterMetas={{
           "01": { eyebrow: "CH.01", title: "HERO", desc: "工坊入口" },
           "02": {
@@ -60,16 +84,35 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           },
           "05": { eyebrow: "CH.05", title: "OUTRO", desc: "传输结束" },
         }}
-        rdMetaLine1={`${config?.currentVersion ?? "v0.4"} · UPDATED`}
-        rdMetaLine2={config?.rdMeta2 ?? "NEXT"}
+        rdMetaLine1={
+          subdials?.rd?.meta1
+            ? renderStatsTemplate(subdials.rd.meta1, templateVars)
+            : `${config?.currentVersion ?? "v0.4"} · UPDATED`
+        }
+        rdMetaLine2={
+          subdials?.rd?.meta2
+            ? renderStatsTemplate(subdials.rd.meta2, templateVars)
+            : (config?.rdMeta2 ?? "NEXT")
+        }
       />
 
       <main>
-        <HeroSection stats={stats} />
-        <WritingSection essays={essays} />
-        <AgentsSection agents={agents} />
-        <TimelineSection nodes={timeline} />
-        <OutroSection />
+        {chapters.map((chapter) => {
+          switch (chapter.id) {
+            case "01":
+              return <HeroSection key={chapter.id} stats={stats} overrides={heroOverrides} />;
+            case "02":
+              return <WritingSection key={chapter.id} essays={essays} />;
+            case "03":
+              return <AgentsSection key={chapter.id} agents={agents} />;
+            case "04":
+              return <TimelineSection key={chapter.id} nodes={timeline} />;
+            case "05":
+              return <OutroSection key={chapter.id} />;
+            default:
+              return null;
+          }
+        })}
       </main>
     </>
   );

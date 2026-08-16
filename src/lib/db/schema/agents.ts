@@ -40,6 +40,7 @@ export const agents = pgTable(
     modalSize: modalSizeEnum("modal_size"),
     order: integer("order").notNull(),
     isPinned: boolean("is_pinned").default(false).notNull(),
+    deletedAt: timestamp("deleted_at", { withTimezone: true }),
     publishedAt: timestamp("published_at", { withTimezone: true }).defaultNow().notNull(),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),

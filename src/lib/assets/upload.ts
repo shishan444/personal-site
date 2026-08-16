@@ -2,7 +2,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { and, eq } from "drizzle-orm";
 import { getDb } from "@/lib/db";
-import { assetLinks, assets } from "@/lib/db/schema";
+import { agents, assetLinks, assets, essays, siteConfig } from "@/lib/db/schema";
 import { computeChecksum } from "./checksum";
 import { buildStorageLayout, type StorageLayout } from "./storage-path";
 import { generateThumbnail, isThumbnailSupported, readImageMetadata } from "./thumbnail";
@@ -143,26 +143,97 @@ export async function unlinkAsset(
     );
 }
 
-export async function findAssetReferences(assetId: string) {
+/** 1:1 强绑定引用：删除前必须检查的字段（DATA-MODEL §8.4 归属纪律）。 */
+export interface DirectAssetReference {
+  field: string;
+  sourceId: string;
+  sourceTitle: string;
+}
+
+export interface AssetReferences {
+  links: Awaited<ReturnType<typeof listAssetLinks>>;
+  direct: DirectAssetReference[];
+}
+
+async function listAssetLinks(assetId: string) {
   const db = await getDb();
   return db.select().from(assetLinks).where(eq(assetLinks.assetId, assetId));
+}
+
+export async function findAssetReferences(assetId: string): Promise<AssetReferences> {
+  const db = await getDb();
+  const links = await listAssetLinks(assetId);
+
+  const direct: DirectAssetReference[] = [];
+  const essayRows = await db
+    .select({ id: essays.id, title: essays.title })
+    .from(essays)
+    .where(eq(essays.ogImageAssetId, assetId));
+  for (const row of essayRows) {
+    direct.push({ field: "essays.og_image_asset_id", sourceId: row.id, sourceTitle: row.title });
+  }
+  const agentRows = await db
+    .select({ id: agents.id, name: agents.name })
+    .from(agents)
+    .where(eq(agents.cardImageAssetId, assetId));
+  for (const row of agentRows) {
+    direct.push({ field: "agents.card_image_asset_id", sourceId: row.id, sourceTitle: row.name });
+  }
+  const configRows = await db.select().from(siteConfig).where(eq(siteConfig.logoAssetId, assetId));
+  for (const row of configRows) {
+    direct.push({
+      field: "site_config.logo_asset_id",
+      sourceId: String(row.id),
+      sourceTitle: row.siteName,
+    });
+  }
+  const faviconRows = await db
+    .select()
+    .from(siteConfig)
+    .where(eq(siteConfig.faviconAssetId, assetId));
+  for (const row of faviconRows) {
+    direct.push({
+      field: "site_config.favicon_asset_id",
+      sourceId: String(row.id),
+      sourceTitle: row.siteName,
+    });
+  }
+
+  return { links, direct };
 }
 
 export interface DeleteAssetResult {
   ok: boolean;
   reason?: "REFERENCED" | "NOT_FOUND";
-  references?: Awaited<ReturnType<typeof findAssetReferences>>;
+  references?: AssetReferences;
 }
 
+/** 删除到回收站：有任意引用（1:1 或 N:N）拒绝；无引用写 deletedAt（行保留）。 */
 export async function deleteAssetIfUnreferenced(assetId: string): Promise<DeleteAssetResult> {
   const db = await getDb();
   const target = await db.select().from(assets).where(eq(assets.id, assetId)).limit(1);
   if (target.length === 0) return { ok: false, reason: "NOT_FOUND" };
 
   const references = await findAssetReferences(assetId);
-  if (references.length > 0) {
+  if (references.links.length > 0 || references.direct.length > 0) {
     return { ok: false, reason: "REFERENCED", references };
   }
+
+  await db.update(assets).set({ deletedAt: new Date() }).where(eq(assets.id, assetId));
+  return { ok: true };
+}
+
+export interface PurgeAssetResult {
+  ok: boolean;
+  reason?: "NOT_FOUND" | "NOT_IN_TRASH";
+}
+
+/** 彻底删除：仅对已在回收站（deletedAt 非空）的资产可行，删除数据库行。 */
+export async function purgeAsset(assetId: string): Promise<PurgeAssetResult> {
+  const db = await getDb();
+  const target = await db.select().from(assets).where(eq(assets.id, assetId)).limit(1);
+  if (target.length === 0) return { ok: false, reason: "NOT_FOUND" };
+  if (target[0].deletedAt === null) return { ok: false, reason: "NOT_IN_TRASH" };
 
   await db.delete(assets).where(eq(assets.id, assetId));
   return { ok: true };

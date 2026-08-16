@@ -129,10 +129,9 @@ describe("L2 · essays CRUD 全状态机（真实 PGlite）", () => {
     expect(revisions[1]?.action).toBe("published");
   });
 
-  it("F4 · deleteEssay 级联清 revisions", async () => {
+  it("F4 · deleteEssay 软删除（回收站语义：行与 revisions 保留，purge 才清）", async () => {
     await seedSession();
     const result = await createEssay({
-      sn: `SN-DL-${UNIQUE_RUN}`,
       lang: "zh",
       title: "待删",
       deck: "d",
@@ -152,12 +151,23 @@ describe("L2 · essays CRUD 全状态机（真实 PGlite）", () => {
     await deleteEssay(result.id);
 
     const essay = (await db.select().from(essays).where(eq(essays.id, result.id)).limit(1))[0];
-    expect(essay).toBeUndefined();
+    expect(essay).toBeDefined();
+    expect(essay?.deletedAt).not.toBeNull();
     const revisionsAfter = await db
       .select()
       .from(essayRevisions)
       .where(eq(essayRevisions.essayId, result.id));
-    expect(revisionsAfter.length).toBe(0);
+    expect(revisionsAfter.length).toBe(1);
+
+    const { purgeEssay } = await import("@/lib/actions/essays");
+    await purgeEssay(result.id);
+    const purged = (await db.select().from(essays).where(eq(essays.id, result.id)).limit(1))[0];
+    expect(purged).toBeUndefined();
+    const revisionsPurged = await db
+      .select()
+      .from(essayRevisions)
+      .where(eq(essayRevisions.essayId, result.id));
+    expect(revisionsPurged.length).toBe(0);
   });
 });
 

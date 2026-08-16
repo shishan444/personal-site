@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { persistUpload, type UploadResult } from "@/lib/assets";
+import { isAllowedMimeType } from "@/lib/assets/mime";
 import { writeAuditLog } from "@/lib/audit";
 import { getSession } from "@/lib/auth";
 
@@ -18,6 +19,9 @@ export async function POST(request: NextRequest) {
   }
   if (file.size > MAX_BYTES) {
     return NextResponse.json({ error: "FILE_TOO_LARGE", maxBytes: MAX_BYTES }, { status: 413 });
+  }
+  if (!isAllowedMimeType(file.type)) {
+    return NextResponse.json({ error: "MIME_NOT_ALLOWED", mimeType: file.type }, { status: 415 });
   }
 
   const buffer = Buffer.from(await file.arrayBuffer());

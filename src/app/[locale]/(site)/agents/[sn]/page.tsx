@@ -4,7 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { StatusBadge } from "@/components/shared";
-import { Button } from "@/components/ui/button";
+import { AgentLaunchButton } from "@/components/site/agent-launch-button";
 import { getAgentBySn, getAgentScreenshots, getRelatedEssays } from "@/lib/queries/detail";
 
 export async function generateMetadata({
@@ -105,11 +105,14 @@ export default async function AgentDetailPage({
             </div>
           ))}
           {agent.launchUrl && agent.status !== "coming" && (
-            <Button asChild className="w-full mt-4">
-              <a href={agent.launchUrl} target="_blank" rel="noreferrer">
-                {t("agent.button_deploy")}
-              </a>
-            </Button>
+            <AgentLaunchButton
+              sn={agent.sn}
+              name={agent.name}
+              launchType={agent.launchType}
+              launchUrl={agent.launchUrl}
+              modalSize={agent.modalSize}
+              locale={locale}
+            />
           )}
         </aside>
       </div>

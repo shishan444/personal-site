@@ -1,6 +1,6 @@
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq, isNull } from "drizzle-orm";
 import { getDb } from "@/lib/db";
-import { agents, essays, siteConfig, timelineNodes } from "@/lib/db/schema";
+import { agents, assets, essays, siteConfig, timelineNodes } from "@/lib/db/schema";
 import type { AgentSpec } from "@/lib/db/schema/agents";
 import type { TimelineChange } from "@/lib/db/schema/timeline_nodes";
 
@@ -23,6 +23,8 @@ export interface HomeEssay {
   slug: string | null;
   words: number;
   readMinutes: number;
+  /** 摘要卡配图（OG 图 URL）；无图 null，前端用色块+SN 占位。 */
+  ogImageUrl: string | null;
 }
 
 export interface HomeAgent {
@@ -56,9 +58,15 @@ export async function getHomeEssays(locale: string = "zh"): Promise<HomeEssay[]>
   const rows = await db
     .select()
     .from(essays)
-    .where(eq(essays.status, "published"))
+    .where(and(eq(essays.status, "published"), isNull(essays.deletedAt)))
     .orderBy(desc(essays.publishedAt))
     .limit(20);
+  // 摘要卡配图（og_image_asset_id → assets，过滤软删资产）；无图返回 null 由前端占位
+  const ogImageRows = await db
+    .select({ id: assets.id, storagePath: assets.storagePath })
+    .from(assets)
+    .where(isNull(assets.deletedAt));
+  const ogImageMap = new Map(ogImageRows.map((a) => [a.id, `/uploads/${a.storagePath}`]));
   return rows
     .filter((e) => e.lang === locale)
     .map((e) => ({
@@ -72,12 +80,13 @@ export async function getHomeEssays(locale: string = "zh"): Promise<HomeEssay[]>
       slug: e.slug,
       words: e.words,
       readMinutes: e.readMinutes,
+      ogImageUrl: e.ogImageAssetId ? (ogImageMap.get(e.ogImageAssetId) ?? null) : null,
     }));
 }
 
 export async function getHomeAgents(): Promise<HomeAgent[]> {
   const db = await getDb();
-  const rows = await db.select().from(agents).orderBy(agents.order);
+  const rows = await db.select().from(agents).where(isNull(agents.deletedAt)).orderBy(agents.order);
   return rows
     .filter((a) => a.status !== "archived")
     .map((a) => ({
@@ -119,9 +128,12 @@ export async function getSiteConfig() {
 
 export async function getSiteStats(): Promise<SiteStats> {
   const db = await getDb();
-  const allAgents = await db.select().from(agents);
+  const allAgents = await db.select().from(agents).where(isNull(agents.deletedAt));
   const config = await getSiteConfig();
-  const essaysPublishedRows = await db.select().from(essays).where(eq(essays.status, "published"));
+  const essaysPublishedRows = await db
+    .select()
+    .from(essays)
+    .where(and(eq(essays.status, "published"), isNull(essays.deletedAt)));
   return {
     agentsActive: allAgents.filter((a) => a.status === "active").length,
     agentsBeta: allAgents.filter((a) => a.status === "beta").length,

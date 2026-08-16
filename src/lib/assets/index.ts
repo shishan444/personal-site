@@ -1,4 +1,5 @@
 export { computeChecksum, shortChecksum } from "./checksum";
+export { isAllowedMimeType, MIME_ALLOWLIST } from "./mime";
 export { buildStorageLayout, type StorageLayout } from "./storage-path";
 export {
   generateThumbnail,
@@ -15,6 +16,7 @@ export {
   type LinkAssetInput,
   linkAsset,
   persistUpload,
+  purgeAsset,
   type UploadInput,
   type UploadResult,
   unlinkAsset,

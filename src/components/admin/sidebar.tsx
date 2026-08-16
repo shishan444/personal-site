@@ -9,6 +9,7 @@ import {
   Settings,
   Sparkles,
   Tag,
+  Trash2,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -28,6 +29,7 @@ export function Sidebar({ locale }: { locale: string }) {
 
   const systemItems = [
     { href: `/${locale}/admin/assets`, label: t("admin.sidebar_assets"), icon: Image },
+    { href: `/${locale}/admin/trash`, label: t("admin.sidebar_trash"), icon: Trash2 },
     { href: `/${locale}/admin/tags`, label: t("admin.sidebar_tags"), icon: Tag },
     { href: `/${locale}/admin/settings`, label: t("admin.sidebar_settings"), icon: Settings },
     { href: `/${locale}/admin/logs`, label: t("admin.sidebar_logs"), icon: Folder },

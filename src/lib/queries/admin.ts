@@ -1,4 +1,4 @@
-import { count, desc, eq, isNull } from "drizzle-orm";
+import { and, count, desc, eq, isNull } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { agents, auditLogs, essays, timelineNodes } from "@/lib/db/schema";
 
@@ -33,11 +33,14 @@ export interface AdminDashboardData {
 export async function getAdminDashboard(): Promise<AdminDashboardData> {
   const db = await getDb();
   const [allAgents, allEssays, allTimeline, recentLogs, drafts] = await Promise.all([
-    db.select().from(agents),
-    db.select().from(essays),
+    db.select().from(agents).where(isNull(agents.deletedAt)),
+    db.select().from(essays).where(isNull(essays.deletedAt)),
     db.select().from(timelineNodes),
     db.select().from(auditLogs).orderBy(desc(auditLogs.createdAt)).limit(5),
-    db.select().from(essays).where(eq(essays.status, "draft")),
+    db
+      .select()
+      .from(essays)
+      .where(and(eq(essays.status, "draft"), isNull(essays.deletedAt))),
   ]);
 
   const incompleteAgents = allAgents

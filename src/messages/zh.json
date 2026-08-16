@@ -87,7 +87,8 @@
     "attachments_download": "下载",
     "detail_eyebrow": "文章",
     "detail_back": "返回章节",
-    "detail_related_agent": "关联 Agent"
+    "detail_related_agent": "关联 Agent",
+    "view_original": "查看原文"
   },
   "agent": {
     "section_label": "§ 03 · 运动中的 Agent",
@@ -213,7 +214,14 @@
       },
       "placeholder_topic_tags": "AI, Agent...",
       "placeholder_slug": "my-essay-zh",
-      "delete": "✕ 删除"
+      "delete": "✕ 删除",
+      "revision_created": "创建",
+      "revision_edited": "编辑",
+      "revision_published": "发布",
+      "revision_archived": "归档",
+      "revision_restored": "恢复",
+      "action_publish": "✓ 发布",
+      "action_archive": "▤ 归档"
     },
     "agent": {
       "field": {
@@ -261,7 +269,15 @@
         "now": "当前"
       },
       "set_as_now": "设为当前",
-      "now_badge": "★ 当前"
+      "now_badge": "★ 当前",
+      "new_title": "新建 Timeline 节点",
+      "edit_title": "编辑 Timeline 节点",
+      "create_button": "创建",
+      "save_button": "保存",
+      "cancel_button": "取消",
+      "toast_created": "已创建",
+      "toast_saved": "已保存",
+      "toast_failed": "保存失败"
     },
     "settings_form": {
       "field": {
@@ -280,28 +296,75 @@
       "subtitle": "来自 {count} 篇文章的 topic_tags"
     },
     "assets_page": {
-      "subtitle": "{count} 个资产 · 通过 /api/upload 上传"
+      "subtitle": "{count} 个资产 · 通过 /api/upload 上传",
+      "upload_button": "+ 上传文件",
+      "uploading": "上传中…",
+      "upload_hint": "拖拽文件到此处或点击选择 · 多文件 · 上限 20MB · 超大文件请用文章外链附件",
+      "toast_uploaded": "已上传 {count} 个文件",
+      "err_mime": "类型不在白名单",
+      "err_size": "超过 20MB 上限",
+      "err_generic": "上传失败"
     },
     "enum": {
-      "essay_type": { "essay": "文章", "note": "笔记", "tutorial": "教程" },
-      "essay_status": { "draft": "草稿", "published": "已发布", "archived": "已归档" },
+      "essay_type": {
+        "essay": "文章",
+        "note": "笔记",
+        "tutorial": "教程"
+      },
+      "essay_status": {
+        "draft": "草稿",
+        "published": "已发布",
+        "archived": "已归档"
+      },
       "agent_status": {
         "active": "运行中",
         "beta": "测试中",
         "coming": "即将上线",
         "archived": "已归档"
       },
-      "click_target": { "internal": "内部（详情页）", "external": "外部（URL）" },
-      "launch_type": { "external": "外部链接", "iframe": "内嵌 iframe", "modal": "弹窗" },
-      "timeline_type": { "genesis": "起源", "now": "当前", "normal": "常规", "major": "重大" },
-      "lang": { "zh": "中文", "en": "英文" }
+      "click_target": {
+        "internal": "内部（详情页）",
+        "external": "外部（URL）"
+      },
+      "launch_type": {
+        "external": "外部链接",
+        "iframe": "内嵌 iframe",
+        "modal": "弹窗"
+      },
+      "timeline_type": {
+        "genesis": "起源",
+        "now": "当前",
+        "normal": "常规",
+        "major": "重大"
+      },
+      "lang": {
+        "zh": "中文",
+        "en": "英文"
+      }
     },
     "common": {
       "saving": "保存中…",
       "saved": "✓ 已保存",
       "create": "创建",
       "save": "保存"
-    }
+    },
+    "trash_page": {
+      "title": "回收站",
+      "hint": "删除的内容先进入回收站；彻底删除不可恢复。",
+      "empty": "回收站是空的",
+      "restore": "恢复",
+      "purge": "彻底删除",
+      "purge_confirm": "确认彻底删除",
+      "cancel": "取消",
+      "kind_essay": "文章",
+      "kind_agent": "Agent",
+      "kind_asset": "资产",
+      "subtitle": "软删除条目管理",
+      "toast_restored": "已恢复",
+      "toast_purged": "已彻底删除",
+      "toast_failed": "操作失败"
+    },
+    "sidebar_trash": "回收站"
   },
   "dashboard": {
     "title": "站点",
@@ -327,7 +390,10 @@
       "update": "更新",
       "delete": "删除",
       "login": "登录",
-      "logout": "登出"
+      "logout": "登出",
+      "publish": "发布",
+      "archive": "归档",
+      "restore": "恢复"
     },
     "target": {
       "user": "用户",

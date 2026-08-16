@@ -2,6 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { AgentEditor } from "@/components/admin/agent-editor";
 import { AgentScreenshots } from "@/components/admin/agent-screenshots";
+import { ConfirmSubmit } from "@/components/admin/confirm-submit";
 import { listAgentScreenshotLinks } from "@/lib/actions/agent-screenshots";
 import { deleteAgent, updateAgent } from "@/lib/actions/agents";
 import { getAgentForEdit } from "@/lib/queries/admin-list";
@@ -63,12 +64,12 @@ export default async function EditAgentPage({
 
       <div className="pt-8 border-t border-[var(--color-line)]">
         <form action={remove}>
-          <button
-            type="submit"
+          <ConfirmSubmit
+            message="确认删除？将移入回收站，可在回收站恢复"
             className="text-[var(--color-danger)] text-xs uppercase tracking-widest hover:underline"
           >
             {t("admin.agent.delete")}
-          </button>
+          </ConfirmSubmit>
         </form>
       </div>
     </div>
